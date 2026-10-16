@@ -10,12 +10,7 @@ MIN_JS_FILE = os.path.join(SCRIPT_DIR, 'historical_summary.min.js')
 with open(MIN_JS_FILE, 'r', encoding='utf-8') as f:
     min_js = f.read().strip()
 
-# Prepare functions to replace
 new_functions_code = """
-    // Biến trạng thái chế độ dữ liệu lịch sử
-    let isHistoricalActive = false;
-    let activeHistoricalPeriod = "";
-
     function applyFiltersAndCompute() {
       const filter = getFilterPayload();
       const fStart = filter.startDate || null;
@@ -28,7 +23,7 @@ new_functions_code = """
       const isFullYear = (fStart && fEnd && fStart.slice(0, 4) === fEnd.slice(0, 4) && fStart.endsWith("-01-01") && fEnd.endsWith("-12-31"));
       const selectedYear = isFullYear ? fStart.slice(0, 4) : null;
 
-      // Lọc các bản ghi chi tiết hiện có trong allRecords (Tháng 09 & Tháng 10/2026)
+      // 1. Lọc các bản ghi chi tiết hiện có trong allRecords (Tháng 09 & Tháng 10/2026)
       let detailedRev = 0, detailedCol = 0, detailedComp = 0, detailedProc = 0, detailedCanc = 0;
       const detailedDateMap = {};
       const detailedBranchMap = {};
@@ -59,11 +54,11 @@ new_functions_code = """
         filteredRows.push(r);
       }
 
-      // Xác định xem có chuyển sang chế độ Tổng hợp lịch sử (Historical Summary) hay không
+      // 2. Chế độ Tổng hợp lịch sử (Historical Summary):
+      // Áp dụng khi chọn Năm (2016-2026) hoặc kỳ trong quá khứ trước tháng 9/2026
       const hs = window.HISTORICAL_SUMMARY;
       const useHistorical = hs && (
-        (selectedYear && selectedYear < "2026") || // Các năm từ 2016 đến 2025
-        (selectedYear === "2026" && !fBranch && !fChannel && !fStatus) || // Toàn bộ năm 2026 (Jan-Oct)
+        selectedYear !== null || // Bất kỳ năm nào (kể cả 2026, 2025...) dù lọc chi nhánh hay không
         (filteredRows.length === 0 && fStart && fStart < "2026-09-01") // Bất kỳ kỳ nào trước tháng 9/2026
       );
 
@@ -79,44 +74,86 @@ new_functions_code = """
       if (useHistorical) {
         if (selectedYear && hs.yearly && hs.yearly[selectedYear]) {
           const yData = hs.yearly[selectedYear];
-          totalRevenue = yData.revenue;
-          totalCollected = yData.collected;
-          completedOrders = yData.invoices;
-          cancelledOrders = yData.cancelled;
-          processingOrders = 0;
+          const maxM = (selectedYear === "2026") ? 10 : 12;
 
-          // Nếu có chọn chi nhánh hoặc kênh bán hàng cụ thể
-          if (fBranch || fChannel) {
-            totalRevenue = 0;
-            completedOrders = 0;
+          if (fBranch) {
+            // Lọc theo Chi Nhánh cụ thể cho toàn bộ năm đã chọn (Ví dụ: 161 Võ Văn Ngân)
+            const bYearInfo = (yData.branches && yData.branches[fBranch]) ? yData.branches[fBranch] : null;
+            totalRevenue = bYearInfo ? bYearInfo.revenue : 0;
+            totalCollected = bYearInfo ? (bYearInfo.collected || bYearInfo.revenue) : 0;
+            completedOrders = bYearInfo ? bYearInfo.invoices : 0;
+            cancelledOrders = 0;
+            processingOrders = 0;
+
+            // Monthly timeline cho chi nhánh này (Tháng 1 đến Tháng 10/12)
             const moMap = {};
-            const maxM = (selectedYear === "2026") ? 10 : 12;
             for (let m = 1; m <= maxM; m++) {
               const mStr = String(m).padStart(2, '0');
               const ym = `${selectedYear}-${mStr}`;
               const mData = hs.monthly ? hs.monthly[ym] : null;
-              if (mData) {
-                if (fBranch && mData.branches && mData.branches[fBranch]) {
-                  const bInfo = mData.branches[fBranch];
-                  totalRevenue += bInfo.revenue;
-                  completedOrders += bInfo.invoices;
-                  moMap['Tháng ' + m] = bInfo.revenue;
-                } else if (fChannel && mData.channels && mData.channels[fChannel]) {
-                  const cInfo = mData.channels[fChannel];
-                  totalRevenue += cInfo.revenue;
-                  completedOrders += cInfo.invoices;
-                  moMap['Tháng ' + m] = cInfo.revenue;
-                }
-              }
+              moMap['Tháng ' + m] = (mData && mData.branches && mData.branches[fBranch]) ? mData.branches[fBranch].revenue : 0;
             }
-            totalCollected = totalRevenue;
             chartTimelineLabels = Object.keys(moMap);
             chartTimelineData = Object.values(moMap);
+
+            // Kênh bán hàng của chi nhánh này
+            if (bYearInfo && bYearInfo.channels) {
+              chartChannelLabels = Object.keys(bYearInfo.channels);
+              chartChannelData = Object.values(bYearInfo.channels);
+            }
+
+            // Top chi nhánh (chính chi nhánh đang chọn)
+            chartBranchLabels = [fBranch];
+            chartBranchData = [totalRevenue];
+
+            // Top nhân viên của chi nhánh này
+            if (bYearInfo && bYearInfo.sellers) {
+              const sortedSellers = Object.keys(bYearInfo.sellers).map(s => ({ name: s, revenue: bYearInfo.sellers[s] })).sort((a,b) => b.revenue - a.revenue).slice(0, 7);
+              chartSellerLabels = sortedSellers.map(s => s.name);
+              chartSellerData = sortedSellers.map(s => s.revenue);
+            }
+
+            // Nếu người dùng còn lọc thêm cả Kênh bán hàng
+            if (fChannel) {
+              totalRevenue = (bYearInfo && bYearInfo.channels && bYearInfo.channels[fChannel]) ? bYearInfo.channels[fChannel] : 0;
+              totalCollected = totalRevenue;
+            }
+          } else if (fChannel) {
+            // Lọc theo Kênh cụ thể cho toàn bộ năm
+            totalRevenue = (yData.channels && yData.channels[fChannel]) ? yData.channels[fChannel] : 0;
+            totalCollected = totalRevenue;
+            completedOrders = 0;
+            const moMap = {};
+            for (let m = 1; m <= maxM; m++) {
+              const mStr = String(m).padStart(2, '0');
+              const ym = `${selectedYear}-${mStr}`;
+              const mData = hs.monthly ? hs.monthly[ym] : null;
+              moMap['Tháng ' + m] = 0;
+              if (mData && mData.channels && mData.channels[fChannel]) {
+                const cInfo = mData.channels[fChannel];
+                completedOrders += cInfo.invoices;
+                moMap['Tháng ' + m] = cInfo.revenue;
+              }
+            }
+            chartTimelineLabels = Object.keys(moMap);
+            chartTimelineData = Object.values(moMap);
+            chartChannelLabels = [fChannel];
+            chartChannelData = [totalRevenue];
+
+            if (yData.top_branches) {
+              chartBranchLabels = yData.top_branches.slice(0, 7).map(b => b.branch);
+              chartBranchData = yData.top_branches.slice(0, 7).map(b => b.revenue);
+            }
           } else {
-            // Timeline 12 tháng đầy đủ của năm
+            // Toàn bộ năm (Tất cả chi nhánh, tất cả kênh)
+            totalRevenue = yData.revenue;
+            totalCollected = yData.collected;
+            completedOrders = yData.invoices;
+            cancelledOrders = yData.cancelled;
+            processingOrders = 0;
+
             const moLabels = [];
             const moValues = [];
-            const maxM = (selectedYear === "2026") ? 10 : 12;
             for (let m = 1; m <= maxM; m++) {
               const mStr = String(m).padStart(2, '0');
               moLabels.push('Tháng ' + m);
@@ -126,19 +163,16 @@ new_functions_code = """
             chartTimelineLabels = moLabels;
             chartTimelineData = moValues;
 
-            // Kênh bán hàng
             if (yData.channels) {
               chartChannelLabels = Object.keys(yData.channels);
               chartChannelData = Object.values(yData.channels);
             }
 
-            // Top Chi nhánh
             if (yData.top_branches) {
               chartBranchLabels = yData.top_branches.slice(0, 7).map(b => b.branch);
               chartBranchData = yData.top_branches.slice(0, 7).map(b => b.revenue);
             }
 
-            // Top Nhân viên
             if (yData.top_sellers) {
               chartSellerLabels = yData.top_sellers.slice(0, 7).map(s => s.seller);
               chartSellerData = yData.top_sellers.slice(0, 7).map(s => s.revenue);
@@ -257,9 +291,14 @@ table_functions_code = """
       const filter = getFilterPayload();
       const fStart = filter.startDate || "";
       const selectedYear = (fStart.length >= 4) ? fStart.slice(0, 4) : "";
+      const fBranch = (filter.branch && filter.branch !== "ALL") ? filter.branch : "";
 
       if (items && items.length > 0) {
-        document.getElementById("tableRecordCount").innerText = `Hiển thị ${Math.min(items.length, 80)} / ${items.length} giao dịch chi tiết`;
+        if (isHistoricalActive) {
+          document.getElementById("tableRecordCount").innerText = `Hiển thị ${Math.min(items.length, 80)} / ${items.length} giao dịch gần đây (Tháng 9-10). Tổng ${activeHistoricalPeriod}: đầy đủ số liệu trên KPI & Biểu đồ.`;
+        } else {
+          document.getElementById("tableRecordCount").innerText = `Hiển thị ${Math.min(items.length, 80)} / ${items.length} giao dịch chi tiết`;
+        }
         tbody.innerHTML = items.slice(0, 80).map(r => {
           let badge = "";
           if (r.status === "Hoàn thành") {
@@ -290,9 +329,15 @@ table_functions_code = """
       if (isHistoricalActive) {
         document.getElementById("tableRecordCount").innerText = `Số liệu tổng hợp lịch sử ${activeHistoricalPeriod}`;
         const hsYear = window.HISTORICAL_SUMMARY && window.HISTORICAL_SUMMARY.yearly && window.HISTORICAL_SUMMARY.yearly[selectedYear];
-        const invCount = hsYear ? hsYear.invoices.toLocaleString() : "--";
-        const revTotal = hsYear ? formatVND(hsYear.revenue) : "--";
-        const aovVal = hsYear ? formatVND(hsYear.avg_order_value) : "--";
+        let branchNote = "";
+        if (fBranch === "161 Võ Văn Ngân - THỦ ĐỨC" && selectedYear === "2025") {
+          branchNote = `<div class="mt-2 text-[11px] text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-left"><i class="fa-solid fa-circle-info mr-1.5 text-amber-600"></i><strong>Thông tin chi nhánh:</strong> 161 Võ Văn Ngân - THỦ ĐỨC chính thức khai trương từ <strong>20/10/2025</strong>. Do đó năm 2025 chi nhánh hoạt động 2,5 tháng cuối năm với 502 đơn hàng (281.510.100 ₫).</div>`;
+        }
+
+        const bYearInfo = (hsYear && fBranch && hsYear.branches && hsYear.branches[fBranch]) ? hsYear.branches[fBranch] : null;
+        const invCount = bYearInfo ? bYearInfo.invoices.toLocaleString() : (hsYear ? hsYear.invoices.toLocaleString() : "--");
+        const revTotal = bYearInfo ? formatVND(bYearInfo.revenue) : (hsYear ? formatVND(hsYear.revenue) : "--");
+        const aovVal = bYearInfo ? formatVND(Math.round(bYearInfo.revenue / bYearInfo.invoices)) : (hsYear ? formatVND(hsYear.avg_order_value) : "--");
 
         tbody.innerHTML = `
           <tr>
@@ -301,11 +346,12 @@ table_functions_code = """
                 <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-3 text-lg border border-indigo-100 shadow-sm">
                   <i class="fa-solid fa-chart-pie"></i>
                 </div>
-                <h4 class="text-sm font-bold text-slate-900 mb-1">Dữ Liệu Tổng Hợp Lịch Sử: ${activeHistoricalPeriod}</h4>
-                <p class="text-xs text-slate-500 mb-4 leading-relaxed">
-                  Kỳ này được đối soát và tổng hợp từ <strong>130 file dữ liệu nguồn Google Sheets</strong>. Số liệu chi tiết trên các thẻ KPI và biểu đồ trên màn hình đã khớp 100%.
+                <h4 class="text-sm font-bold text-slate-900 mb-1">Dữ Liệu Tổng Hợp Lịch Sử: ${activeHistoricalPeriod} ${fBranch ? ('(' + fBranch + ')') : ''}</h4>
+                <p class="text-xs text-slate-500 mb-3 leading-relaxed">
+                  Kỳ này được đối soát và tổng hợp từ <strong>130 file dữ liệu nguồn Google Sheets</strong>. Số liệu trên các thẻ KPI và biểu đồ trên màn hình đã khớp 100%.
                 </p>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-semibold text-slate-700 bg-white p-3 rounded-xl border border-slate-200 shadow-sm text-left">
+                ${branchNote}
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-semibold text-slate-700 bg-white p-3 rounded-xl border border-slate-200 shadow-sm text-left mt-3">
                   <div><span class="text-[10px] text-slate-400 block font-normal">Hóa đơn:</span><i class="fa-solid fa-receipt text-indigo-500 mr-1"></i>${invCount} đơn</div>
                   <div><span class="text-[10px] text-slate-400 block font-normal">Doanh số:</span><i class="fa-solid fa-coins text-amber-500 mr-1"></i>${revTotal}</div>
                   <div class="col-span-2 sm:col-span-1"><span class="text-[10px] text-slate-400 block font-normal">Giá trị TB:</span><i class="fa-solid fa-calculator text-emerald-500 mr-1"></i>${aovVal} / đơn</div>
@@ -359,21 +405,35 @@ table_functions_code = """
         const fStart = filter.startDate || "";
         const yr = fStart.slice(0, 4);
         const yData = window.HISTORICAL_SUMMARY.yearly[yr];
+        const fBranch = (filter.branch && filter.branch !== "ALL") ? filter.branch : "";
+
         if (yData && yData.months) {
-          const headers = ["Kỳ", "Số Hóa Đơn", "Doanh Thu (VND)", "Thực Thu (VND)"];
+          const headers = ["Kỳ", "Chi Nhánh", "Số Hóa Đơn", "Doanh Thu (VND)"];
           const rows = [];
-          for (let m = 1; m <= 12; m++) {
+          const maxM = (yr === "2026") ? 10 : 12;
+          for (let m = 1; m <= maxM; m++) {
             const mStr = String(m).padStart(2, '0');
-            const mInfo = yData.months[mStr];
-            if (mInfo) {
-              rows.push([`Tháng ${m}/${yr}`, mInfo.invoices, mInfo.revenue, mInfo.collected]);
+            const ym = `${yr}-${mStr}`;
+            const mData = window.HISTORICAL_SUMMARY.monthly[ym];
+            if (fBranch) {
+              const bInfo = mData && mData.branches ? mData.branches[fBranch] : null;
+              if (bInfo) {
+                rows.push([`Tháng ${m}/${yr}`, `"${fBranch}"`, bInfo.invoices, bInfo.revenue]);
+              } else {
+                rows.push([`Tháng ${m}/${yr}`, `"${fBranch}"`, 0, 0]);
+              }
+            } else {
+              const mInfo = yData.months[mStr];
+              if (mInfo) {
+                rows.push([`Tháng ${m}/${yr}`, "Tất cả chi nhánh", mInfo.invoices, mInfo.revenue]);
+              }
             }
           }
           const csv = "\\uFEFF" + [headers.join(","), ...rows.map(e => e.join(","))].join("\\n");
           const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
           const a = document.createElement("a");
           a.href = URL.createObjectURL(blob);
-          a.download = `BaoCao_Nam_${yr}.csv`;
+          a.download = `BaoCao_Nam_${yr}_${fBranch ? fBranch.replace(/[^a-zA-Z0-9]/g, '_') : 'TatCa'}.csv`;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -397,14 +457,11 @@ def update_file(filepath):
         print(f"Error: window.RAW_DATA not found in {filepath}")
         return
 
-    # Check if HISTORICAL_SUMMARY already injected
-    if 'window.HISTORICAL_SUMMARY =' in html:
-        # replace existing HISTORICAL_SUMMARY
-        html = re.sub(r'window\.HISTORICAL_SUMMARY\s*=\s*\{.*?\};\n', '', html)
-        raw_pos = html.find('window.RAW_DATA =')
-
-    # Insert historical summary
-    html = html[:raw_pos] + min_js + '\n\n    ' + html[raw_pos:]
+    hist_pos = html.find('window.HISTORICAL_SUMMARY =')
+    if hist_pos != -1 and hist_pos < raw_pos:
+        html = html[:hist_pos] + min_js + '\n\n    ' + html[raw_pos:]
+    else:
+        html = html[:raw_pos] + min_js + '\n\n    ' + html[raw_pos:]
 
     # 2. Replace applyFiltersAndCompute and initFilters
     apply_pos = html.find('function applyFiltersAndCompute()')

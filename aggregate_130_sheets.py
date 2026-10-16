@@ -54,7 +54,7 @@ def normalize_status(val, raw):
 
 def process_single_file(file_name, file_id):
     import subprocess
-    cmd = [GSHEETS_CLI, 'readonly', 'read', file_id, 'Invoices!A1:N10000', '--json']
+    cmd = [GSHEETS_CLI, 'readonly', 'read', file_id, 'Invoices!A1:N20000', '--json']
     try:
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
         rows = json.loads(res.stdout)
@@ -127,9 +127,13 @@ def process_single_file(file_name, file_id):
         # Branches
         if branch:
             if branch not in branches:
-                branches[branch] = {'invoices': 0, 'revenue': 0.0}
+                branches[branch] = {'invoices': 0, 'revenue': 0.0, 'collected': 0.0, 'channels': {}, 'sellers': {}}
             branches[branch]['invoices'] += 1
             branches[branch]['revenue'] += tot
+            branches[branch]['collected'] += col
+            branches[branch]['channels'][ch] = round(branches[branch]['channels'].get(ch, 0.0) + tot, 2)
+            if seller and seller != 'Chưa gán':
+                branches[branch]['sellers'][seller] = round(branches[branch]['sellers'].get(seller, 0.0) + tot, 2)
 
         # Channels
         if ch not in channels:
@@ -143,6 +147,7 @@ def process_single_file(file_name, file_id):
                 sellers[seller] = {'invoices': 0, 'revenue': 0.0, 'branch': branch}
             sellers[seller]['invoices'] += 1
             sellers[seller]['revenue'] += tot
+
 
     return {
         'file_name': file_name,
@@ -262,9 +267,14 @@ def main():
         # Year branches
         for b, bv in d['branches'].items():
             if b not in y_entry['branches']:
-                y_entry['branches'][b] = {'invoices': 0, 'revenue': 0.0}
+                y_entry['branches'][b] = {'invoices': 0, 'revenue': 0.0, 'collected': 0.0, 'channels': {}, 'sellers': {}}
             y_entry['branches'][b]['invoices'] += bv['invoices']
             y_entry['branches'][b]['revenue'] += bv['revenue']
+            y_entry['branches'][b]['collected'] += bv.get('collected', 0.0)
+            for c, cv in bv.get('channels', {}).items():
+                y_entry['branches'][b]['channels'][c] = round(y_entry['branches'][b]['channels'].get(c, 0.0) + cv, 2)
+            for s, sv in bv.get('sellers', {}).items():
+                y_entry['branches'][b]['sellers'][s] = round(y_entry['branches'][b]['sellers'].get(s, 0.0) + sv, 2)
 
         # Year channels
         for c, cv in d['channels'].items():
@@ -305,9 +315,11 @@ def main():
             'avg_order_value': round(y['revenue'] / y['invoices'], 0) if y['invoices'] > 0 else 0,
             'months': y['months'],
             'channels': {c: round(v['revenue'], 2) for c, v in y['channels'].items()},
-            'top_branches': sorted_branches[:10],
-            'top_sellers': sorted_sellers[:15]
+            'branches': y['branches'],
+            'top_branches': sorted_branches[:15],
+            'top_sellers': sorted_sellers[:20]
         }
+
 
     # Summary all-time
     all_time_rev = sum(y['revenue'] for y in final_yearly.values())
