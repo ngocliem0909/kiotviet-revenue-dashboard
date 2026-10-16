@@ -16,7 +16,9 @@ const SUMMARY_SPREADSHEET_ID = '1FrWL8e_7LAFhjL7at915i9CKt6t87NzXKFLQ9j_V-uo';
 // Danh sách email được phép truy cập hệ thống
 const ALLOWED_EMAILS = [
   'lee.famn@gmail.com',
-  'ngocliem0909@gmail.com'
+  'ngocliem0909@gmail.com',
+  'zoolnguyen@gmail.com',
+  'duong.nguyen@leeandtee.com'
 ];
 
 /**
@@ -147,6 +149,8 @@ function doGet(e) {
       '<ul class="space-y-1 font-mono text-[11px] text-indigo-700 bg-white/70 p-2.5 rounded-xl border border-amber-200">' +
       '<li>&bull; lee.famn@gmail.com</li>' +
       '<li>&bull; ngocliem0909@gmail.com</li>' +
+      '<li>&bull; zoolnguyen@gmail.com</li>' +
+      '<li>&bull; duong.nguyen@leeandtee.com</li>' +
       '</ul>' +
       '</div>' +
       '<a href="https://accounts.google.com/AccountChooser?continue=' + encodeURIComponent(ScriptApp.getService().getUrl()) + '" class="inline-flex items-center justify-center w-full px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md shadow-indigo-500/20 transition">' +
