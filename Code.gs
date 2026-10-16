@@ -85,25 +85,45 @@ function doGet(e) {
 
   // 4. API Trạng Thái Hệ Thống & Tự Động Hóa
   if (e && e.parameter && e.parameter.api === 'system_status') {
-    var kiotCfg = getKiotConfig_();
-    var props = PropertiesService.getScriptProperties();
-    var statusData = {
-      success: true,
-      triggers: getTriggersStatus(),
-      kiot: {
-        configured: !!(kiotCfg.clientId && kiotCfg.clientSecret),
-        retailer: kiotCfg.retailer,
-        lastSyncTime: props.getProperty('LAST_SYNC_SUCCESS_TIME') || '',
-        lastSyncCount: props.getProperty('LAST_SYNC_COUNT') || '0',
-        lastError: props.getProperty('LAST_SYNC_ERROR') || null
-      },
-      telegram: {
-        configured: !!getTelegramConfig_().token,
-        chatId: getTelegramConfig_().chatId
-      }
-    };
-    return ContentService.createTextOutput(JSON.stringify(statusData))
-      .setMimeType(ContentService.MimeType.JSON);
+    try {
+      var kiotCfg = getKiotConfig_();
+      var props = PropertiesService.getScriptProperties();
+      var triggers = getTriggersStatus();
+      var triggerHandlers = triggers.map(function(t) { return t.handler; });
+      var info = {
+        triggers: {
+          totalCount: triggers.length,
+          installed: triggerHandlers,
+          list: triggers
+        },
+        kiot: {
+          configured: !!(kiotCfg.clientId && kiotCfg.clientSecret),
+          retailer: kiotCfg.retailer || 'leeandteevn',
+          clientId: kiotCfg.clientId || 'leeandteevn',
+          hasClientSecret: !!kiotCfg.clientSecret,
+          tokenCached: !!props.getProperty('KIOT_ACCESS_TOKEN'),
+          lastSyncTime: props.getProperty('LAST_SYNC_SUCCESS_TIME') || '',
+          lastSyncCount: props.getProperty('LAST_SYNC_COUNT') || '0',
+          lastError: props.getProperty('LAST_SYNC_ERROR') || null
+        },
+        telegram: {
+          configured: !!getTelegramConfig_().token,
+          chatId: getTelegramConfig_().chatId || '530892002'
+        }
+      };
+      var statusData = {
+        success: true,
+        status: info,
+        triggers: info.triggers,
+        kiot: info.kiot,
+        telegram: info.telegram
+      };
+      return ContentService.createTextOutput(JSON.stringify(statusData))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (stErr) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: stErr.message }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
   }
 
   // 5. API Kích hoạt gửi thử Telegram

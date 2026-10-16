@@ -82944,20 +82944,35 @@
       fetch("https://script.google.com/macros/s/AKfycbzBJ8SdazzihyeIomttMdgIgj3czv_I4xMt_K1Bw7Syc2Jdc7sU0wJRnjUbQvaKhyXs/exec?api=system_status")
         .then(r => r.json())
         .then(res => {
-          if (box) {
-            if (res && res.success) {
-              const st = res.status;
-              const trigNames = (st.triggers && st.triggers.installed) ? st.triggers.installed.join(", ") : "Chưa cài";
-              box.innerHTML = '<div class="space-y-1.5">' +
-                '<div class="flex items-center justify-between"><span>KiotViet Client ID:</span><span class="font-semibold text-slate-800">' + st.kiotviet.clientId + ' (' + (st.kiotviet.hasClientSecret ? "Secret OK" : "Thiếu Secret") + ')</span></div>' +
-                '<div class="flex items-center justify-between"><span>OAuth Token:</span><span class="' + (st.kiotviet.tokenCached ? "text-emerald-600 font-semibold" : "text-amber-600") + '">' + (st.kiotviet.tokenCached ? "Sẵn sàng (Cached)" : "Cần cấp mới") + '</span></div>' +
-                '<div class="flex items-center justify-between"><span>Telegram Bot:</span><span class="font-semibold text-blue-700">Chat ID ' + st.telegram.chatId + '</span></div>' +
-                '<div class="flex items-center justify-between"><span>Triggers Hoạt Động:</span><span class="font-bold text-emerald-700">' + st.triggers.totalCount + ' triggers</span></div>' +
-                '<div class="text-[11px] text-slate-500 pt-1 border-t border-slate-200">' + trigNames + '</div>' +
-              '</div>';
-            } else {
-              box.innerHTML = '<span class="text-rose-600">Không thể lấy trạng thái: ' + (res ? res.message : "") + '</span>';
+          if (!box) return;
+          if (res && res.success) {
+            const st = res.status || res;
+            const kiot = st.kiot || {};
+            const tele = st.telegram || {};
+            const trig = st.triggers || {};
+
+            let trigCount = 0;
+            let trigNames = "Chưa cài lịch tự động";
+            if (Array.isArray(trig)) {
+              trigCount = trig.length;
+              trigNames = trig.map(t => t.handler).join(", ") || "Chưa cài";
+            } else if (trig.totalCount !== undefined) {
+              trigCount = trig.totalCount;
+              trigNames = (trig.installed && trig.installed.length) ? trig.installed.join(", ") : "Chưa cài";
             }
+
+            const clientIdDisp = kiot.clientId ? (kiot.clientId + (kiot.hasClientSecret ? " (Secret OK)" : " (Thiếu Secret)")) : (kiot.retailer || "leeandteevn");
+            const tokenDisp = kiot.tokenCached ? '<span class="text-emerald-600 font-semibold">Sẵn sàng (Cached)</span>' : '<span class="text-amber-600 font-semibold">Cần cấp mới</span>';
+
+            box.innerHTML = '<div class="space-y-1.5 text-xs text-slate-700">' +
+              '<div class="flex items-center justify-between"><span>KiotViet Client ID:</span><span class="font-semibold text-slate-800">' + clientIdDisp + '</span></div>' +
+              '<div class="flex items-center justify-between"><span>OAuth Token:</span>' + tokenDisp + '</div>' +
+              '<div class="flex items-center justify-between"><span>Telegram Bot:</span><span class="font-semibold text-blue-700">Chat ID ' + (tele.chatId || "530892002") + '</span></div>' +
+              '<div class="flex items-center justify-between"><span>Triggers Hoạt Động:</span><span class="font-bold ' + (trigCount > 0 ? 'text-emerald-700' : 'text-amber-600') + '">' + trigCount + ' triggers</span></div>' +
+              '<div class="text-[11px] text-slate-500 pt-1 border-t border-slate-200"><i class="fa-solid fa-list-check mr-1"></i> ' + trigNames + '</div>' +
+            '</div>';
+          } else {
+            box.innerHTML = '<span class="text-rose-600">Không thể lấy trạng thái: ' + (res ? (res.message || res.error || "Lỗi không xác định") : "") + '</span>';
           }
         })
         .catch(err => {
