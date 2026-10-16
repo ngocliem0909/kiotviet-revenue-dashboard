@@ -3,3 +3,7 @@ node_modules/
 .clasprc.json
 .DS_Store
 *.log
+__pycache__/
+*.pyc
+*.csv
+test_prep.py

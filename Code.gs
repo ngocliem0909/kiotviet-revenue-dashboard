@@ -33,6 +33,12 @@ function isUserAuthorized_() {
  */
 function doGet(e) {
   // Hỗ trợ API JSON cho các ứng dụng ngoài (như GitHub Pages, website độc lập)
+  if (e && e.parameter && (e.parameter.api === 'history' || e.parameter.type === 'history')) {
+    var yearly = getYearlySummary_();
+    return ContentService.createTextOutput(JSON.stringify(yearly))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (e && e.parameter && (e.parameter.api === '1' || e.parameter.format === 'json')) {
     var fresh = getFreshOctoberRecords();
     return ContentService.createTextOutput(JSON.stringify(fresh))
@@ -472,3 +478,32 @@ function get2026MonthlySummary_() {
     return { labels: [], data: [] };
   }
 }
+
+/**
+ * Đọc bảng tổng hợp các năm từ KiotViet-Summary (Yearly)
+ */
+function getYearlySummary_() {
+  try {
+    var ss = SpreadsheetApp.openById(SUMMARY_SPREADSHEET_ID);
+    var sheet = ss.getSheetByName('Yearly');
+    if (!sheet) return [];
+    var lr = sheet.getLastRow();
+    if (lr <= 1) return [];
+    var vals = sheet.getRange(2, 1, lr - 1, 7).getValues();
+    return vals.map(function(r) {
+      return {
+        year: String(r[0]),
+        invoices: Number(r[1]) || 0,
+        revenue: Number(r[2]) || 0,
+        collected: Number(r[3]) || 0,
+        cancelled: Number(r[4]) || 0,
+        avgOrderValue: Number(r[5]) || 0,
+        updatedAt: r[6]
+      };
+    });
+  } catch (e) {
+    console.warn('Lỗi đọc Yearly Summary: ' + e.message);
+    return [];
+  }
+}
+
