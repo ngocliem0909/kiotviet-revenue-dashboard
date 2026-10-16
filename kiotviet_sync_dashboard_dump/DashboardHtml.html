@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<base target="_top">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KiotViet Dashboard</title>
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Roboto,Arial,sans-serif;background:#f1f5f9;color:#1e293b}
+header{background:linear-gradient(135deg,#1565c0,#1e88e5);color:#fff;padding:18px 28px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+header h1{font-size:22px}
+header .user{font-size:13px;text-align:right}
+header .role{display:inline-block;background:rgba(255,255,255,.25);border-radius:12px;padding:2px 10px;font-size:12px;margin-top:4px}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+.controls{background:#fff;border-radius:10px;padding:12px 18px;margin-bottom:16px;display:flex;gap:14px;align-items:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.controls label{font-weight:600;font-size:14px}
+.controls select{padding:7px 10px;border:1px solid #cbd5e1;border-radius:6px;font-size:14px}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:16px}
+.card{background:#fff;border-radius:10px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.08);border-top:4px solid #1e88e5}
+.card .label{font-size:13px;color:#64748b;margin-bottom:6px}
+.card .value{font-size:23px;font-weight:700}
+.card.revenue{border-top-color:#16a34a}.card.invoices{border-top-color:#2563eb}.card.collected{border-top-color:#0891b2}.card.debt{border-top-color:#dc2626}.card.profit{border-top-color:#f59e0b}
+.card .compare{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid #eef2f7;font-size:13px;color:#64748b}
+.card .compare .cmp{font-size:15px;font-weight:700}
+.cmp.up-green{color:#16a34a}.cmp.up-blue{color:#2563eb}.cmp.up-teal{color:#0891b2}.cmp.up-red{color:#dc2626}.cmp.up-amber{color:#f59e0b}
+.cmp.down{color:#dc2626}.cmp.na{color:#94a3b8;font-weight:400}
+.card .note{font-size:11px;color:#94a3b8;margin-top:6px}
+.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.chart-box{background:#fff;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.chart-box h3{font-size:15px;margin-bottom:6px;color:#334155}
+.chart-box .chart{height:300px}
+.table-box{background:#fff;border-radius:10px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);overflow-x:auto;margin-bottom:16px}
+.table-box h3{font-size:15px;margin-bottom:8px;color:#334155}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:7px 9px;border-bottom:1px solid #e2e8f0;text-align:left;white-space:nowrap}
+th{background:#f8fafc;font-weight:600;color:#475569}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.loading{text-align:center;padding:20px;color:#64748b}
+.inv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.inv-grid .card .value{font-size:20px}
+@media(max-width:900px){.cards{grid-template-columns:1fr 1fr}.inv-grid{grid-template-columns:1fr 1fr}.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<h1>KiotViet Dashboard</h1>
+<div class="user"><div><?= userEmail ?></div><span class="role"><?= userRole ?></span></div>
+</header>
+<div class="container">
+<div class="controls">
+<label for="yearSel">Năm:</label><select id="yearSel"></select>
+<label for="monthSel">Tháng:</label><select id="monthSel"></select>
+<span id="status" style="margin-left:auto;font-size:13px;color:#64748b"></span>
+</div>
+<div class="cards">
+<div class="card revenue"><div class="label" id="lblRev">Doanh thu thuần (₫)</div><div class="value" id="statRevenue">–</div><div class="compare"><span>Đối chiếu cùng kỳ</span><b class="cmp" id="cmpRevenue">–</b></div></div>
+<div class="card invoices"><div class="label" id="lblInv">Số hóa đơn</div><div class="value" id="statInvoices">–</div><div class="compare"><span>Đối chiếu cùng kỳ</span><b class="cmp" id="cmpInvoices">–</b></div></div>
+<div class="card collected"><div class="label" id="lblPaid">Giá trị thu nợ (₫)</div><div class="value" id="statCollected">–</div><div class="compare"><span>Đối chiếu cùng kỳ</span><b class="cmp" id="cmpCollected">–</b></div></div>
+<div class="card debt"><div class="label" id="lblDebt">Công nợ hiện tại (₫)</div><div class="value" id="statDebt">–</div><div class="compare"><span>Đối chiếu cùng kỳ</span><b class="cmp" id="cmpDebt">–</b></div></div>
+<div class="card profit"><div class="label" id="lblProfit">Lợi nhuận gộp (₫)</div><div class="value" id="statProfit">–</div><div class="compare"><span>Đối chiếu cùng kỳ</span><b class="cmp" id="cmpProfit">–</b></div><div class="note" id="profitNote"></div></div>
+</div>
+<div class="charts">
+<div class="chart-box">
+<h3>Tồn kho <span id="invDate" style="color:#64748b;font-weight:400;font-size:12px"></span></h3>
+<div class="inv-grid" style="grid-template-columns:repeat(2,1fr)">
+<div class="card" style="border-top-color:#8b5cf6"><div class="label">Giá trị tồn kho (₫)</div><div class="value" id="invValue" style="font-size:18px">–</div></div>
+<div class="card" style="border-top-color:#6366f1"><div class="label">Tổng SKU</div><div class="value" id="invSku" style="font-size:18px">–</div></div>
+<div class="card" style="border-top-color:#f59e0b"><div class="label">Sắp hết hàng</div><div class="value" id="invLow" style="font-size:18px">–</div></div>
+<div class="card" style="border-top-color:#dc2626"><div class="label">Hết hàng</div><div class="value" id="invOut" style="font-size:18px">–</div></div>
+</div>
+</div>
+<div class="chart-box">
+<h3>🔄 Đối soát dữ liệu <span id="reconDate" style="color:#64748b;font-weight:400;font-size:12px"></span></h3>
+<div class="inv-grid" style="grid-template-columns:repeat(3,1fr)">
+<div class="card" style="border-top-color:#2563eb"><div class="label">KiotViet (API)</div><div class="value" id="reconKiotviet" style="font-size:18px">–</div></div>
+<div class="card" style="border-top-color:#16a34a"><div class="label">Google Sheets</div><div class="value" id="reconSheet" style="font-size:18px">–</div></div>
+<div class="card" style="border-top-color:#dc2626"><div class="label">Chênh lệch</div><div class="value" id="reconDiff" style="font-size:18px">–</div></div>
+</div>
+<div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+<button onclick="manualSync()" id="btnSync" style="padding:8px 16px;background:#1e88e5;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:14px">🔄 Làm mới dữ liệu</button>
+<span id="reconStatus" style="font-size:13px;color:#64748b"></span>
+</div>
+<div style="font-size:11px;color:#94a3b8;margin-top:8px">Đồng bộ lần cuối: <span id="reconLastSync">–</span></div>
+</div>
+</div>
+<div class="charts">
+<div class="chart-box"><h3>Doanh thu theo tháng</h3><div class="chart" id="monthChart"></div></div>
+<div class="chart-box"><h3>Doanh thu theo ngày (30 ngày)</h3><div class="chart" id="dayChart"></div></div>
+</div>
+<div class="table-box">
+<h3>Top sản phẩm bán chạy <span id="topProdLabel" style="color:#64748b;font-weight:400"></span></h3>
+<div id="topProdWrap"><div class="loading">Đang tải...</div></div>
+</div>
+<div class="table-box" style="display:none">
+<h3>Chi tiết hóa đơn <span id="monthLabel" style="color:#64748b;font-weight:400"></span></h3>
+<div id="tableWrap"><div class="loading">Đang tải...</div></div>
+</div>
+</div>
+<script>
+var fmt=function(n){return Number(n||0).toLocaleString('vi-VN');};
+var currentYear='',currentMonth='';
+function setStatus(t){document.getElementById('status').textContent=t||'';}
+function setMonthLabels(m){var scope=m?('tháng '+m+'/'+currentYear):('năm '+currentYear);document.getElementById('lblRev').textContent='Doanh thu thuần (₫) '+scope;document.getElementById('lblInv').textContent='Số hóa đơn '+scope;document.getElementById('lblPaid').textContent='Giá trị thu nợ (₫) '+scope;document.getElementById('lblDebt').textContent='Công nợ hiện tại (₫) '+scope;document.getElementById('lblProfit').textContent='Lợi nhuận gộp (₫) '+scope;}
+var latestSummary=null,latestDaily=null,chartsReady=false;
+function renderCmp(id,cur,prev,accent){
+var el=document.getElementById(id);
+if(prev===null||prev===undefined||!prev){el.textContent='—';el.className='cmp na';return;}
+var p=(cur-prev)/prev*100,up=p>=0;
+el.textContent=(up?'↑ ':'↓ ')+Math.abs(p).toFixed(1).replace('.',',')+'%';
+el.className='cmp '+(up?'up-'+accent:'down');
+}
+function renderStats(rows,comparison,profitData){
+var rev=0,inv=0,col=0,months=[];
+rows.forEach(function(r){rev+=r.revenue;inv+=r.invoices;col+=r.collected;months.push(r.month);});
+document.getElementById('statRevenue').textContent=fmt(rev);
+document.getElementById('statInvoices').textContent=fmt(inv);
+document.getElementById('statCollected').textContent=fmt(col);
+document.getElementById('statDebt').textContent=fmt(rev-col);
+var c=comparison||{revenue:0,invoices:0,collected:0};
+renderCmp('cmpRevenue',rev,c.revenue,'green');
+renderCmp('cmpInvoices',inv,c.invoices,'blue');
+renderCmp('cmpCollected',col,c.collected,'teal');
+renderCmp('cmpDebt',rev-col,c.revenue-c.collected,'red');
+// Render profit directly from combined data (no separate call = no lag)
+if(profitData&&profitData.current){
+var cur=profitData.current||{grossProfit:0,marginPct:0,coveragePct:0};
+var prev=profitData.comparison||{grossProfit:0};
+document.getElementById('statProfit').textContent=fmt(cur.grossProfit);
+renderCmp('cmpProfit',cur.grossProfit,prev.grossProfit,'amber');
+var note='Biên '+String(cur.marginPct).replace('.',',')+'%';
+if(cur.coveragePct<100){note+=' • '+String(cur.coveragePct).replace('.',',')+'% DT có giá vốn';}
+document.getElementById('profitNote').textContent=note;
+}else{
+document.getElementById('statProfit').textContent='–';
+document.getElementById('cmpProfit').textContent='—';
+document.getElementById('cmpProfit').className='cmp na';
+}
+var msel=document.getElementById('monthSel');msel.innerHTML='';
+var allO=document.createElement('option');allO.value='';allO.textContent='Tất cả các tháng';msel.appendChild(allO);
+months.forEach(function(m){var o=document.createElement('option');o.value=m;o.textContent='Tháng '+m;msel.appendChild(o);});
+currentMonth='';msel.value='';
+setMonthLabels(null);
+document.getElementById('tableWrap').innerHTML='<div class="loading">Chọn tháng để xem chi tiết hóa đơn</div>';
+document.getElementById('monthLabel').textContent='';
+loadTopProducts(currentYear,months,null);
+}
+function loadProfit(year,months){
+if(!year||!months||!months.length){
+document.getElementById('statProfit').textContent='–';
+document.getElementById('cmpProfit').textContent='—';
+document.getElementById('cmpProfit').className='cmp na';
+return;
+}
+google.script.run.withSuccessHandler(function(res){
+var cur=res.current||{grossProfit:0,marginPct:0,coveragePct:0};
+var prev=res.comparison||{grossProfit:0};
+document.getElementById('statProfit').textContent=fmt(cur.grossProfit);
+renderCmp('cmpProfit',cur.grossProfit,prev.grossProfit,'amber');
+var note='Biên '+String(cur.marginPct).replace('.',',')+'%';
+if(cur.coveragePct<100){note+=' • '+String(cur.coveragePct).replace('.',',')+'% DT có giá vốn';}
+document.getElementById('profitNote').textContent=note;
+}).withFailureHandler(function(e){
+document.getElementById('statProfit').textContent='Lỗi';
+}).getProfitWithComparison(year,months);
+}
+function loadTopProducts(year,months,monthLabel){
+var wrap=document.getElementById('topProdWrap');
+if(!year||!months||!months.length){wrap.innerHTML='<div class="loading">Chưa có dữ liệu</div>';return;}
+wrap.innerHTML='<div class="loading">Đang tải...</div>';
+document.getElementById('topProdLabel').textContent=monthLabel||'';
+google.script.run.withSuccessHandler(function(rows){
+if(!rows||!rows.length){wrap.innerHTML='<div class="loading">Không có dữ liệu</div>';return;}
+var html='<table><tr><th>#</th><th>Mã SP</th><th>Tên sản phẩm</th><th class="num">SL bán</th><th class="num">Doanh thu (₫)</th><th class="num">Lợi nhuận (₫)</th></tr>';
+rows.forEach(function(r,i){
+html+='<tr><td>'+(i+1)+'</td><td>'+r.code+'</td><td>'+r.name+'</td><td class="num">'+fmt(r.qty)+'</td><td class="num">'+fmt(r.revenue)+'</td><td class="num">'+fmt(r.grossProfit)+'</td></tr>';
+});
+html+='</table>';
+wrap.innerHTML=html;
+}).withFailureHandler(function(e){
+wrap.innerHTML='<div class="loading">Lỗi tải dữ liệu</div>';
+}).getTopProducts(year,months,10);
+}
+function loadInventory(){
+google.script.run.withSuccessHandler(function(d){
+if(!d)return;
+document.getElementById('invValue').textContent=fmt(d.totalValue);
+document.getElementById('invSku').textContent=fmt(d.skuCount);
+document.getElementById('invLow').textContent=fmt(d.lowStockCount);
+document.getElementById('invOut').textContent=fmt(d.outOfStockCount);
+document.getElementById('invDate').textContent='— cập nhật '+d.date;
+}).getInventoryData();
+}
+function loadReconciliation(){
+google.script.run.withSuccessHandler(function(d){
+document.getElementById('reconKiotviet').textContent=fmt(d.kiotvietCount);
+document.getElementById('reconSheet').textContent=fmt(d.sheetCount);
+var diffEl=document.getElementById('reconDiff');
+var diff=d.difference;
+diffEl.textContent=(diff>0?'+':'')+fmt(diff);
+diffEl.style.color=diff>0?'#dc2626':'#16a34a';
+document.getElementById('reconDate').textContent='— '+d.date;
+var ls=d.lastSync||'';
+if(ls){try{var dt=new Date(ls);ls=dt.toLocaleString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'});}catch(e){}}
+document.getElementById('reconLastSync').textContent=ls||'–';
+}).withFailureHandler(function(e){
+document.getElementById('reconStatus').textContent='Lỗi tải đối soát';
+}).getReconciliationStatus();
+}
+function manualSync(){
+var btn=document.getElementById('btnSync');
+btn.disabled=true;btn.textContent='⏳ Đang đồng bộ...';
+document.getElementById('reconStatus').textContent='Đang lấy dữ liệu từ KiotViet...';
+google.script.run.withSuccessHandler(function(){
+document.getElementById('reconStatus').textContent='✅ Xong! Đang tải lại số liệu...';
+setTimeout(function(){loadReconciliation();btn.disabled=false;btn.textContent='🔄 Làm mới dữ liệu';document.getElementById('reconStatus').textContent='';},2000);
+}).withFailureHandler(function(e){
+document.getElementById('reconStatus').textContent='❌ Lỗi: '+(e.message||e);
+btn.disabled=false;btn.textContent='🔄 Làm mới dữ liệu';
+}).syncHourly();
+}
+function drawCharts(){
+if(!chartsReady||!window.google||!google.visualization)return;
+if(latestSummary)drawMonthChart(latestSummary);
+if(latestDaily)drawDailyChart(latestDaily);
+}
+function renderInit(d){
+var sel=document.getElementById('yearSel');sel.innerHTML='';
+(d.years||[]).forEach(function(y){var o=document.createElement('option');o.value=y;o.textContent=y;sel.appendChild(o);});
+currentYear=d.year||'';
+if(currentYear){sel.value=currentYear;renderStats(d.summary||[],d.comparison,d.profit);}else{setStatus('Chưa có dữ liệu');}
+latestSummary=d.summary||[];latestDaily=d.daily||[];
+drawCharts();
+loadInventory();
+loadReconciliation();
+}
+function refreshInit(){
+setStatus('Đang tải...');
+google.script.run.withSuccessHandler(function(d){
+try{localStorage.setItem('kvDash',JSON.stringify({t:Date.now(),d:d}));}catch(e){}
+renderInit(d);setStatus('');
+}).withFailureHandler(function(e){setStatus('Lỗi: '+e.message);}).getDashboardInit();
+}
+function loadYearData(){
+if(!currentYear)return;
+setStatus('Đang tải...');
+google.script.run.withSuccessHandler(function(res){
+renderStats(res.summary,res.comparison,res.profit);latestSummary=res.summary;drawCharts();setStatus('');
+}).withFailureHandler(function(e){setStatus('Lỗi: '+e.message);}).getYearDataWithComparison(currentYear);
+}
+function onMonthChange(){
+if(!currentMonth){
+google.script.run.withSuccessHandler(function(res){
+renderStats(res.summary,res.comparison,res.profit);
+}).withFailureHandler(function(e){setStatus('Lỗi: '+e.message);}).getYearDataWithComparison(currentYear);
+document.getElementById('tableWrap').innerHTML='<div class="loading">Chọn tháng để xem chi tiết hóa đơn</div>';
+document.getElementById('monthLabel').textContent='';
+return;
+}
+var fullYm=currentYear+'-'+String(currentMonth).padStart(2,'0');
+google.script.run.withSuccessHandler(function(res){
+var s=res.current,c=res.comparison||{revenue:0,invoices:0,collected:0};
+document.getElementById('statRevenue').textContent=fmt(s.revenue);
+document.getElementById('statInvoices').textContent=fmt(s.invoices);
+document.getElementById('statCollected').textContent=fmt(s.collected);
+document.getElementById('statDebt').textContent=fmt(s.revenue-s.collected);
+renderCmp('cmpRevenue',s.revenue,c.revenue,'green');
+renderCmp('cmpInvoices',s.invoices,c.invoices,'blue');
+renderCmp('cmpCollected',s.collected,c.collected,'teal');
+renderCmp('cmpDebt',s.revenue-s.collected,c.revenue-c.collected,'red');
+setMonthLabels(currentMonth);
+loadProfit(currentYear,[currentMonth]);
+loadTopProducts(currentYear,[currentMonth],'— tháng '+currentMonth+'/'+currentYear);
+}).withFailureHandler(function(e){setStatus('Lỗi: '+e.message);}).getMonthDataWithComparison(fullYm);
+loadInvoices();
+}
+function drawMonthChart(rows){
+var data=new google.visualization.DataTable();
+data.addColumn('string','Tháng');data.addColumn('number','Doanh thu');
+rows.forEach(function(r){data.addRow(['T'+r.month,r.revenue]);});
+new google.visualization.ColumnChart(document.getElementById('monthChart')).draw(data,{title:'Doanh thu năm '+currentYear,legend:{position:'none'},colors:['#1e88e5']});
+}
+function drawDailyChart(rows){
+var data=new google.visualization.DataTable();
+data.addColumn('string','Ngày');data.addColumn('number','Doanh thu');
+rows.forEach(function(r){data.addRow([r.date.substring(5),r.revenue]);});
+new google.visualization.AreaChart(document.getElementById('dayChart')).draw(data,{title:'Doanh thu 30 ngày gần nhất',legend:{position:'none'},colors:['#16a34a']});
+}
+var currentYm='',currentPage=1,pageSize=30;
+function loadInvoices(){
+if(!currentYear||!currentMonth)return;
+loadMonthPage(currentYear+'-'+currentMonth,1);
+}
+function loadMonthPage(ym,page){
+currentYm=ym;currentPage=page;
+document.getElementById('monthLabel').textContent='— '+ym;
+document.getElementById('tableWrap').innerHTML='<div class="loading">Đang tải trang '+page+'...</div>';
+google.script.run.withSuccessHandler(drawMonthPage).withFailureHandler(function(err){document.getElementById('tableWrap').innerHTML='<div class="loading">Lỗi tải dữ liệu: '+(err&&err.message||err)+'</div>';}).getMonthInvoices(ym,page,pageSize);
+}
+function changePageSize(sel){pageSize=parseInt(sel.value,10)||50;loadMonthPage(currentYm,1);}
+function drawMonthPage(res){
+var rows=res.rows||[];
+if(!rows.length){document.getElementById('tableWrap').innerHTML='<div class="loading">Không có dữ liệu</div>';return;}
+var showCustomer=rows[0].hasOwnProperty('customerName');
+var html='<table class="data"><tr><th>Mã HĐ</th><th>Ngày</th>'+(showCustomer?'<th>Khách hàng</th>':'')+'<th class="num">Tổng tiền</th><th class="num">Đã thu</th><th>Trạng thái</th></tr>';
+rows.forEach(function(r){
+html+='<tr><td>'+(r.code||'')+'</td><td>'+String(r.purchaseDate||'').substring(0,10)+'</td>'+(showCustomer?'<td>'+(r.customerName||'')+'</td>':'')+'<td class="num">'+fmt(r.total)+'</td><td class="num">'+fmt(r.totalPayment)+'</td>'+'<td>'+(r.status||'')+'</td></tr>';
+});
+html+='</table>';
+html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;flex-wrap:wrap;gap:8px;">';
+html+='<div class="sub">Trang '+res.page+'/'+res.totalPages+' — '+fmt(res.total)+' hóa đơn</div>';html+='<div style="display:flex;align-items:center;gap:8px;"><label class="sub">Hiển thị:</label><select onchange="changePageSize(this)" style="padding:6px 8px;border:1px solid #ddd;border-radius:4px;">';[30,50,100,200].forEach(function(n){html+='<option value="'+n+'"'+(pageSize===n?' selected':'')+'>'+n+'/trang</option>';});html+='</select></div>';html+='<div>';
+if(res.page>1)html+='<button onclick="loadMonthPage(currentYm,'+(res.page-1)+')" style="padding:6px 14px;margin-right:8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">← Trước</button>';
+if(res.page<res.totalPages)html+='<button onclick="loadMonthPage(currentYm,'+(res.page+1)+')" style="padding:6px 14px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">Sau →</button>';
+html+='</div></div></div>';
+document.getElementById('tableWrap').innerHTML=html;
+}
+document.getElementById('yearSel').addEventListener('change',function(e){currentYear=e.target.value;loadYearData();});
+document.getElementById('monthSel').addEventListener('change',function(e){currentMonth=e.target.value;onMonthChange();});
+(function(){
+try{
+var c=JSON.parse(localStorage.getItem('kvDash')||'null');
+if(c&&c.d&&c.d.year){renderInit(c.d);setStatus('Đang cập nhật...');}
+}catch(e){}
+})();
+google.charts.load('current',{packages:['corechart']});
+google.charts.setOnLoadCallback(function(){chartsReady=true;drawCharts();refreshInit();});
+</script>
+</body>
+</html>
+

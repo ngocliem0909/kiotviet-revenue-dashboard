@@ -45,6 +45,86 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
+  // 1. API Top Sản Phẩm Bán Chạy
+  if (e && e.parameter && e.parameter.api === 'products') {
+    try {
+      var prods = getTopSellingProducts(e.parameter.year, e.parameter.month, Number(e.parameter.limit || 15));
+      return ContentService.createTextOutput(JSON.stringify({ success: true, count: prods.length, products: prods }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message, products: [] }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  // 2. API Tổng quan Lợi Nhuận Gộp & Biên Lợi Nhuận
+  if (e && e.parameter && e.parameter.api === 'profit') {
+    try {
+      var prof = getProfitOverview(e.parameter.year, e.parameter.month);
+      return ContentService.createTextOutput(JSON.stringify({ success: true, profit: prof }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  // 3. API Thống Kê Tồn Kho
+  if (e && e.parameter && e.parameter.api === 'inventory') {
+    try {
+      var inv = getInventoryOverview();
+      return ContentService.createTextOutput(JSON.stringify({ success: true, inventory: inv }))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.message }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  // 4. API Trạng Thái Hệ Thống & Tự Động Hóa
+  if (e && e.parameter && e.parameter.api === 'system_status') {
+    var kiotCfg = getKiotConfig_();
+    var props = PropertiesService.getScriptProperties();
+    var statusData = {
+      success: true,
+      triggers: getTriggersStatus(),
+      kiot: {
+        configured: !!(kiotCfg.clientId && kiotCfg.clientSecret),
+        retailer: kiotCfg.retailer,
+        lastSyncTime: props.getProperty('LAST_SYNC_SUCCESS_TIME') || '',
+        lastSyncCount: props.getProperty('LAST_SYNC_COUNT') || '0',
+        lastError: props.getProperty('LAST_SYNC_ERROR') || null
+      },
+      telegram: {
+        configured: !!getTelegramConfig_().token,
+        chatId: getTelegramConfig_().chatId
+      }
+    };
+    return ContentService.createTextOutput(JSON.stringify(statusData))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // 5. API Kích hoạt gửi thử Telegram
+  if (e && e.parameter && e.parameter.api === 'test_telegram') {
+    var resTel = testTelegramReport();
+    return ContentService.createTextOutput(JSON.stringify(resTel))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // 6. API Kích hoạt đồng bộ KiotViet ngay
+  if (e && e.parameter && e.parameter.api === 'sync_now') {
+    var resSync = syncHourly();
+    return ContentService.createTextOutput(JSON.stringify(resSync))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // 7. API Kích hoạt cài đặt Triggers tự động
+  if (e && e.parameter && e.parameter.api === 'setup_triggers') {
+    var resTrig = setupAllTriggers();
+    return ContentService.createTextOutput(JSON.stringify(resTrig))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
   var userEmail = (Session.getActiveUser().getEmail() || '').trim().toLowerCase();
 
   // Kiểm tra quyền truy cập: nếu có email tài khoản và không nằm trong danh sách thì chặn

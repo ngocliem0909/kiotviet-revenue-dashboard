@@ -81210,5 +81210,1023 @@
       "revenue": 129579500.0,
       "collected": 104799500.0
     }
+  },
+  "profit_summary": {
+    "2016-01": {
+      "revenue": 2377750250.0,
+      "grossProfit": 1537376750.0,
+      "marginPct": 64.7,
+      "revWithCost": 1338288500.0
+    },
+    "2016-02": {
+      "revenue": 2122804500.0,
+      "grossProfit": 1311171000.0,
+      "marginPct": 61.8,
+      "revWithCost": 1285730000.0
+    },
+    "2016-03": {
+      "revenue": 2869137500.0,
+      "grossProfit": 1711798000.0,
+      "marginPct": 59.7,
+      "revWithCost": 1854414500.0
+    },
+    "2016-04": {
+      "revenue": 2243190000.0,
+      "grossProfit": 1291883750.0,
+      "marginPct": 57.6,
+      "revWithCost": 1526960000.0
+    },
+    "2016-05": {
+      "revenue": 1800680000.0,
+      "grossProfit": 1064748000.0,
+      "marginPct": 59.1,
+      "revWithCost": 1193395000.0
+    },
+    "2016-06": {
+      "revenue": 1997112500.0,
+      "grossProfit": 1195691750.0,
+      "marginPct": 59.9,
+      "revWithCost": 1285997500.0
+    },
+    "2016-07": {
+      "revenue": 2018284500.0,
+      "grossProfit": 1133760500.0,
+      "marginPct": 56.2,
+      "revWithCost": 1430985000.0
+    },
+    "2016-08": {
+      "revenue": 2476330000.0,
+      "grossProfit": 1301516750.0,
+      "marginPct": 52.6,
+      "revWithCost": 1914830000.0
+    },
+    "2016-09": {
+      "revenue": 2345950000.0,
+      "grossProfit": 1175352750.0,
+      "marginPct": 50.1,
+      "revWithCost": 1929780000.0
+    },
+    "2016-10": {
+      "revenue": 2864251000.0,
+      "grossProfit": 1393758750.0,
+      "marginPct": 48.7,
+      "revWithCost": 2421835500.0
+    },
+    "2016-11": {
+      "revenue": 2442131000.0,
+      "grossProfit": 1257821750.0,
+      "marginPct": 51.5,
+      "revWithCost": 1951896000.0
+    },
+    "2016-12": {
+      "revenue": 2687414000.0,
+      "grossProfit": 1481860400.0,
+      "marginPct": 55.1,
+      "revWithCost": 1986389000.0
+    },
+    "2017-01": {
+      "revenue": 3061230000.0,
+      "grossProfit": 2117061250.0,
+      "marginPct": 69.2,
+      "revWithCost": 1578170000.0
+    },
+    "2017-02": {
+      "revenue": 3461980000.0,
+      "grossProfit": 2538158450.0,
+      "marginPct": 73.3,
+      "revWithCost": 1563185000.0
+    },
+    "2017-03": {
+      "revenue": 3007125000.0,
+      "grossProfit": 2404436400.0,
+      "marginPct": 80.0,
+      "revWithCost": 1016945000.0
+    },
+    "2017-04": {
+      "revenue": 2376060500.0,
+      "grossProfit": 2052510250.0,
+      "marginPct": 86.4,
+      "revWithCost": 555150000.0
+    },
+    "2017-05": {
+      "revenue": 2599835950.0,
+      "grossProfit": 2369971200.0,
+      "marginPct": 91.2,
+      "revWithCost": 400700000.0
+    },
+    "2017-06": {
+      "revenue": 2449495000.0,
+      "grossProfit": 2255115500.0,
+      "marginPct": 92.1,
+      "revWithCost": 337590000.0
+    },
+    "2017-07": {
+      "revenue": 2931629500.0,
+      "grossProfit": 2698221250.0,
+      "marginPct": 92.0,
+      "revWithCost": 404755000.0
+    },
+    "2017-08": {
+      "revenue": 3051710000.0,
+      "grossProfit": 2669399750.0,
+      "marginPct": 87.5,
+      "revWithCost": 635100000.0
+    },
+    "2017-09": {
+      "revenue": 3109845250.0,
+      "grossProfit": 2603761750.0,
+      "marginPct": 83.7,
+      "revWithCost": 818590000.0
+    },
+    "2017-10": {
+      "revenue": 3607895000.0,
+      "grossProfit": 2670918000.0,
+      "marginPct": 74.0,
+      "revWithCost": 1517490000.0
+    },
+    "2017-11": {
+      "revenue": 3188460000.0,
+      "grossProfit": 2298242250.0,
+      "marginPct": 72.1,
+      "revWithCost": 1464950000.0
+    },
+    "2017-12": {
+      "revenue": 3066355000.0,
+      "grossProfit": 2220629581.0,
+      "marginPct": 72.4,
+      "revWithCost": 1406750000.0
+    },
+    "2018-01": {
+      "revenue": 3057565000.0,
+      "grossProfit": 2139776944.0,
+      "marginPct": 70.0,
+      "revWithCost": 1528090000.0
+    },
+    "2018-02": {
+      "revenue": 3743790000.0,
+      "grossProfit": 2755443459.0,
+      "marginPct": 73.6,
+      "revWithCost": 1641600000.0
+    },
+    "2018-03": {
+      "revenue": 4151990000.0,
+      "grossProfit": 2978530068.0,
+      "marginPct": 71.7,
+      "revWithCost": 1938885000.0
+    },
+    "2018-04": {
+      "revenue": 2962840000.0,
+      "grossProfit": 2107883065.0,
+      "marginPct": 71.1,
+      "revWithCost": 1446330000.0
+    },
+    "2018-05": {
+      "revenue": 2983980000.0,
+      "grossProfit": 1993790166.0,
+      "marginPct": 66.8,
+      "revWithCost": 1647700000.0
+    },
+    "2018-06": {
+      "revenue": 2957250500.0,
+      "grossProfit": 1940409472.0,
+      "marginPct": 65.6,
+      "revWithCost": 1704040500.0
+    },
+    "2018-07": {
+      "revenue": 3514190000.0,
+      "grossProfit": 2484933516.0,
+      "marginPct": 70.7,
+      "revWithCost": 1753975000.0
+    },
+    "2018-08": {
+      "revenue": 3586475000.0,
+      "grossProfit": 2693373651.0,
+      "marginPct": 75.1,
+      "revWithCost": 1542660000.0
+    },
+    "2018-09": {
+      "revenue": 3118480000.0,
+      "grossProfit": 2450124338.0,
+      "marginPct": 78.6,
+      "revWithCost": 1170235000.0
+    },
+    "2018-10": {
+      "revenue": 4224795500.0,
+      "grossProfit": 3349743685.0,
+      "marginPct": 79.3,
+      "revWithCost": 1525100500.0
+    },
+    "2018-11": {
+      "revenue": 4263662500.0,
+      "grossProfit": 2808582035.0,
+      "marginPct": 65.9,
+      "revWithCost": 2417520000.0
+    },
+    "2018-12": {
+      "revenue": 3477196000.0,
+      "grossProfit": 2100017408.0,
+      "marginPct": 60.4,
+      "revWithCost": 2320450000.0
+    },
+    "2019-01": {
+      "revenue": 4039854000.0,
+      "grossProfit": 2310356011.0,
+      "marginPct": 57.2,
+      "revWithCost": 2920035000.0
+    },
+    "2019-02": {
+      "revenue": 3550357000.0,
+      "grossProfit": 1912246570.0,
+      "marginPct": 53.9,
+      "revWithCost": 2726595000.0
+    },
+    "2019-03": {
+      "revenue": 4330357000.0,
+      "grossProfit": 2245247311.0,
+      "marginPct": 51.8,
+      "revWithCost": 3401640000.0
+    },
+    "2019-04": {
+      "revenue": 3099425500.0,
+      "grossProfit": 1533370833.0,
+      "marginPct": 49.5,
+      "revWithCost": 2578510000.0
+    },
+    "2019-05": {
+      "revenue": 3121561500.0,
+      "grossProfit": 1513229165.0,
+      "marginPct": 48.5,
+      "revWithCost": 2651530000.0
+    },
+    "2019-06": {
+      "revenue": 3472773500.0,
+      "grossProfit": 1774524425.0,
+      "marginPct": 51.1,
+      "revWithCost": 2817970000.0
+    },
+    "2019-07": {
+      "revenue": 3571301500.0,
+      "grossProfit": 1795265378.0,
+      "marginPct": 50.3,
+      "revWithCost": 2940320000.0
+    },
+    "2019-08": {
+      "revenue": 4294677500.0,
+      "grossProfit": 2097771046.0,
+      "marginPct": 48.8,
+      "revWithCost": 3629312500.0
+    },
+    "2019-09": {
+      "revenue": 4128956000.0,
+      "grossProfit": 1851203650.0,
+      "marginPct": 44.8,
+      "revWithCost": 3569564000.0
+    },
+    "2019-10": {
+      "revenue": 4536636500.0,
+      "grossProfit": 2220368128.0,
+      "marginPct": 48.9,
+      "revWithCost": 3813075000.0
+    },
+    "2019-11": {
+      "revenue": 4794756500.0,
+      "grossProfit": 2357953250.0,
+      "marginPct": 49.2,
+      "revWithCost": 4075635000.0
+    },
+    "2019-12": {
+      "revenue": 3762613000.0,
+      "grossProfit": 1826747733.0,
+      "marginPct": 48.5,
+      "revWithCost": 3267541000.0
+    },
+    "2020-01": {
+      "revenue": 4136481000.0,
+      "grossProfit": 1971487428.0,
+      "marginPct": 47.7,
+      "revWithCost": 3683878000.0
+    },
+    "2020-02": {
+      "revenue": 4995734500.0,
+      "grossProfit": 2356592690.0,
+      "marginPct": 47.2,
+      "revWithCost": 4470610000.0
+    },
+    "2020-03": {
+      "revenue": 3886275000.0,
+      "grossProfit": 1790353918.0,
+      "marginPct": 46.1,
+      "revWithCost": 3494783000.0
+    },
+    "2020-04": {
+      "revenue": 1533268000.0,
+      "grossProfit": 720996750.0,
+      "marginPct": 47.0,
+      "revWithCost": 1373360000.0
+    },
+    "2020-05": {
+      "revenue": 4014046000.0,
+      "grossProfit": 1784535728.0,
+      "marginPct": 44.5,
+      "revWithCost": 3709166000.0
+    },
+    "2020-06": {
+      "revenue": 3548995500.0,
+      "grossProfit": 1558557378.0,
+      "marginPct": 43.9,
+      "revWithCost": 3308425000.0
+    },
+    "2020-07": {
+      "revenue": 4201186000.0,
+      "grossProfit": 1816828340.0,
+      "marginPct": 43.2,
+      "revWithCost": 3947570000.0
+    },
+    "2020-08": {
+      "revenue": 3637985000.0,
+      "grossProfit": 1565276450.0,
+      "marginPct": 43.0,
+      "revWithCost": 3458726000.0
+    },
+    "2020-09": {
+      "revenue": 3892539000.0,
+      "grossProfit": 1724079756.0,
+      "marginPct": 44.3,
+      "revWithCost": 3631870000.0
+    },
+    "2020-10": {
+      "revenue": 5079980250.0,
+      "grossProfit": 2226089433.0,
+      "marginPct": 43.8,
+      "revWithCost": 4761450500.0
+    },
+    "2020-11": {
+      "revenue": 5253769750.0,
+      "grossProfit": 2239494300.0,
+      "marginPct": 42.6,
+      "revWithCost": 5054246750.0
+    },
+    "2020-12": {
+      "revenue": 4251317500.0,
+      "grossProfit": 1918910600.0,
+      "marginPct": 45.1,
+      "revWithCost": 3948796000.0
+    },
+    "2021-01": {
+      "revenue": 4261101500.0,
+      "grossProfit": 1844550300.0,
+      "marginPct": 43.3,
+      "revWithCost": 4097697000.0
+    },
+    "2021-02": {
+      "revenue": 3847397500.0,
+      "grossProfit": 1665743750.0,
+      "marginPct": 43.3,
+      "revWithCost": 3713886000.0
+    },
+    "2021-03": {
+      "revenue": 5188299000.0,
+      "grossProfit": 2186987100.0,
+      "marginPct": 42.2,
+      "revWithCost": 5001273000.0
+    },
+    "2021-04": {
+      "revenue": 3674202500.0,
+      "grossProfit": 1549729750.0,
+      "marginPct": 42.2,
+      "revWithCost": 3581690500.0
+    },
+    "2021-05": {
+      "revenue": 3034959500.0,
+      "grossProfit": 1293142450.0,
+      "marginPct": 42.6,
+      "revWithCost": 2962029000.0
+    },
+    "2021-06": {
+      "revenue": 2236028500.0,
+      "grossProfit": 954460950.0,
+      "marginPct": 42.7,
+      "revWithCost": 2181102000.0
+    },
+    "2021-07": {
+      "revenue": 1589007500.0,
+      "grossProfit": 675819500.0,
+      "marginPct": 42.5,
+      "revWithCost": 1539773000.0
+    },
+    "2021-08": {
+      "revenue": 364758500.0,
+      "grossProfit": 157128250.0,
+      "marginPct": 43.1,
+      "revWithCost": 353624000.0
+    },
+    "2021-09": {
+      "revenue": 671809500.0,
+      "grossProfit": 285008000.0,
+      "marginPct": 42.4,
+      "revWithCost": 655905000.0
+    },
+    "2021-10": {
+      "revenue": 3024311500.0,
+      "grossProfit": 1281330750.0,
+      "marginPct": 42.4,
+      "revWithCost": 2949481000.0
+    },
+    "2021-11": {
+      "revenue": 3477085750.0,
+      "grossProfit": 1471463500.0,
+      "marginPct": 42.3,
+      "revWithCost": 3393561750.0
+    },
+    "2021-12": {
+      "revenue": 3229452750.0,
+      "grossProfit": 1388486300.0,
+      "marginPct": 43.0,
+      "revWithCost": 3138056750.0
+    },
+    "2022-01": {
+      "revenue": 4644026500.0,
+      "grossProfit": 1985071650.0,
+      "marginPct": 42.7,
+      "revWithCost": 4541131500.0
+    },
+    "2022-02": {
+      "revenue": 4440155000.0,
+      "grossProfit": 1888879250.0,
+      "marginPct": 42.5,
+      "revWithCost": 4347110000.0
+    },
+    "2022-03": {
+      "revenue": 4645089000.0,
+      "grossProfit": 1933132750.0,
+      "marginPct": 41.6,
+      "revWithCost": 4533755500.0
+    },
+    "2022-04": {
+      "revenue": 4111762000.0,
+      "grossProfit": 1704447590.0,
+      "marginPct": 41.5,
+      "revWithCost": 4024604500.0
+    },
+    "2022-05": {
+      "revenue": 4401061500.0,
+      "grossProfit": 1838247590.0,
+      "marginPct": 41.8,
+      "revWithCost": 4301812500.0
+    },
+    "2022-06": {
+      "revenue": 4300135000.0,
+      "grossProfit": 1790369500.0,
+      "marginPct": 41.6,
+      "revWithCost": 4206690000.0
+    },
+    "2022-07": {
+      "revenue": 4707062000.0,
+      "grossProfit": 1979133340.0,
+      "marginPct": 42.0,
+      "revWithCost": 4572405000.0
+    },
+    "2022-08": {
+      "revenue": 4247887000.0,
+      "grossProfit": 1769734700.0,
+      "marginPct": 41.7,
+      "revWithCost": 4155535500.0
+    },
+    "2022-09": {
+      "revenue": 3458158000.0,
+      "grossProfit": 1447872000.0,
+      "marginPct": 41.9,
+      "revWithCost": 3379710000.0
+    },
+    "2022-10": {
+      "revenue": 4841171600.0,
+      "grossProfit": 2009002100.0,
+      "marginPct": 41.5,
+      "revWithCost": 4718900000.0
+    },
+    "2022-11": {
+      "revenue": 4576851000.0,
+      "grossProfit": 1908527700.0,
+      "marginPct": 41.7,
+      "revWithCost": 4481041000.0
+    },
+    "2022-12": {
+      "revenue": 4146267500.0,
+      "grossProfit": 1761118500.0,
+      "marginPct": 42.5,
+      "revWithCost": 4037660000.0
+    },
+    "2023-01": {
+      "revenue": 3853220000.0,
+      "grossProfit": 1638940750.0,
+      "marginPct": 42.5,
+      "revWithCost": 3777820000.0
+    },
+    "2023-02": {
+      "revenue": 4685682500.0,
+      "grossProfit": 1991721500.0,
+      "marginPct": 42.5,
+      "revWithCost": 4571685000.0
+    },
+    "2023-03": {
+      "revenue": 4389675000.0,
+      "grossProfit": 1830210500.0,
+      "marginPct": 41.7,
+      "revWithCost": 4284635000.0
+    },
+    "2023-04": {
+      "revenue": 3370060000.0,
+      "grossProfit": 1416895000.0,
+      "marginPct": 42.0,
+      "revWithCost": 3289500000.0
+    },
+    "2023-05": {
+      "revenue": 3165916000.0,
+      "grossProfit": 1333008950.0,
+      "marginPct": 42.1,
+      "revWithCost": 3091708500.0
+    },
+    "2023-06": {
+      "revenue": 3189616000.0,
+      "grossProfit": 1334961450.0,
+      "marginPct": 41.9,
+      "revWithCost": 3127531000.0
+    },
+    "2023-07": {
+      "revenue": 3483080000.0,
+      "grossProfit": 1460686000.0,
+      "marginPct": 41.9,
+      "revWithCost": 3402865000.0
+    },
+    "2023-08": {
+      "revenue": 3693291000.0,
+      "grossProfit": 1556067750.0,
+      "marginPct": 42.1,
+      "revWithCost": 3608910000.0
+    },
+    "2023-09": {
+      "revenue": 3125612000.0,
+      "grossProfit": 1313563500.0,
+      "marginPct": 42.0,
+      "revWithCost": 3051335000.0
+    },
+    "2023-10": {
+      "revenue": 4110499500.0,
+      "grossProfit": 1705059050.0,
+      "marginPct": 41.5,
+      "revWithCost": 4007494000.0
+    },
+    "2023-11": {
+      "revenue": 4045812500.0,
+      "grossProfit": 1680143300.0,
+      "marginPct": 41.5,
+      "revWithCost": 3959379000.0
+    },
+    "2023-12": {
+      "revenue": 3488706000.0,
+      "grossProfit": 1467425000.0,
+      "marginPct": 42.1,
+      "revWithCost": 3389220000.0
+    },
+    "2024-01": {
+      "revenue": 3608028500.0,
+      "grossProfit": 1532386200.0,
+      "marginPct": 42.5,
+      "revWithCost": 3514576000.0
+    },
+    "2024-02": {
+      "revenue": 3380573000.0,
+      "grossProfit": 1444281950.0,
+      "marginPct": 42.7,
+      "revWithCost": 3303626000.0
+    },
+    "2024-03": {
+      "revenue": 4357031000.0,
+      "grossProfit": 1811352200.0,
+      "marginPct": 41.6,
+      "revWithCost": 4251199000.0
+    },
+    "2024-04": {
+      "revenue": 2876708000.0,
+      "grossProfit": 1203955550.0,
+      "marginPct": 41.9,
+      "revWithCost": 2801664000.0
+    },
+    "2024-05": {
+      "revenue": 3056073000.0,
+      "grossProfit": 1283196000.0,
+      "marginPct": 42.0,
+      "revWithCost": 2967625000.0
+    },
+    "2024-06": {
+      "revenue": 3071862000.0,
+      "grossProfit": 1273794500.0,
+      "marginPct": 41.5,
+      "revWithCost": 3005725000.0
+    },
+    "2024-07": {
+      "revenue": 3661095000.0,
+      "grossProfit": 1533008000.0,
+      "marginPct": 41.9,
+      "revWithCost": 3565815000.0
+    },
+    "2024-08": {
+      "revenue": 3745197500.0,
+      "grossProfit": 1562618000.0,
+      "marginPct": 41.7,
+      "revWithCost": 3661445000.0
+    },
+    "2024-09": {
+      "revenue": 3214291000.0,
+      "grossProfit": 1343517200.0,
+      "marginPct": 41.8,
+      "revWithCost": 3145641000.0
+    },
+    "2024-10": {
+      "revenue": 4576334000.0,
+      "grossProfit": 1892388500.0,
+      "marginPct": 41.4,
+      "revWithCost": 4470575000.0
+    },
+    "2024-11": {
+      "revenue": 4765987500.0,
+      "grossProfit": 1970613250.0,
+      "marginPct": 41.3,
+      "revWithCost": 4670475000.0
+    },
+    "2024-12": {
+      "revenue": 3905415000.0,
+      "grossProfit": 1636291250.0,
+      "marginPct": 41.9,
+      "revWithCost": 3808275000.0
+    },
+    "2025-01": {
+      "revenue": 3644585000.0,
+      "grossProfit": 1524251500.0,
+      "marginPct": 41.8,
+      "revWithCost": 3583955000.0
+    },
+    "2025-02": {
+      "revenue": 4577765000.0,
+      "grossProfit": 1940885000.0,
+      "marginPct": 42.4,
+      "revWithCost": 4468450000.0
+    },
+    "2025-03": {
+      "revenue": 4475925000.0,
+      "grossProfit": 1846232500.0,
+      "marginPct": 41.2,
+      "revWithCost": 4371690000.0
+    },
+    "2025-04": {
+      "revenue": 3030382000.0,
+      "grossProfit": 1256837000.0,
+      "marginPct": 41.5,
+      "revWithCost": 2967295000.0
+    },
+    "2025-05": {
+      "revenue": 3308707000.0,
+      "grossProfit": 1364967000.0,
+      "marginPct": 41.3,
+      "revWithCost": 3239505000.0
+    },
+    "2025-06": {
+      "revenue": 3275993000.0,
+      "grossProfit": 1361635000.0,
+      "marginPct": 41.6,
+      "revWithCost": 3201504000.0
+    },
+    "2025-07": {
+      "revenue": 3536787500.0,
+      "grossProfit": 1474076750.0,
+      "marginPct": 41.7,
+      "revWithCost": 3449170000.0
+    },
+    "2025-08": {
+      "revenue": 3927650000.0,
+      "grossProfit": 1639187750.0,
+      "marginPct": 41.7,
+      "revWithCost": 3822160000.0
+    },
+    "2025-09": {
+      "revenue": 3775264000.0,
+      "grossProfit": 1561941000.0,
+      "marginPct": 41.4,
+      "revWithCost": 3698270000.0
+    },
+    "2025-10": {
+      "revenue": 4611859000.0,
+      "grossProfit": 1894352500.0,
+      "marginPct": 41.1,
+      "revWithCost": 4512625000.0
+    },
+    "2025-11": {
+      "revenue": 4624907000.0,
+      "grossProfit": 1906300000.0,
+      "marginPct": 41.2,
+      "revWithCost": 4537526000.0
+    },
+    "2025-12": {
+      "revenue": 3412790000.0,
+      "grossProfit": 1431960750.0,
+      "marginPct": 42.0,
+      "revWithCost": 3344315000.0
+    },
+    "2026-01": {
+      "revenue": 3397399000.0,
+      "grossProfit": 1426371500.0,
+      "marginPct": 42.0,
+      "revWithCost": 3330160000.0
+    },
+    "2026-02": {
+      "revenue": 3677789500.0,
+      "grossProfit": 1565506000.0,
+      "marginPct": 42.6,
+      "revWithCost": 3615891000.0
+    },
+    "2026-03": {
+      "revenue": 4683640000.0,
+      "grossProfit": 1933240250.0,
+      "marginPct": 41.3,
+      "revWithCost": 4599356000.0
+    },
+    "2026-04": {
+      "revenue": 3032759500.0,
+      "grossProfit": 1257476000.0,
+      "marginPct": 41.5,
+      "revWithCost": 2980565000.0
+    },
+    "2026-05": {
+      "revenue": 3267811000.0,
+      "grossProfit": 1353427500.0,
+      "marginPct": 41.4,
+      "revWithCost": 3209671000.0
+    },
+    "2026-06": {
+      "revenue": 2960382000.0,
+      "grossProfit": 1225550750.0,
+      "marginPct": 41.4,
+      "revWithCost": 2910562000.0
+    },
+    "2026-07": {
+      "revenue": 3766107000.0,
+      "grossProfit": 1887839950.0,
+      "marginPct": 50.1,
+      "revWithCost": 3467477000.0
+    },
+    "2026-08": {
+      "revenue": 3856395750.0,
+      "grossProfit": 2111178250.0,
+      "marginPct": 54.7,
+      "revWithCost": 3225816000.0
+    },
+    "2026-09": {
+      "revenue": 3052989500.0,
+      "grossProfit": 1856476250.0,
+      "marginPct": 60.8,
+      "revWithCost": 2199739500.0
+    }
+  },
+  "top_products": [
+    {
+      "code": "PK50K",
+      "name": "Phí khắc chữ 50K",
+      "qty": 561,
+      "revenue": 28050000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 28050000.0
+    },
+    {
+      "code": "BL168N",
+      "name": "BL LEXI - NÂU",
+      "qty": 32,
+      "revenue": 26080000.0,
+      "costPerUnit": 447000.0,
+      "grossProfit": 11776000.0
+    },
+    {
+      "code": "BL170N",
+      "name": "BL RONA - NÂU",
+      "qty": 32,
+      "revenue": 25760000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 25760000.0
+    },
+    {
+      "code": "VI220N",
+      "name": "VNAM RICK - NÂU",
+      "qty": 45,
+      "revenue": 24525000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 24525000.0
+    },
+    {
+      "code": "DAY09D",
+      "name": "Bộ nịt Mark - Đen",
+      "qty": 40,
+      "revenue": 22200000.0,
+      "costPerUnit": 277750.0,
+      "grossProfit": 11090000.0
+    },
+    {
+      "code": "BL163N",
+      "name": "BL YEJI - NÂU",
+      "qty": 25,
+      "revenue": 20875000.0,
+      "costPerUnit": 453000.0,
+      "grossProfit": 9550000.0
+    },
+    {
+      "code": "TQV048L",
+      "name": "TQV RIZA - LỢT",
+      "qty": 31,
+      "revenue": 20305000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 20305000.0
+    },
+    {
+      "code": "CX068L",
+      "name": "CX VALE - LỢT",
+      "qty": 26,
+      "revenue": 20150000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 20150000.0
+    },
+    {
+      "code": "CX067N",
+      "name": "CX BINA - NÂU",
+      "qty": 25,
+      "revenue": 20125000.0,
+      "costPerUnit": 441000.0,
+      "grossProfit": 9100000.0
+    },
+    {
+      "code": "BL165N",
+      "name": "BL HORA - NÂU",
+      "qty": 25,
+      "revenue": 20125000.0,
+      "costPerUnit": 441000.0,
+      "grossProfit": 9100000.0
+    },
+    {
+      "code": "BL171N",
+      "name": "BL WALI - NÂU",
+      "qty": 27,
+      "revenue": 19575000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 19575000.0
+    },
+    {
+      "code": "TK014B",
+      "name": "TK HARI - BÒ",
+      "qty": 40,
+      "revenue": 19000000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 19000000.0
+    },
+    {
+      "code": "DAY04D",
+      "name": "Dây nịt Saff - Đen",
+      "qty": 42,
+      "revenue": 18270000.0,
+      "costPerUnit": 217250.0,
+      "grossProfit": 9145500.0
+    },
+    {
+      "code": "TQV048N",
+      "name": "TQV RIZA - NÂU",
+      "qty": 26,
+      "revenue": 17030000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 17030000.0
+    },
+    {
+      "code": "TQV048B",
+      "name": "TQV RIZA - BÒ",
+      "qty": 26,
+      "revenue": 17030000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 17030000.0
+    },
+    {
+      "code": "VI220D",
+      "name": "VNAM RICK - ĐEN",
+      "qty": 31,
+      "revenue": 16895000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 16895000.0
+    },
+    {
+      "code": "VI205N",
+      "name": "VNAM HIKA - NÂU",
+      "qty": 32,
+      "revenue": 16800000.0,
+      "costPerUnit": 237500.0,
+      "grossProfit": 9200000.0
+    },
+    {
+      "code": "CX068N",
+      "name": "CX VALE - NÂU",
+      "qty": 21,
+      "revenue": 16275000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 16275000.0
+    },
+    {
+      "code": "BL167N",
+      "name": "BL BORA - NÂU",
+      "qty": 25,
+      "revenue": 15875000.0,
+      "costPerUnit": 373750.0,
+      "grossProfit": 6531250.0
+    },
+    {
+      "code": "VI222D",
+      "name": "VNAM ADEM - ĐEN",
+      "qty": 29,
+      "revenue": 15805000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 15805000.0
+    },
+    {
+      "code": "TQV047B",
+      "name": "TQV LERI - BÒ",
+      "qty": 26,
+      "revenue": 15730000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 15730000.0
+    },
+    {
+      "code": "BL164B",
+      "name": "BL WOLF - BÒ",
+      "qty": 16,
+      "revenue": 15120000.0,
+      "costPerUnit": 513000.0,
+      "grossProfit": 6912000.0
+    },
+    {
+      "code": "TDC185N",
+      "name": "TDC KAGA - NÂU",
+      "qty": 28,
+      "revenue": 14980000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 14980000.0
+    },
+    {
+      "code": "VI222N",
+      "name": "VNAM ADEM - NÂU",
+      "qty": 27,
+      "revenue": 14715000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 14715000.0
+    },
+    {
+      "code": "BL172L",
+      "name": "BL VELI - LỢT",
+      "qty": 26,
+      "revenue": 14170000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 14170000.0
+    },
+    {
+      "code": "BL172B",
+      "name": "BL VELI - BÒ",
+      "qty": 26,
+      "revenue": 14170000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 14170000.0
+    },
+    {
+      "code": "BL171L",
+      "name": "BL WALI - LỢT",
+      "qty": 19,
+      "revenue": 13775000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 13775000.0
+    },
+    {
+      "code": "TDC185L",
+      "name": "TDC KAGA - LỢT",
+      "qty": 25,
+      "revenue": 13375000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 13375000.0
+    },
+    {
+      "code": "TK014N",
+      "name": "TK HARI - NÂU",
+      "qty": 28,
+      "revenue": 13300000.0,
+      "costPerUnit": 0.0,
+      "grossProfit": 13300000.0
+    }
+  ],
+  "inventory_summary": {
+    "date": "2026-10-16",
+    "skuCount": 3877,
+    "totalOnHand": 54036,
+    "totalValue": 9898222248.0,
+    "lowStockCount": 167,
+    "outOfStockCount": 131218
   }
 }

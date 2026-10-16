@@ -1,4 +1,8 @@
 **/*
 !Code.gs
+!KiotVietSync.gs
+!TelegramNotifier.gs
+!ProductProfit.gs
+!TriggersManager.gs
 !Index.html
 !appsscript.json
