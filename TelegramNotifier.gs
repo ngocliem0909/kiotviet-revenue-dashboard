@@ -87,7 +87,8 @@ function buildDailyReportMessage() {
     const rawDate = r[2];
     let pdStr = '';
     if (Object.prototype.toString.call(rawDate) === '[object Date]') {
-      pdStr = Utilities.formatDate(rawDate, tz, 'yyyy-MM-dd');
+      // Dùng Etc/GMT vì giờ trong Google Sheet đã là giờ VN, tránh cộng 7 tiếng làm trôi đơn tối sang sáng hôm sau
+      pdStr = Utilities.formatDate(rawDate, 'Etc/GMT', 'yyyy-MM-dd');
     } else {
       pdStr = String(rawDate || '').substring(0, 10);
     }
