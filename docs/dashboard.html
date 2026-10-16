@@ -99,6 +99,17 @@
           <span class="text-xs text-slate-400 flex-shrink-0">Chọn năm:</span>
           <select id="filterSelectYear" onchange="selectSpecificYear(this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none font-medium">
             <option value="">-- Năm --</option>
+            <option value="2026">Năm 2026</option>
+            <option value="2025">Năm 2025</option>
+            <option value="2024">Năm 2024</option>
+            <option value="2023">Năm 2023</option>
+            <option value="2022">Năm 2022</option>
+            <option value="2021">Năm 2021</option>
+            <option value="2020">Năm 2020</option>
+            <option value="2019">Năm 2019</option>
+            <option value="2018">Năm 2018</option>
+            <option value="2017">Năm 2017</option>
+            <option value="2016">Năm 2016</option>
           </select>
         </div>
       </div>
@@ -482,6 +493,15 @@
         endInp.value = dates.end;
       }
 
+      const ySel = document.getElementById("filterSelectYear");
+      if (ySel) {
+        const curY = String(new Date().getFullYear());
+        const prevY = String(new Date().getFullYear() - 1);
+        if (preset === "thisYear") ySel.value = curY;
+        else if (preset === "lastYear") ySel.value = prevY;
+        else if (preset !== "custom") ySel.value = "";
+      }
+
       triggerFilter();
     }
 
@@ -491,7 +511,28 @@
       const endInp = document.getElementById("filterEndDate");
       startInp.value = `${yearVal}-01-01`;
       endInp.value = `${yearVal}-12-31`;
-      triggerFilter();
+
+      const curY = String(new Date().getFullYear());
+      const prevY = String(new Date().getFullYear() - 1);
+      if (yearVal === curY) {
+        setPreset("thisYear");
+      } else if (yearVal === prevY) {
+        setPreset("lastYear");
+      } else {
+        const presets = ["today", "yesterday", "7days", "30days", "thisMonth", "lastMonth", "thisYear", "lastYear", "custom"];
+        presets.forEach(p => {
+          const btnId = "btnPreset" + p.charAt(0).toUpperCase() + p.slice(1);
+          const btn = document.getElementById(btnId);
+          if (btn) {
+            if (p === "custom") {
+              btn.className = "preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg border transition bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm";
+            } else {
+              btn.className = "preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition";
+            }
+          }
+        });
+        triggerFilter();
+      }
     }
 
     function getFilterPayload() {
@@ -630,14 +671,10 @@
 
       const ySel = document.getElementById("filterSelectYear");
       if (ySel) {
-        const curY = new Date().getFullYear();
-        yearsSet.add(String(curY));
-        yearsSet.add(String(curY - 1));
-        const sortedY = Array.from(yearsSet).sort().reverse();
         ySel.innerHTML = '<option value="">-- Năm --</option>';
-        sortedY.forEach(yr => {
-          ySel.add(new Option('Năm ' + yr, yr));
-        });
+        for (let yr = 2026; yr >= 2016; yr--) {
+          ySel.add(new Option('Năm ' + yr, String(yr)));
+        }
       }
 
       // Đặt mặc định là Tháng này
