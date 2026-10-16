@@ -79,19 +79,27 @@
         <button type="button" onclick="setPreset('30days')" id="btnPreset30days" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">30 ngày</button>
         <button type="button" onclick="setPreset('thisMonth')" id="btnPresetThisMonth" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg border transition bg-indigo-50 text-indigo-700 border-indigo-200">Tháng này</button>
         <button type="button" onclick="setPreset('lastMonth')" id="btnPresetLastMonth" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Tháng trước</button>
+        <button type="button" onclick="setPreset('thisYear')" id="btnPresetThisYear" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Năm nay</button>
+        <button type="button" onclick="setPreset('lastYear')" id="btnPresetLastYear" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Năm trước</button>
         <button type="button" onclick="setPreset('custom')" id="btnPresetCustom" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Tùy chọn</button>
       </div>
 
       <!-- Custom Date Range Inputs -->
       <div id="customDateRangeBox" class="hidden flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
-        <div class="flex items-center flex-1 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+        <div class="flex items-center flex-1 min-w-[130px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
           <span class="text-xs text-slate-400 mr-1.5 flex-shrink-0">Từ:</span>
           <input type="date" id="filterStartDate" onchange="triggerFilter()" class="bg-transparent text-xs text-slate-800 outline-none w-full">
         </div>
         <span class="text-slate-400 text-xs">→</span>
-        <div class="flex items-center flex-1 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+        <div class="flex items-center flex-1 min-w-[130px] bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
           <span class="text-xs text-slate-400 mr-1.5 flex-shrink-0">Đến:</span>
           <input type="date" id="filterEndDate" onchange="triggerFilter()" class="bg-transparent text-xs text-slate-800 outline-none w-full">
+        </div>
+        <div class="flex items-center space-x-1.5 flex-shrink-0">
+          <span class="text-xs text-slate-400 flex-shrink-0">Chọn năm:</span>
+          <select id="filterSelectYear" onchange="selectSpecificYear(this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none font-medium">
+            <option value="">-- Năm --</option>
+          </select>
         </div>
       </div>
 
@@ -429,6 +437,16 @@
         const lastDayLastMo = new Date(y, m, 0);
         start = formatDateStr(firstDayLastMo);
         end = formatDateStr(lastDayLastMo);
+      } else if (preset === "thisYear") {
+        const firstDayYear = new Date(y, 0, 1);
+        const lastDayYear = new Date(y, 11, 31);
+        start = formatDateStr(firstDayYear);
+        end = formatDateStr(lastDayYear);
+      } else if (preset === "lastYear") {
+        const firstDayLastYear = new Date(y - 1, 0, 1);
+        const lastDayLastYear = new Date(y - 1, 11, 31);
+        start = formatDateStr(firstDayLastYear);
+        end = formatDateStr(lastDayLastYear);
       }
 
       return { start, end };
@@ -436,15 +454,15 @@
 
     function setPreset(preset) {
       currentPreset = preset;
-      const presets = ["today", "yesterday", "7days", "30days", "thisMonth", "lastMonth", "custom"];
+      const presets = ["today", "yesterday", "7days", "30days", "thisMonth", "lastMonth", "thisYear", "lastYear", "custom"];
       presets.forEach(p => {
         const btnId = "btnPreset" + p.charAt(0).toUpperCase() + p.slice(1);
         const btn = document.getElementById(btnId);
         if (btn) {
           if (p === preset) {
-            btn.className = "preset-btn px-3 py-1.5 text-xs font-semibold rounded-lg border transition bg-indigo-50 text-indigo-700 border-indigo-300 shadow-sm";
+            btn.className = "preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg border transition bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm";
           } else {
-            btn.className = "preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50";
+            btn.className = "preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition";
           }
         }
       });
@@ -464,6 +482,15 @@
         endInp.value = dates.end;
       }
 
+      triggerFilter();
+    }
+
+    function selectSpecificYear(yearVal) {
+      if (!yearVal) return;
+      const startInp = document.getElementById("filterStartDate");
+      const endInp = document.getElementById("filterEndDate");
+      startInp.value = `${yearVal}-01-01`;
+      endInp.value = `${yearVal}-12-31`;
       triggerFilter();
     }
 
@@ -589,15 +616,29 @@
       }
 
       let minD = "9999-99-99", maxD = "0000-00-00";
+      const yearsSet = new Set();
       allRecords.forEach(r => {
         if (r.date) {
           if (r.date < minD) minD = r.date;
           if (r.date > maxD) maxD = r.date;
+          if (r.date.length >= 4) yearsSet.add(r.date.slice(0, 4));
         }
       });
       if (minD !== "9999-99-99") serverDateRange.min = minD;
       const todayStr = getVietnamTodayStr();
       serverDateRange.max = (maxD > todayStr) ? maxD : todayStr;
+
+      const ySel = document.getElementById("filterSelectYear");
+      if (ySel) {
+        const curY = new Date().getFullYear();
+        yearsSet.add(String(curY));
+        yearsSet.add(String(curY - 1));
+        const sortedY = Array.from(yearsSet).sort().reverse();
+        ySel.innerHTML = '<option value="">-- Năm --</option>';
+        sortedY.forEach(yr => {
+          ySel.add(new Option('Năm ' + yr, yr));
+        });
+      }
 
       // Đặt mặc định là Tháng này
       setPreset("thisMonth");
