@@ -43,11 +43,42 @@ function onOpen() {
       .addItem('📱 Gửi thử báo cáo Telegram', 'testTelegramReport')
       .addItem('📦 Cập nhật Sản phẩm & Tồn kho', 'syncProductsAndInventory')
       .addSeparator()
+      .addItem('🔑 Cài đặt KiotViet API (Client ID / Secret)', 'promptSetKiotCredentials')
+      .addItem('🤖 Cài đặt Telegram Bot (Token / Chat ID)', 'promptSetTelegramCredentials')
+      .addSeparator()
       .addItem('❌ Xóa tất cả Triggers', 'removeAllTriggers')
       .addToUi();
   } catch (e) {
     Logger.log('onOpen notice: ' + e.message);
   }
+}
+
+/**
+ * Hộp thoại cài đặt nhanh thông tin KiotViet API từ Google Sheet
+ */
+function promptSetKiotCredentials() {
+  var ui = SpreadsheetApp.getUi();
+  var cid = ui.prompt('Cài đặt KiotViet API (Bước 1/3)', 'Nhập KIOT_CLIENT_ID của bạn:', ui.ButtonSet.OK_CANCEL);
+  if (cid.getSelectedButton() !== ui.Button.OK || !cid.getResponseText().trim()) return;
+  var sec = ui.prompt('Cài đặt KiotViet API (Bước 2/3)', 'Nhập KIOT_CLIENT_SECRET:', ui.ButtonSet.OK_CANCEL);
+  if (sec.getSelectedButton() !== ui.Button.OK || !sec.getResponseText().trim()) return;
+  var ret = ui.prompt('Cài đặt KiotViet API (Bước 3/3)', 'Nhập Mã gian hàng KiotViet (Mặc định: leeandteevn):', ui.ButtonSet.OK_CANCEL);
+  var retVal = (ret.getSelectedButton() === ui.Button.OK && ret.getResponseText().trim()) ? ret.getResponseText().trim() : 'leeandteevn';
+  setKiotCredentials(cid.getResponseText().trim(), sec.getResponseText().trim(), retVal);
+  ui.alert('Thành công', 'Đã lưu cấu hình KiotViet API vào Script Properties!', ui.ButtonSet.OK);
+}
+
+/**
+ * Hộp thoại cài đặt nhanh Telegram Bot Token từ Google Sheet
+ */
+function promptSetTelegramCredentials() {
+  var ui = SpreadsheetApp.getUi();
+  var tok = ui.prompt('Cài đặt Telegram Bot (Bước 1/2)', 'Nhập TELEGRAM_BOT_TOKEN (do @BotFather cấp):', ui.ButtonSet.OK_CANCEL);
+  if (tok.getSelectedButton() !== ui.Button.OK || !tok.getResponseText().trim()) return;
+  var chat = ui.prompt('Cài đặt Telegram Bot (Bước 2/2)', 'Nhập TELEGRAM_CHAT_ID (Mặc định: 530892002):', ui.ButtonSet.OK_CANCEL);
+  var chatVal = (chat.getSelectedButton() === ui.Button.OK && chat.getResponseText().trim()) ? chat.getResponseText().trim() : '530892002';
+  setTelegramCredentials(tok.getResponseText().trim(), chatVal);
+  ui.alert('Thành công', 'Đã lưu cấu hình Telegram Bot vào Script Properties!', ui.ButtonSet.OK);
 }
 
 /**
@@ -119,9 +150,9 @@ function doGet(e) {
         kiot: {
           configured: !!(kiotCfg.clientId && kiotCfg.clientSecret),
           retailer: kiotCfg.retailer || 'leeandteevn',
-          clientId: kiotCfg.clientId || 'leeandteevn',
+          clientId: kiotCfg.clientId || '',
           hasClientSecret: !!kiotCfg.clientSecret,
-          tokenCached: !!props.getProperty('KIOT_ACCESS_TOKEN'),
+          tokenCached: !!props.getProperty('KIOT_TOKEN'),
           lastSyncTime: props.getProperty('LAST_SYNC_SUCCESS_TIME') || '',
           lastSyncCount: props.getProperty('LAST_SYNC_COUNT') || '0',
           lastError: props.getProperty('LAST_SYNC_ERROR') || null
@@ -164,6 +195,33 @@ function doGet(e) {
   if (e && e.parameter && e.parameter.api === 'setup_triggers') {
     var resTrig = setupAllTriggers();
     return ContentService.createTextOutput(JSON.stringify(resTrig))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // 8. API Lưu Cấu Hình KiotViet (Client ID / Secret / Retailer)
+  if (e && e.parameter && e.parameter.api === 'save_kiot_config') {
+    var cId = (e.parameter.clientId || '').trim();
+    var cSec = (e.parameter.clientSecret || '').trim();
+    var cRet = (e.parameter.retailer || 'leeandteevn').trim();
+    if (!cId || !cSec) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Thiếu Client ID hoặc Client Secret' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var resSaveK = setKiotCredentials(cId, cSec, cRet);
+    return ContentService.createTextOutput(JSON.stringify(resSaveK))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // 9. API Lưu Cấu Hình Telegram (Bot Token / Chat ID)
+  if (e && e.parameter && e.parameter.api === 'save_telegram_config') {
+    var bTok = (e.parameter.botToken || '').trim();
+    var cIdTele = (e.parameter.chatId || '530892002').trim();
+    if (!bTok) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Thiếu Bot Token' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var resSaveT = setTelegramCredentials(bTok, cIdTele);
+    return ContentService.createTextOutput(JSON.stringify(resSaveT))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
