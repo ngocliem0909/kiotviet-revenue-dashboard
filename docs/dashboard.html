@@ -1066,8 +1066,23 @@
         document.getElementById("tableRecordCount").innerText = `Số liệu tổng hợp lịch sử ${activeHistoricalPeriod}`;
         const hsYear = window.HISTORICAL_SUMMARY && window.HISTORICAL_SUMMARY.yearly && window.HISTORICAL_SUMMARY.yearly[selectedYear];
         let branchNote = "";
-        if (fBranch === "161 Võ Văn Ngân - THỦ ĐỨC" && selectedYear === "2025") {
-          branchNote = `<div class="mt-2 text-[11px] text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-left"><i class="fa-solid fa-circle-info mr-1.5 text-amber-600"></i><strong>Thông tin chi nhánh:</strong> 161 Võ Văn Ngân - THỦ ĐỨC chính thức khai trương từ <strong>20/10/2025</strong>. Do đó năm 2025 chi nhánh hoạt động 2,5 tháng cuối năm với 502 đơn hàng (281.510.100 ₫).</div>`;
+        if (fBranch) {
+          let firstActiveMonth = null;
+          let activeMonthsCount = 0;
+          if (hsYear && window.HISTORICAL_SUMMARY && window.HISTORICAL_SUMMARY.monthly) {
+            for (let m = 1; m <= 12; m++) {
+              const mStr = String(m).padStart(2, '0');
+              const ym = `${selectedYear}-${mStr}`;
+              const mData = window.HISTORICAL_SUMMARY.monthly[ym];
+              if (mData && mData.branches && mData.branches[fBranch]) {
+                if (!firstActiveMonth) firstActiveMonth = m;
+                activeMonthsCount++;
+              }
+            }
+          }
+          if (firstActiveMonth && activeMonthsCount < 12 && selectedYear !== "2026") {
+            branchNote = `<div class="mt-2 text-[11px] text-indigo-700 bg-indigo-50 p-2.5 rounded-xl border border-indigo-200 text-left"><i class="fa-solid fa-circle-info mr-1.5 text-indigo-600"></i><strong>Thông tin chi nhánh:</strong> Trong năm ${selectedYear}, <strong>${fBranch}</strong> phát sinh đơn hàng từ <strong>Tháng ${firstActiveMonth}/${selectedYear}</strong> (${activeMonthsCount} tháng hoạt động).</div>`;
+          }
         }
 
         const bYearInfo = (hsYear && fBranch && hsYear.branches && hsYear.branches[fBranch]) ? hsYear.branches[fBranch] : null;
