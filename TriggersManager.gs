@@ -73,18 +73,32 @@ function setupAllTriggers() {
     
     if (res1.success && res2.success && res3.success) {
       Logger.log('Đã kích hoạt toàn bộ lịch trình tự động thành công!');
+      const successMsg = 'Đã kích hoạt toàn bộ 3 triggers tự động: Đồng bộ KiotViet (1h/lần), Báo cáo Telegram (23:59), Làm mới Sản phẩm & Kho (02:00)';
+      try {
+        if (typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.getActiveSpreadsheet()) {
+          SpreadsheetApp.getUi().alert('✅ Thành công', successMsg, SpreadsheetApp.getUi().ButtonSet.OK);
+        }
+      } catch (uiErr) {}
       return {
         success: true,
-        message: 'Đã kích hoạt toàn bộ lịch trình tự động: Đồng bộ KiotViet (1h/lần), Báo cáo Telegram (23:59), Làm mới Sản phẩm & Kho (02:00)'
+        message: successMsg
       };
     } else {
+      const allMsgs = [res1.message, res2.message, res3.message].join('; ');
+      const isAuthErr = allMsgs.includes('ScriptApp') || allMsgs.includes('quyền') || allMsgs.includes('permission');
+      const friendlyMsg = isAuthErr
+        ? 'Chính sách bảo mật Google: Triggers chạy ngầm cần được kích hoạt từ Google Sheet "Báo Cáo Doanh Thu Bán Hàng 2026" > Chọn menu "📊 L&T Analytics" > "⚡ Kích hoạt tất cả Triggers" (chỉ cần làm 1 lần duy nhất).'
+        : ('Có trigger chưa tạo được: ' + allMsgs);
       return {
         success: false,
-        message: 'Có trigger chưa tạo được: ' + [res1.message, res2.message, res3.message].join('; ')
+        message: friendlyMsg
       };
     }
   } catch (e) {
-    return { success: false, message: e.message };
+    return {
+      success: false,
+      message: 'Vui lòng mở Google Sheet "Báo Cáo Doanh Thu Bán Hàng 2026" > Menu "📊 L&T Analytics" > Bấm "⚡ Kích hoạt tất cả Triggers".'
+    };
   }
 }
 
@@ -96,7 +110,12 @@ function removeAllTriggers() {
     const triggers = ScriptApp.getProjectTriggers();
     triggers.forEach(t => ScriptApp.deleteTrigger(t));
     Logger.log('Đã xóa %d triggers.', triggers.length);
-    return { success: true, count: triggers.length };
+    try {
+      if (typeof SpreadsheetApp !== 'undefined' && SpreadsheetApp.getActiveSpreadsheet()) {
+        SpreadsheetApp.getUi().alert('Đã xóa sạch ' + triggers.length + ' triggers.');
+      }
+    } catch (uiErr) {}
+    return { success: true, count: triggers.length, message: 'Đã xóa sạch ' + triggers.length + ' triggers.' };
   } catch (e) {
     Logger.log('Lỗi removeAllTriggers: ' + e.message);
     return { success: false, message: e.message };

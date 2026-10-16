@@ -521,11 +521,64 @@
           </div>
           <div id="systemStatusDetails" class="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-lg border border-slate-200 hidden mt-2">
           </div>
+          <div class="mt-2 text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200">
+            <div class="font-bold flex items-center mb-1 text-amber-900">
+              <i class="fa-solid fa-circle-info mr-1.5 text-amber-600"></i> Hướng dẫn kích hoạt Triggers 24/7:
+            </div>
+            <p class="text-[11px] leading-relaxed text-slate-600">
+              Do chính sách bảo mật của Google, bạn mở <a href="https://docs.google.com/spreadsheets/d/1O2uomcThkJx06_6V3iBD8rdkqPl7q4h6TT6_20QSc0I/edit" target="_blank" class="text-indigo-600 font-bold underline hover:text-indigo-800">Google Sheet Báo Cáo 2026</a> &gt; Menu <strong>📊 L&amp;T Analytics</strong> &gt; Chọn <strong>⚡ Kích hoạt tất cả Triggers</strong> (chỉ cần làm 1 lần duy nhất).
+            </p>
+          </div>
         </div>
       </div>
 
       <div class="p-3 bg-slate-50 border-t border-slate-200 text-right">
         <button onclick="closeAutomationModal()" class="px-4 py-1.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-100">
+          Đóng
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRIGGER GUIDE MODAL -->
+  <div id="triggerGuideModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
+      <div class="p-4 bg-amber-500 text-white flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+          <i class="fa-solid fa-shield-halved text-lg"></i>
+          <h3 class="text-sm font-bold">Kích Hoạt Triggers Chạy Ngầm 24/7</h3>
+        </div>
+        <button onclick="document.getElementById('triggerGuideModal').classList.add('hidden')" class="text-white/80 hover:text-white p-1 rounded-lg">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+      <div class="p-5 space-y-3 text-xs text-slate-600 leading-relaxed">
+        <p class="font-medium text-slate-800">
+          Theo chính sách bảo mật của Google, các lịch trình tự động (Triggers) cần được xác thực trực tiếp từ Google Sheet để chạy ngầm 24/7 trên máy chủ đám mây:
+        </p>
+        <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 space-y-2.5">
+          <div class="flex items-start space-x-2.5">
+            <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>
+            <span>Mở <a href="https://docs.google.com/spreadsheets/d/1O2uomcThkJx06_6V3iBD8rdkqPl7q4h6TT6_20QSc0I/edit" target="_blank" class="text-indigo-600 font-bold underline hover:text-indigo-800">Google Sheet Báo Cáo 2026</a></span>
+          </div>
+          <div class="flex items-start space-x-2.5">
+            <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>
+            <span>Trên thanh menu Google Sheets, bấm vào menu <strong>📊 L&amp;T Analytics</strong></span>
+          </div>
+          <div class="flex items-start space-x-2.5">
+            <span class="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>
+            <span>Chọn <strong>⚡ Kích hoạt tất cả Triggers (1-Click)</strong></span>
+          </div>
+        </div>
+        <div class="p-2.5 bg-amber-50 rounded-lg border border-amber-200 text-[11px] text-amber-900">
+          <i class="fa-solid fa-circle-check mr-1 text-emerald-600"></i> Chỉ cần thực hiện <strong>1 lần duy nhất</strong>. Sau đó cả 3 triggers sẽ chạy tự động 24/7 vĩnh viễn (Đồng bộ hàng giờ, Telegram 23:59, Tồn kho 02:00).
+        </div>
+      </div>
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-end space-x-2">
+        <a href="https://docs.google.com/spreadsheets/d/1O2uomcThkJx06_6V3iBD8rdkqPl7q4h6TT6_20QSc0I/edit" target="_blank" class="px-3.5 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm flex items-center">
+          <i class="fa-solid fa-arrow-up-right-from-square mr-1.5 text-[10px]"></i> Mở Google Sheet Ngay
+        </a>
+        <button onclick="document.getElementById('triggerGuideModal').classList.add('hidden')" class="px-3 py-1.5 text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100">
           Đóng
         </button>
       </div>
@@ -82893,45 +82946,43 @@
         });
     }
 
+    function openTriggerGuideModal() {
+      const modal = document.getElementById("triggerGuideModal");
+      if (modal) modal.classList.remove("hidden");
+    }
+
     function setupAllTriggers() {
       const btn = document.getElementById("btnSetupTriggers");
       if (btn) btn.disabled = true;
-      showToast("Đang kích hoạt lại 3 triggers tự động...", "info");
+      showToast("Đang kiểm tra thiết lập Triggers...", "info");
+
+      function handleTriggerResult(res) {
+        if (btn) btn.disabled = false;
+        if (res && res.success) {
+          showToast("Đã kích hoạt 3 triggers tự động thành công!", "success");
+          checkSystemStatus();
+        } else {
+          openTriggerGuideModal();
+        }
+      }
+
+      function handleTriggerError(err) {
+        if (btn) btn.disabled = false;
+        openTriggerGuideModal();
+      }
 
       if (typeof google !== "undefined" && google.script && google.script.run) {
         google.script.run
-          .withSuccessHandler(res => {
-            if (btn) btn.disabled = false;
-            if (res && res.success) {
-              showToast("Đã kích hoạt 3 triggers tự động thành công!", "success");
-              checkSystemStatus();
-            } else {
-              showToast("Lỗi cài triggers: " + (res ? res.message : ""), "error");
-            }
-          })
-          .withFailureHandler(err => {
-            if (btn) btn.disabled = false;
-            showToast("Lỗi: " + err.message, "error");
-          })
+          .withSuccessHandler(handleTriggerResult)
+          .withFailureHandler(handleTriggerError)
           .setupAllTriggers();
         return;
       }
 
       fetch("https://script.google.com/macros/s/AKfycbzBJ8SdazzihyeIomttMdgIgj3czv_I4xMt_K1Bw7Syc2Jdc7sU0wJRnjUbQvaKhyXs/exec?api=setup_triggers")
         .then(r => r.json())
-        .then(res => {
-          if (btn) btn.disabled = false;
-          if (res && res.success) {
-            showToast("Đã kích hoạt các triggers tự động!", "success");
-            checkSystemStatus();
-          } else {
-            showToast("Lỗi kích hoạt triggers: " + (res ? res.message : ""), "error");
-          }
-        })
-        .catch(err => {
-          if (btn) btn.disabled = false;
-          showToast("Lỗi kết nối API!", "error");
-        });
+        .then(handleTriggerResult)
+        .catch(handleTriggerError);
     }
 
     function checkSystemStatus() {

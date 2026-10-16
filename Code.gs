@@ -31,6 +31,26 @@ function isUserAuthorized_() {
 }
 
 /**
+ * Tự động tạo Menu điều khiển khi mở Google Sheet
+ */
+function onOpen() {
+  try {
+    SpreadsheetApp.getUi()
+      .createMenu('📊 L&T Analytics')
+      .addItem('⚡ Kích hoạt tất cả Triggers (1-Click)', 'setupAllTriggers')
+      .addSeparator()
+      .addItem('🔄 Đồng bộ KiotViet ngay', 'syncHourly')
+      .addItem('📱 Gửi thử báo cáo Telegram', 'testTelegramReport')
+      .addItem('📦 Cập nhật Sản phẩm & Tồn kho', 'syncProductsAndInventory')
+      .addSeparator()
+      .addItem('❌ Xóa tất cả Triggers', 'removeAllTriggers')
+      .addToUi();
+  } catch (e) {
+    Logger.log('onOpen notice: ' + e.message);
+  }
+}
+
+/**
  * Khởi tạo Web App (doGet) kèm xác thực tài khoản Google
  */
 function doGet(e) {
