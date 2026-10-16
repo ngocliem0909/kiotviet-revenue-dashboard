@@ -41,8 +41,8 @@ function doGet(e) {
 
   var userEmail = (Session.getActiveUser().getEmail() || '').trim().toLowerCase();
 
-  // Kiểm tra quyền truy cập (Chỉ cho phép 2 email được chỉ định)
-  if (!userEmail || ALLOWED_EMAILS.indexOf(userEmail) === -1) {
+  // Kiểm tra quyền truy cập: nếu có email tài khoản và không nằm trong danh sách thì chặn
+  if (userEmail && ALLOWED_EMAILS.indexOf(userEmail) === -1) {
     var output = '<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><title>Truy Cập Bị Từ Chối</title>' +
       '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
       '<script src="https://cdn.tailwindcss.com"></script>' +
@@ -72,8 +72,10 @@ function doGet(e) {
       .addMetaTag('viewport', 'width=device-width, initial-scale=1.0');
   }
 
+  var freshOct = getFreshOctoberRecords();
   var template = HtmlService.createTemplateFromFile('Index');
-  template.currentUserEmail = userEmail;
+  template.freshOctoberRecords = (freshOct && freshOct.success) ? freshOct.records : [];
+  template.currentUserEmail = userEmail || 'Ủy quyền nội bộ';
   return template.evaluate()
     .setTitle('Dashboard Doanh Thu KiotViet - Lee&Tee')
     .setFaviconUrl('https://ssl.gstatic.com/docs/spreadsheets/forms/favicon_qp2.png')
