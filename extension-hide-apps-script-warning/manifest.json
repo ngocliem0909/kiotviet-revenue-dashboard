@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Ẩn Cảnh Báo Google Apps Script",
+  "version": "1.0",
+  "description": "Tự động ẩn thanh thông báo 'Ứng dụng này do một người dùng Google Apps Script tạo' trên script.google.com",
+  "content_scripts": [
+    {
+      "matches": ["https://script.google.com/*"],
+      "css": ["style.css"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
