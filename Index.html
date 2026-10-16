@@ -96,43 +96,52 @@
           <span class="text-xs text-slate-400 mr-1.5 flex-shrink-0">Đến:</span>
           <input type="date" id="filterEndDate" onchange="triggerFilter()" class="bg-transparent text-xs text-slate-800 outline-none w-full">
         </div>
-        <div class="flex items-center space-x-1.5 flex-shrink-0">
-          <span class="text-xs text-slate-400 flex-shrink-0">Chọn năm:</span>
-          <select id="filterSelectYear" onchange="selectSpecificYear(this.value)" class="bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-xs text-slate-700 outline-none font-medium">
-            <option value="">-- Năm --</option>
-            <option value="2026">Năm 2026</option>
-            <option value="2025">Năm 2025</option>
-            <option value="2024">Năm 2024</option>
-            <option value="2023">Năm 2023</option>
-            <option value="2022">Năm 2022</option>
-            <option value="2021">Năm 2021</option>
-            <option value="2020">Năm 2020</option>
-            <option value="2019">Năm 2019</option>
-            <option value="2018">Năm 2018</option>
-            <option value="2017">Năm 2017</option>
-            <option value="2016">Năm 2016</option>
-          </select>
-        </div>
       </div>
 
       <!-- Dropdowns & Filter Button -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1 border-t border-slate-100 sm:border-0 sm:pt-0">
-        <select id="filterBranch" onchange="triggerFilter()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 sm:py-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1 border-t border-slate-100 sm:border-0 sm:pt-0">
+        <!-- BỘ LỌC NĂM (2016 -> Nay, tự động cập nhật) -->
+        <div class="relative">
+          <select id="filterSelectYear" onchange="onYearMonthChange()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer">
+            <!-- Tự động sinh từ 2016 đến new Date().getFullYear() -->
+          </select>
+        </div>
+
+        <!-- BỘ LỌC THÁNG (12 Tháng) -->
+        <div class="relative">
+          <select id="filterSelectMonth" onchange="onYearMonthChange()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 text-xs rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none cursor-pointer">
+            <option value="ALL">Tháng: Cả năm</option>
+            <option value="1">Tháng 1</option>
+            <option value="2">Tháng 2</option>
+            <option value="3">Tháng 3</option>
+            <option value="4">Tháng 4</option>
+            <option value="5">Tháng 5</option>
+            <option value="6">Tháng 6</option>
+            <option value="7">Tháng 7</option>
+            <option value="8">Tháng 8</option>
+            <option value="9">Tháng 9</option>
+            <option value="10">Tháng 10</option>
+            <option value="11">Tháng 11</option>
+            <option value="12">Tháng 12</option>
+          </select>
+        </div>
+
+        <select id="filterBranch" onchange="triggerFilter()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
           <option value="ALL">Chi nhánh: Tất cả</option>
         </select>
 
-        <select id="filterChannel" onchange="triggerFilter()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 sm:py-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-          <option value="ALL">Kênh bán: Tất cả</option>
-          <option value="Cửa hàng trực tiếp">Cửa hàng trực tiếp</option>
-          <option value="Zalo / Online COD">Zalo / Online COD</option>
-          <option value="TikTok Shop">TikTok Shop</option>
-        </select>
-
-        <select id="filterStatus" onchange="triggerFilter()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 sm:py-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+        <select id="filterStatus" onchange="triggerFilter()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
           <option value="ALL">Trạng thái: Tất cả</option>
           <option value="Hoàn thành">Hoàn thành</option>
           <option value="Đang xử lý">Đang xử lý</option>
           <option value="Đã hủy">Đã hủy</option>
+        </select>
+
+        <select id="filterChannel" onchange="triggerFilter()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <option value="ALL">Kênh bán: Tất cả</option>
+          <option value="Cửa hàng trực tiếp">Cửa hàng trực tiếp</option>
+          <option value="Zalo / Online COD">Zalo / Online COD</option>
+          <option value="TikTok Shop">TikTok Shop</option>
         </select>
 
         <button onclick="triggerFilter()" class="w-full inline-flex items-center justify-center px-3.5 py-2 sm:py-2.5 text-xs font-semibold text-white bg-slate-800 hover:bg-slate-900 active:scale-95 rounded-lg shadow-sm transition">
@@ -83196,45 +83205,96 @@
       }
 
       const ySel = document.getElementById("filterSelectYear");
-      if (ySel) {
-        const curY = String(new Date().getFullYear());
-        const prevY = String(new Date().getFullYear() - 1);
-        if (preset === "thisYear") ySel.value = curY;
-        else if (preset === "lastYear") ySel.value = prevY;
-        else if (preset !== "custom") ySel.value = "";
+      const mSel = document.getElementById("filterSelectMonth");
+      const curY = new Date().getFullYear();
+      const curM = new Date().getMonth() + 1;
+
+      if (preset === "thisMonth") {
+        if (ySel) ySel.value = String(curY);
+        if (mSel) mSel.value = String(curM);
+      } else if (preset === "lastMonth") {
+        const lastMDate = new Date(curY, curM - 2, 1);
+        if (ySel) ySel.value = String(lastMDate.getFullYear());
+        if (mSel) mSel.value = String(lastMDate.getMonth() + 1);
+      } else if (preset === "thisYear") {
+        if (ySel) ySel.value = String(curY);
+        if (mSel) mSel.value = "ALL";
+      } else if (preset === "lastYear") {
+        if (ySel) ySel.value = String(curY - 1);
+        if (mSel) mSel.value = "ALL";
+      } else if (preset === "today" || preset === "yesterday" || preset === "7days" || preset === "30days") {
+        if (ySel) ySel.value = String(curY);
+        if (mSel) mSel.value = String(curM);
       }
 
       triggerFilter();
     }
 
-    function selectSpecificYear(yearVal) {
-      if (!yearVal) return;
+    function onYearMonthChange() {
+      const ySel = document.getElementById("filterSelectYear");
+      const mSel = document.getElementById("filterSelectMonth");
+      if (!ySel || !mSel) return;
+
+      const yr = parseInt(ySel.value, 10) || new Date().getFullYear();
+      const moVal = mSel.value;
+
       const startInp = document.getElementById("filterStartDate");
       const endInp = document.getElementById("filterEndDate");
-      startInp.value = `${yearVal}-01-01`;
-      endInp.value = `${yearVal}-12-31`;
 
-      const curY = String(new Date().getFullYear());
-      const prevY = String(new Date().getFullYear() - 1);
-      if (yearVal === curY) {
-        setPreset("thisYear");
-      } else if (yearVal === prevY) {
-        setPreset("lastYear");
+      if (moVal === "ALL") {
+        // Cả năm: từ 01/01 đến 31/12
+        startInp.value = `${yr}-01-01`;
+        endInp.value = `${yr}-12-31`;
       } else {
-        const presets = ["today", "yesterday", "7days", "30days", "thisMonth", "lastMonth", "thisYear", "lastYear", "custom"];
-        presets.forEach(p => {
-          const btnId = "btnPreset" + p.charAt(0).toUpperCase() + p.slice(1);
-          const btn = document.getElementById(btnId);
-          if (btn) {
-            if (p === "custom") {
-              btn.className = "preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg border transition bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm";
-            } else {
-              btn.className = "preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition";
-            }
-          }
-        });
-        triggerFilter();
+        // Tháng cụ thể: từ ngày 01 đến ngày cuối cùng của tháng
+        const mo = parseInt(moVal, 10);
+        const moStr = mo < 10 ? `0${mo}` : String(mo);
+        const lastDay = new Date(yr, mo, 0).getDate();
+        const lastDayStr = lastDay < 10 ? `0${lastDay}` : String(lastDay);
+
+        startInp.value = `${yr}-${moStr}-01`;
+        endInp.value = `${yr}-${moStr}-${lastDayStr}`;
       }
+
+      // Xác định preset tương ứng để highlight nút
+      const curY = new Date().getFullYear();
+      const curM = new Date().getMonth() + 1;
+      const lastMDate = new Date(curY, curM - 2, 1);
+      const lastMY = lastMDate.getFullYear();
+      const lastM = lastMDate.getMonth() + 1;
+
+      let matchedPreset = null;
+      if (moVal === "ALL") {
+        if (yr === curY) matchedPreset = "thisYear";
+        else if (yr === curY - 1) matchedPreset = "lastYear";
+      } else {
+        const mo = parseInt(moVal, 10);
+        if (yr === curY && mo === curM) matchedPreset = "thisMonth";
+        else if (yr === lastMY && mo === lastM) matchedPreset = "lastMonth";
+      }
+
+      const presets = ["today", "yesterday", "7days", "30days", "thisMonth", "lastMonth", "thisYear", "lastYear", "custom"];
+      presets.forEach(p => {
+        const btn = document.getElementById("btnPreset" + p.charAt(0).toUpperCase() + p.slice(1));
+        if (btn) {
+          if (p === matchedPreset) {
+            btn.className = "preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg border transition bg-indigo-50 text-indigo-700 border-indigo-200 shadow-sm";
+          } else {
+            btn.className = "preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition";
+          }
+        }
+      });
+
+      const customBox = document.getElementById("customDateRangeBox");
+      if (customBox) customBox.classList.add("hidden");
+
+      triggerFilter();
+    }
+
+    function selectSpecificYear(yearVal) {
+      const ySel = document.getElementById("filterSelectYear");
+      if (ySel) ySel.value = yearVal;
+      onYearMonthChange();
     }
 
     function getFilterPayload() {
@@ -83266,6 +83326,9 @@
       // Kiểm tra xem kỳ đang chọn có phải là trọn vẹn 1 Năm (từ 2016 đến 2026) hay không
       const isFullYear = (fStart && fEnd && fStart.slice(0, 4) === fEnd.slice(0, 4) && fStart.endsWith("-01-01") && fEnd.endsWith("-12-31"));
       const selectedYear = isFullYear ? fStart.slice(0, 4) : null;
+      // Kiểm tra xem kỳ đang chọn có phải là trọn vẹn 1 Tháng hay không
+      const isSingleMonth = (fStart && fEnd && fStart.slice(0, 7) === fEnd.slice(0, 7) && fStart.endsWith("-01"));
+      const selectedMonthKey = isSingleMonth ? fStart.slice(0, 7) : null;
 
       // 1. Lọc các bản ghi chi tiết hiện có trong allRecords (Tháng 09 & Tháng 10/2026)
       let detailedRev = 0, detailedCol = 0, detailedComp = 0, detailedProc = 0, detailedCanc = 0;
@@ -83303,6 +83366,7 @@
       const hs = window.HISTORICAL_SUMMARY;
       const useHistorical = hs && (
         selectedYear !== null || // Bất kỳ năm nào (kể cả 2026, 2025...) dù lọc chi nhánh hay không
+        (selectedMonthKey !== null && selectedMonthKey < "2026-09") || // Bất kỳ tháng nào trước tháng 9/2026
         (filteredRows.length === 0 && fStart && fStart < "2026-09-01") // Bất kỳ kỳ nào trước tháng 9/2026
       );
 
@@ -83313,7 +83377,15 @@
       let chartSellerLabels = [], chartSellerData = [];
 
       isHistoricalActive = useHistorical;
-      activeHistoricalPeriod = selectedYear ? ("Năm " + selectedYear) : (fStart ? (fStart + " → " + fEnd) : "Toàn bộ lịch sử");
+      let periodLabel = "Toàn bộ lịch sử";
+      if (selectedYear) {
+        periodLabel = "Năm " + selectedYear;
+      } else if (selectedMonthKey) {
+        periodLabel = "Tháng " + parseInt(selectedMonthKey.slice(5, 7), 10) + "/" + selectedMonthKey.slice(0, 4);
+      } else if (fStart && fEnd) {
+        periodLabel = fStart + " → " + fEnd;
+      }
+      activeHistoricalPeriod = periodLabel;
 
       if (useHistorical) {
         if (selectedYear && hs.yearly && hs.yearly[selectedYear]) {
@@ -83421,6 +83493,97 @@
               chartSellerLabels = yData.top_sellers.slice(0, 7).map(s => s.seller);
               chartSellerData = yData.top_sellers.slice(0, 7).map(s => s.revenue);
             }
+          }
+        } else if (selectedMonthKey && hs.monthly && hs.monthly[selectedMonthKey]) {
+          const mData = hs.monthly[selectedMonthKey];
+
+          if (fBranch) {
+            // Lọc theo Chi nhánh trong tháng đã chọn
+            const bInfo = (mData.branches && mData.branches[fBranch]) ? mData.branches[fBranch] : null;
+            totalRevenue = bInfo ? bInfo.revenue : 0;
+            totalCollected = bInfo ? (bInfo.collected || bInfo.revenue) : 0;
+            completedOrders = bInfo ? bInfo.invoices : 0;
+            cancelledOrders = 0;
+            processingOrders = 0;
+
+            chartBranchLabels = [fBranch];
+            chartBranchData = [totalRevenue];
+
+            if (bInfo && bInfo.channels) {
+              chartChannelLabels = Object.keys(bInfo.channels);
+              chartChannelData = Object.values(bInfo.channels);
+            }
+            if (bInfo && bInfo.sellers) {
+              const sortedSellers = Object.keys(bInfo.sellers).map(s => ({ name: s, revenue: bInfo.sellers[s] })).sort((a,b) => b.revenue - a.revenue).slice(0, 7);
+              chartSellerLabels = sortedSellers.map(s => s.name);
+              chartSellerData = sortedSellers.map(s => s.revenue);
+            }
+            if (fChannel) {
+              totalRevenue = (bInfo && bInfo.channels && bInfo.channels[fChannel]) ? bInfo.channels[fChannel] : 0;
+              totalCollected = totalRevenue;
+            }
+          } else if (fChannel) {
+            // Lọc theo Kênh bán hàng trong tháng đã chọn
+            const cInfo = (mData.channels && mData.channels[fChannel]) ? mData.channels[fChannel] : null;
+            totalRevenue = cInfo ? (typeof cInfo === 'number' ? cInfo : cInfo.revenue) : 0;
+            totalCollected = totalRevenue;
+            completedOrders = cInfo ? (cInfo.invoices || 0) : 0;
+            cancelledOrders = 0;
+            processingOrders = 0;
+
+            chartChannelLabels = [fChannel];
+            chartChannelData = [totalRevenue];
+
+            if (mData.branches) {
+              const branchWithChannel = [];
+              Object.keys(mData.branches).forEach(bName => {
+                const bObj = mData.branches[bName];
+                if (bObj.channels && bObj.channels[fChannel]) {
+                  branchWithChannel.push({ branch: bName, revenue: bObj.channels[fChannel] });
+                }
+              });
+              branchWithChannel.sort((a, b) => b.revenue - a.revenue);
+              chartBranchLabels = branchWithChannel.slice(0, 7).map(b => b.branch);
+              chartBranchData = branchWithChannel.slice(0, 7).map(b => b.revenue);
+            }
+          } else {
+            // Toàn bộ tháng (Tất cả chi nhánh, tất cả kênh)
+            totalRevenue = mData.revenue;
+            totalCollected = mData.collected;
+            completedOrders = mData.invoices;
+            cancelledOrders = mData.cancelled || 0;
+            processingOrders = 0;
+
+            if (mData.channels) {
+              chartChannelLabels = Object.keys(mData.channels);
+              chartChannelData = Object.keys(mData.channels).map(c => typeof mData.channels[c] === 'number' ? mData.channels[c] : mData.channels[c].revenue);
+            }
+
+            if (mData.branches) {
+              const sortedBranches = Object.keys(mData.branches).map(b => ({
+                branch: b,
+                revenue: mData.branches[b].revenue
+              })).sort((a, b) => b.revenue - a.revenue);
+              chartBranchLabels = sortedBranches.slice(0, 7).map(b => b.branch);
+              chartBranchData = sortedBranches.slice(0, 7).map(b => b.revenue);
+            }
+
+            if (mData.top_sellers) {
+              chartSellerLabels = mData.top_sellers.slice(0, 7).map(s => s.seller);
+              chartSellerData = mData.top_sellers.slice(0, 7).map(s => s.revenue);
+            }
+          }
+
+          // Daily timeline trong tháng đã chọn
+          const dMap = {};
+          if (hs.daily) {
+            Object.keys(hs.daily).sort().forEach(d => {
+              if (d.startsWith(selectedMonthKey)) {
+                dMap['Ngày ' + parseInt(d.slice(8), 10)] = hs.daily[d].revenue;
+              }
+            });
+            chartTimelineLabels = Object.keys(dMap);
+            chartTimelineData = Object.values(dMap);
           }
         } else {
           // Kỳ tùy chọn trong quá khứ dùng hs.daily
@@ -83558,8 +83721,9 @@
 
       const ySel = document.getElementById("filterSelectYear");
       if (ySel) {
-        ySel.innerHTML = '<option value="">-- Năm --</option>';
-        for (let yr = 2026; yr >= 2016; yr--) {
+        ySel.innerHTML = "";
+        const curY = new Date().getFullYear();
+        for (let yr = curY; yr >= 2016; yr--) {
           ySel.add(new Option('Năm ' + yr, String(yr)));
         }
       }
