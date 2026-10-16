@@ -265,9 +265,9 @@ function doGet(e) {
   template.freshOctoberRecords = (freshOct && freshOct.success) ? freshOct.records : [];
   template.currentUserEmail = userEmail || 'Ủy quyền nội bộ';
   return template.evaluate()
-    .setTitle('Dashboard Doanh Thu KiotViet - Lee&Tee')
-    .setFaviconUrl('https://ssl.gstatic.com/docs/spreadsheets/forms/favicon_qp2.png')
-    .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
+    .setTitle('L&T Analytics - Báo Cáo Doanh Thu KiotViet')
+    .setFaviconUrl('https://ngocliem0909.github.io/kiotviet-revenue-dashboard/app-icon.png')
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
