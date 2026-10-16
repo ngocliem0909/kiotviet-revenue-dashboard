@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Dashboard Doanh Thu KiotViet - Lee&Tee</title>
   <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,41 +17,46 @@
 
   <style>
     body { font-family: "Plus Jakarta Sans", sans-serif; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: #f1f5f9; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    /* An thanh cuon nhung van cuon ngang muot ma tren mobile */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
 
   <!-- ================= TOP HEADER ================= -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center justify-between h-16">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14 sm:h-16">
         
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-            <i class="fa-solid fa-chart-pie text-lg"></i>
+        <div class="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-indigo-600 flex-shrink-0 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
+            <i class="fa-solid fa-chart-pie text-sm sm:text-base"></i>
           </div>
-          <div>
-            <div class="flex items-center space-x-2">
-              <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight">KiotViet Analytics - Lee&Tee</h1>
-              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <i class="fa-solid fa-shield-halved mr-1 text-[10px]"></i> Chế độ Chỉ Đọc (An Toàn Nguồn)
+          <div class="min-w-0">
+            <div class="flex items-center space-x-1.5 sm:space-x-2">
+              <h1 class="text-sm sm:text-base font-bold text-slate-900 tracking-tight truncate">Lee&Tee Analytics</h1>
+              <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex-shrink-0">
+                <i class="fa-solid fa-shield-halved mr-1 text-[10px]"></i> Chỉ Đọc
               </span>
             </div>
-            <p id="headerSubtitle" class="text-xs text-slate-500">Dữ liệu thực tế từ HoaDon_2026-10 & HoaDon_2026-09</p>
+            <p id="headerSubtitle" class="text-[10px] sm:text-xs text-slate-500 truncate">HoaDon_2026-10 &amp; 09</p>
           </div>
         </div>
 
-        <div class="flex items-center space-x-2 sm:space-x-3">
-          <div class="hidden md:inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-sm">
+        <div class="flex items-center space-x-1.5 sm:space-x-3 flex-shrink-0">
+          <div class="hidden lg:inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-sm">
             <i class="fa-solid fa-user-shield text-emerald-600 mr-1.5 text-xs"></i>
             <span>Ủy quyền: lee.famn &amp; ngocliem0909</span>
           </div>
-          <button onclick="fetchFreshData()" id="btnRefresh" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-500/30 transition">
-            <i class="fa-solid fa-rotate mr-1.5" id="iconRefresh"></i> Làm Mới Dữ Liệu
+          <button onclick="fetchFreshData()" id="btnRefresh" class="inline-flex items-center px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-lg shadow-sm shadow-indigo-500/30 transition">
+            <i class="fa-solid fa-rotate sm:mr-1.5 text-xs" id="iconRefresh"></i> 
+            <span class="hidden sm:inline">Làm Mới</span>
           </button>
         </div>
 
@@ -60,132 +65,132 @@
   </header>
 
   <!-- ================= MAIN CONTENT ================= -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-6 flex-1 w-full space-y-3.5 sm:space-y-6">
 
     <!-- FILTERS BAR -->
-    <section class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200 shadow-sm">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        
-        <!-- Date Presets Requested by User -->
-        <div class="flex items-center flex-wrap gap-1.5">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400 mr-2"><i class="fa-regular fa-calendar mr-1"></i> Kỳ lọc:</span>
-          <button type="button" onclick="setPreset('today')" id="btnPresetToday" class="preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Hôm nay</button>
-          <button type="button" onclick="setPreset('yesterday')" id="btnPresetYesterday" class="preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Hôm qua</button>
-          <button type="button" onclick="setPreset('7days')" id="btnPreset7days" class="preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">7 ngày</button>
-          <button type="button" onclick="setPreset('30days')" id="btnPreset30days" class="preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">30 ngày</button>
-          <button type="button" onclick="setPreset('thisMonth')" id="btnPresetThisMonth" class="preset-btn px-3 py-1.5 text-xs font-semibold rounded-lg border transition bg-indigo-50 text-indigo-700 border-indigo-200">Tháng này</button>
-          <button type="button" onclick="setPreset('lastMonth')" id="btnPresetLastMonth" class="preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Tháng trước</button>
-          <button type="button" onclick="setPreset('custom')" id="btnPresetCustom" class="preset-btn px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Tùy chọn</button>
-        </div>
-
-        <!-- Custom Date Range Inputs -->
-        <div id="customDateRangeBox" class="hidden flex items-center gap-2">
-          <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
-            <span class="text-xs text-slate-400 mr-1.5">Từ:</span>
-            <input type="date" id="filterStartDate" onchange="triggerFilter()" class="bg-transparent text-xs text-slate-800 outline-none cursor-pointer">
-          </div>
-          <span class="text-slate-400 text-xs">→</span>
-          <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
-            <span class="text-xs text-slate-400 mr-1.5">Đến:</span>
-            <input type="date" id="filterEndDate" onchange="triggerFilter()" class="bg-transparent text-xs text-slate-800 outline-none cursor-pointer">
-          </div>
-        </div>
-
-        <!-- Dropdowns -->
-        <div class="flex items-center flex-wrap gap-2.5">
-          <!-- Chi nhánh -->
-          <select id="filterBranch" onchange="triggerFilter()" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none max-w-[200px]">
-            <option value="ALL">Chi nhánh: Tất cả</option>
-          </select>
-
-          <!-- Kênh bán -->
-          <select id="filterChannel" onchange="triggerFilter()" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            <option value="ALL">Kênh bán: Tất cả</option>
-            <option value="Cửa hàng trực tiếp">Cửa hàng trực tiếp</option>
-            <option value="Zalo / Online COD">Zalo / Online COD</option>
-            <option value="TikTok Shop">TikTok Shop</option>
-          </select>
-
-          <!-- Trạng thái -->
-          <select id="filterStatus" onchange="triggerFilter()" class="bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            <option value="ALL">Trạng thái: Tất cả</option>
-            <option value="Hoàn thành">Hoàn thành</option>
-            <option value="Đang xử lý">Đang xử lý</option>
-            <option value="Đã hủy">Đã hủy</option>
-          </select>
-
-          <button onclick="triggerFilter()" class="px-3.5 py-2 text-xs font-semibold text-white bg-slate-800 hover:bg-slate-900 rounded-lg shadow-sm transition">
-            <i class="fa-solid fa-filter mr-1"></i> Lọc
-          </button>
-        </div>
-
+    <section class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-sm space-y-3">
+      
+      <!-- Date Presets Requested by User (Horizontal Swipeable on Mobile) -->
+      <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1 sm:mx-0 sm:px-0 sm:flex-wrap sm:space-x-0 sm:gap-1.5">
+        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 flex-shrink-0"><i class="fa-regular fa-calendar mr-1"></i> Kỳ:</span>
+        <button type="button" onclick="setPreset('today')" id="btnPresetToday" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Hôm nay</button>
+        <button type="button" onclick="setPreset('yesterday')" id="btnPresetYesterday" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Hôm qua</button>
+        <button type="button" onclick="setPreset('7days')" id="btnPreset7days" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">7 ngày</button>
+        <button type="button" onclick="setPreset('30days')" id="btnPreset30days" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">30 ngày</button>
+        <button type="button" onclick="setPreset('thisMonth')" id="btnPresetThisMonth" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg border transition bg-indigo-50 text-indigo-700 border-indigo-200">Tháng này</button>
+        <button type="button" onclick="setPreset('lastMonth')" id="btnPresetLastMonth" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Tháng trước</button>
+        <button type="button" onclick="setPreset('custom')" id="btnPresetCustom" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Tùy chọn</button>
       </div>
+
+      <!-- Custom Date Range Inputs -->
+      <div id="customDateRangeBox" class="hidden flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+        <div class="flex items-center flex-1 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+          <span class="text-xs text-slate-400 mr-1.5 flex-shrink-0">Từ:</span>
+          <input type="date" id="filterStartDate" onchange="triggerFilter()" class="bg-transparent text-xs text-slate-800 outline-none w-full">
+        </div>
+        <span class="text-slate-400 text-xs">→</span>
+        <div class="flex items-center flex-1 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+          <span class="text-xs text-slate-400 mr-1.5 flex-shrink-0">Đến:</span>
+          <input type="date" id="filterEndDate" onchange="triggerFilter()" class="bg-transparent text-xs text-slate-800 outline-none w-full">
+        </div>
+      </div>
+
+      <!-- Dropdowns & Filter Button -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-1 border-t border-slate-100 sm:border-0 sm:pt-0">
+        <select id="filterBranch" onchange="triggerFilter()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 sm:py-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <option value="ALL">Chi nhánh: Tất cả</option>
+        </select>
+
+        <select id="filterChannel" onchange="triggerFilter()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 sm:py-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <option value="ALL">Kênh bán: Tất cả</option>
+          <option value="Cửa hàng trực tiếp">Cửa hàng trực tiếp</option>
+          <option value="Zalo / Online COD">Zalo / Online COD</option>
+          <option value="TikTok Shop">TikTok Shop</option>
+        </select>
+
+        <select id="filterStatus" onchange="triggerFilter()" class="w-full bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-lg px-3 py-2 sm:py-2.5 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+          <option value="ALL">Trạng thái: Tất cả</option>
+          <option value="Hoàn thành">Hoàn thành</option>
+          <option value="Đang xử lý">Đang xử lý</option>
+          <option value="Đã hủy">Đã hủy</option>
+        </select>
+
+        <button onclick="triggerFilter()" class="w-full inline-flex items-center justify-center px-3.5 py-2 sm:py-2.5 text-xs font-semibold text-white bg-slate-800 hover:bg-slate-900 active:scale-95 rounded-lg shadow-sm transition">
+          <i class="fa-solid fa-filter mr-1.5"></i> Áp Dụng Lọc
+        </button>
+      </div>
+
     </section>
 
-    <!-- METRIC KPI CARDS -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <!-- METRIC KPI CARDS (2 columns on mobile, 5 on desktop) -->
+    <section class="grid grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-4">
       
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Tổng Doanh Số</span>
-          <div class="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-            <i class="fa-solid fa-wallet text-sm"></i>
+      <!-- Doanh thu Hero -->
+      <div class="col-span-2 sm:col-span-1 bg-gradient-to-br from-indigo-600 to-indigo-800 text-white rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-sm shadow-indigo-500/20">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-indigo-100">Tổng Doanh Số</span>
+          <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-lg bg-white/20 flex items-center justify-center text-white">
+            <i class="fa-solid fa-wallet text-xs sm:text-sm"></i>
           </div>
         </div>
-        <div class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="kpiTotalRevenue">0 ₫</div>
-        <div class="mt-2 text-xs text-slate-500 flex items-center">
-          <i class="fa-solid fa-circle-check text-emerald-600 mr-1 text-[10px]"></i> Đơn thành công + Đang xử lý
+        <div class="text-xl sm:text-2xl font-black tracking-tight" id="kpiTotalRevenue">0 ₫</div>
+        <div class="mt-1.5 text-[10px] sm:text-xs text-indigo-100/90 flex items-center">
+          <i class="fa-solid fa-circle-check text-emerald-300 mr-1 text-[9px]"></i> Đơn HT + Đang xử lý
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Thực Thu Đã Nhận</span>
-          <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <i class="fa-solid fa-hand-holding-dollar text-sm"></i>
+      <!-- Thực thu -->
+      <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-1.5 sm:mb-2">
+          <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 truncate">Thực Thu</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-hand-holding-dollar text-xs sm:text-sm"></i>
           </div>
         </div>
-        <div class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="kpiTotalCollected">0 ₫</div>
-        <div class="mt-2 text-xs text-emerald-600 font-semibold flex items-center justify-between">
-          <span>Tỷ lệ thu tiền:</span>
+        <div class="text-base sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="kpiTotalCollected">0 ₫</div>
+        <div class="mt-1.5 text-[10px] sm:text-xs text-emerald-600 font-semibold flex items-center justify-between">
+          <span>Tỷ lệ:</span>
           <span id="kpiCollectionRatio" class="font-bold">0%</span>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Số Lượng Hóa Đơn</span>
-          <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-            <i class="fa-solid fa-receipt text-sm"></i>
+      <!-- Số lượng đơn -->
+      <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-1.5 sm:mb-2">
+          <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 truncate">Số Lượng Đơn</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-receipt text-xs sm:text-sm"></i>
           </div>
         </div>
-        <div class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="kpiTotalOrders">0 đơn</div>
-        <div class="mt-2 flex items-center text-xs text-slate-500 justify-between">
+        <div class="text-base sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="kpiTotalOrders">0 đơn</div>
+        <div class="mt-1.5 flex items-center text-[10px] sm:text-xs text-slate-500 justify-between">
           <span>Hoàn thành:</span>
           <span id="kpiCompletedOrders" class="font-bold text-slate-700">0 đơn</span>
         </div>
       </div>
 
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Đơn Giá TB (AOV)</span>
-          <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-            <i class="fa-solid fa-basket-shopping text-sm"></i>
+      <!-- AOV -->
+      <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-1.5 sm:mb-2">
+          <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 truncate">Đơn Giá TB</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-basket-shopping text-xs sm:text-sm"></i>
           </div>
         </div>
-        <div class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="kpiAOV">0 ₫</div>
-        <div class="mt-2 text-xs text-slate-500">Doanh thu / số hóa đơn</div>
+        <div class="text-base sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="kpiAOV">0 ₫</div>
+        <div class="mt-1.5 text-[10px] sm:text-xs text-slate-500 truncate">Doanh thu / đơn</div>
       </div>
 
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Tỷ Lệ Hoàn Thành</span>
-          <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
-            <i class="fa-solid fa-percent text-sm"></i>
+      <!-- Tỷ lệ thành công -->
+      <div class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-1.5 sm:mb-2">
+          <span class="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-slate-500 truncate">Tỷ Lệ Hoàn Thành</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+            <i class="fa-solid fa-percent text-xs sm:text-sm"></i>
           </div>
         </div>
-        <div class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="kpiSuccessRate">0%</div>
-        <div class="mt-2.5 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+        <div class="text-base sm:text-2xl font-extrabold text-slate-900 tracking-tight" id="kpiSuccessRate">0%</div>
+        <div class="mt-2 w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
           <div id="barSuccessRate" class="bg-amber-500 h-1.5 rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
       </div>
@@ -193,117 +198,117 @@
     </section>
 
     <!-- CHARTS ROW 1 -->
-    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-6">
       <!-- Timeline Chart -->
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm lg:col-span-2">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h3 class="text-sm sm:text-base font-bold text-slate-900" id="timelineTitle">Biến Động Doanh Số Theo Ngày</h3>
-            <p class="text-xs text-slate-500">Doanh số thực tế ghi nhận theo từng ngày trong kỳ chọn</p>
+      <div class="bg-white rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border border-slate-200 shadow-sm lg:col-span-2">
+        <div class="flex items-center justify-between mb-3 sm:mb-4">
+          <div class="min-w-0">
+            <h3 class="text-xs sm:text-base font-bold text-slate-900 truncate" id="timelineTitle">Biến Động Doanh Số Theo Ngày</h3>
+            <p class="text-[10px] sm:text-xs text-slate-500 truncate">Doanh số thực tế ghi nhận theo từng ngày</p>
           </div>
-          <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100">
+          <span class="text-[10px] sm:text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 sm:px-2.5 py-1 rounded-full border border-indigo-100 flex-shrink-0">
             <i class="fa-solid fa-chart-line mr-1"></i> Theo Ngày
           </span>
         </div>
-        <div class="h-64 sm:h-72 w-full">
+        <div class="h-56 sm:h-72 w-full">
           <canvas id="chartTimeline"></canvas>
         </div>
       </div>
 
       <!-- Channel Doughnut Chart -->
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h3 class="text-sm sm:text-base font-bold text-slate-900">Tỷ Trọng Kênh Bán Hàng</h3>
-            <p class="text-xs text-slate-500">Phân bố doanh số theo kênh</p>
+      <div class="bg-white rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-3 sm:mb-4">
+          <div class="min-w-0">
+            <h3 class="text-xs sm:text-base font-bold text-slate-900 truncate">Tỷ Trọng Kênh Bán Hàng</h3>
+            <p class="text-[10px] sm:text-xs text-slate-500 truncate">Phân bố doanh số theo kênh</p>
           </div>
-          <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+          <span class="text-[10px] sm:text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 sm:px-2.5 py-1 rounded-full border border-emerald-100 flex-shrink-0">
             <i class="fa-solid fa-store mr-1"></i> Kênh Bán
           </span>
         </div>
-        <div class="h-64 sm:h-72 flex items-center justify-center">
+        <div class="h-56 sm:h-72 flex items-center justify-center">
           <canvas id="chartChannel"></canvas>
         </div>
       </div>
     </section>
 
     <!-- CHARTS ROW 2 -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-3.5 sm:gap-6">
       <!-- Top Branches -->
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h3 class="text-sm sm:text-base font-bold text-slate-900">Top 7 Chi Nhánh Doanh Thu Cao Nhất</h3>
-            <p class="text-xs text-slate-500">Xếp hạng cửa hàng theo doanh thu thực tế</p>
+      <div class="bg-white rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-3 sm:mb-4">
+          <div class="min-w-0">
+            <h3 class="text-xs sm:text-base font-bold text-slate-900 truncate">Top 7 Chi Nhánh Doanh Thu Cao</h3>
+            <p class="text-[10px] sm:text-xs text-slate-500 truncate">Xếp hạng cửa hàng theo doanh thu thực tế</p>
           </div>
-          <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-100">
+          <span class="text-[10px] sm:text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 sm:px-2.5 py-1 rounded-full border border-indigo-100 flex-shrink-0">
             <i class="fa-solid fa-trophy mr-1"></i> Cửa Hàng
           </span>
         </div>
-        <div class="h-64 sm:h-72">
+        <div class="h-56 sm:h-72">
           <canvas id="chartBranch"></canvas>
         </div>
       </div>
 
       <!-- Top Sellers -->
-      <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-        <div class="flex items-center justify-between mb-4">
-          <div>
-            <h3 class="text-sm sm:text-base font-bold text-slate-900">Top 7 Nhân Viên Xuất Sắc Nhất Kỳ</h3>
-            <p class="text-xs text-slate-500">Doanh số bán hàng thực tế theo nhân viên</p>
+      <div class="bg-white rounded-xl sm:rounded-2xl p-3.5 sm:p-5 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-3 sm:mb-4">
+          <div class="min-w-0">
+            <h3 class="text-xs sm:text-base font-bold text-slate-900 truncate">Top 7 Nhân Viên Xuất Sắc</h3>
+            <p class="text-[10px] sm:text-xs text-slate-500 truncate">Doanh số bán hàng theo nhân viên</p>
           </div>
-          <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+          <span class="text-[10px] sm:text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 sm:px-2.5 py-1 rounded-full border border-emerald-100 flex-shrink-0">
             <i class="fa-solid fa-user-check mr-1"></i> Best Sellers
           </span>
         </div>
-        <div class="h-64 sm:h-72">
+        <div class="h-56 sm:h-72">
           <canvas id="chartSellers"></canvas>
         </div>
       </div>
     </section>
 
     <!-- TRANSACTIONS TABLE -->
-    <section class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+    <section class="bg-white rounded-xl sm:rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       
-      <div class="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div class="p-3.5 sm:p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <h3 class="text-sm sm:text-base font-bold text-slate-900">Chi Tiết Hóa Đơn Bán Hàng</h3>
-          <p class="text-xs text-slate-500">Dữ liệu thực tế từ hệ thống KiotViet (Chế độ xem an toàn)</p>
+          <p class="text-[10px] sm:text-xs text-slate-500">Dữ liệu thực tế từ hệ thống KiotViet (Chế độ xem an toàn)</p>
         </div>
-        <div class="flex items-center space-x-3">
-          <div class="relative">
-            <input type="text" id="tableSearchInput" oninput="filterTableLocal()" placeholder="Tìm mã đơn, khách, chi nhánh, NV..." class="w-60 sm:w-72 bg-slate-50 border border-slate-200 text-xs rounded-lg pl-8 pr-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+          <div class="relative flex-1 sm:w-72">
+            <input type="text" id="tableSearchInput" oninput="filterTableLocal()" placeholder="Tìm mã đơn, khách, chi nhánh, NV..." class="w-full bg-slate-50 border border-slate-200 text-xs rounded-lg pl-8 pr-3 py-2 outline-none focus:ring-2 focus:ring-indigo-500">
             <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2.5 text-xs text-slate-400"></i>
           </div>
-          <button onclick="exportCSV()" class="inline-flex items-center px-3 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition shadow-sm">
+          <button onclick="exportCSV()" class="inline-flex items-center justify-center px-3 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition shadow-sm">
             <i class="fa-solid fa-file-excel mr-1.5 text-emerald-600"></i> Xuất CSV
           </button>
         </div>
       </div>
 
       <!-- Table Body -->
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse text-xs">
+      <div class="overflow-x-auto -webkit-overflow-scrolling-touch">
+        <table class="w-full text-left border-collapse text-[11px] sm:text-xs">
           <thead>
-            <tr class="bg-slate-50/75 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-              <th class="py-3 px-4 text-center">Mã Đơn</th>
-              <th class="py-3 px-4">Ngày Mua</th>
-              <th class="py-3 px-4">Chi Nhánh</th>
-              <th class="py-3 px-4">Nhân Viên</th>
-              <th class="py-3 px-4">Khách Hàng</th>
-              <th class="py-3 px-4 text-center">Kênh Bán</th>
-              <th class="py-3 px-4 text-right">Tổng Tiền</th>
-              <th class="py-3 px-4 text-right">Thực Thu</th>
-              <th class="py-3 px-4 text-center">Trạng Thái</th>
+            <tr class="bg-slate-50/75 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider whitespace-nowrap">
+              <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-center">Mã Đơn</th>
+              <th class="py-2.5 sm:py-3 px-3 sm:px-4">Ngày Mua</th>
+              <th class="py-2.5 sm:py-3 px-3 sm:px-4">Chi Nhánh</th>
+              <th class="py-2.5 sm:py-3 px-3 sm:px-4">Nhân Viên</th>
+              <th class="py-2.5 sm:py-3 px-3 sm:px-4">Khách Hàng</th>
+              <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-center">Kênh Bán</th>
+              <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-right">Tổng Tiền</th>
+              <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-right">Thực Thu</th>
+              <th class="py-2.5 sm:py-3 px-3 sm:px-4 text-center">Trạng Thái</th>
             </tr>
           </thead>
-          <tbody id="tableBody" class="divide-y divide-slate-100">
+          <tbody id="tableBody" class="divide-y divide-slate-100 whitespace-nowrap">
             <!-- Dynamic rows -->
           </tbody>
         </table>
       </div>
 
-      <div class="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-1 text-[10px] sm:text-xs text-slate-500">
         <span id="tableRecordCount">Đang tải dữ liệu...</span>
         <span>Dữ liệu hóa đơn từ hệ thống KiotViet</span>
       </div>
@@ -313,15 +318,15 @@
   </main>
 
   <!-- ================= FOOTER ================= -->
-  <footer class="bg-white border-t border-slate-200 py-4 mt-8">
-    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-400">
+  <footer class="bg-white border-t border-slate-200 py-3.5 sm:py-4 mt-6 sm:mt-8">
+    <div class="max-w-7xl mx-auto px-4 text-center text-[11px] sm:text-xs text-slate-400">
       Báo Cáo Doanh Thu KiotViet - Lee&Tee &bull; Kết nối Google Sheets Trực Tiếp &bull; Chế độ Chỉ Đọc
     </div>
   </footer>
 
   <!-- TOAST NOTIFICATION -->
-  <div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-24 opacity-0 pointer-events-none">
-    <div id="toastBox" class="flex items-center space-x-3 px-4 py-3 rounded-xl shadow-lg border text-xs font-semibold bg-emerald-50 text-emerald-800 border-emerald-200">
+  <div id="toast" class="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 transform transition-all duration-300 translate-y-24 opacity-0 pointer-events-none">
+    <div id="toastBox" class="flex items-center space-x-2.5 sm:space-x-3 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl shadow-lg border text-xs font-semibold bg-emerald-50 text-emerald-800 border-emerald-200">
       <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
       <span id="toastMessage">Thông báo</span>
     </div>
@@ -788,15 +793,15 @@
 
         return `
           <tr class="hover:bg-slate-50/70 transition">
-            <td class="py-3 px-4 font-mono font-bold text-slate-900 text-center">${r.orderCode || ""}</td>
-            <td class="py-3 px-4 text-slate-500 whitespace-nowrap">${r.date || ""}</td>
-            <td class="py-3 px-4 font-medium text-slate-800">${r.branch || ""}</td>
-            <td class="py-3 px-4 text-slate-600">${r.seller || ""}</td>
-            <td class="py-3 px-4 font-medium text-slate-900">${r.customer || ""}</td>
-            <td class="py-3 px-4 text-center"><span class="px-2 py-0.5 rounded-md text-[11px] bg-indigo-50 text-indigo-700 font-semibold border border-indigo-100">${r.channel || ""}</span></td>
-            <td class="py-3 px-4 text-right font-bold text-slate-900">${formatVND(r.total)}</td>
-            <td class="py-3 px-4 text-right font-semibold text-emerald-600">${formatVND(r.collected)}</td>
-            <td class="py-3 px-4 text-center">${badge}</td>
+            <td class="py-2.5 sm:py-3 px-3 sm:px-4 font-mono font-bold text-slate-900 text-center">${r.orderCode || ""}</td>
+            <td class="py-2.5 sm:py-3 px-3 sm:px-4 text-slate-500 whitespace-nowrap">${r.date || ""}</td>
+            <td class="py-2.5 sm:py-3 px-3 sm:px-4 font-medium text-slate-800">${r.branch || ""}</td>
+            <td class="py-2.5 sm:py-3 px-3 sm:px-4 text-slate-600">${r.seller || ""}</td>
+            <td class="py-2.5 sm:py-3 px-3 sm:px-4 font-medium text-slate-900">${r.customer || ""}</td>
+            <td class="py-2.5 sm:py-3 px-3 sm:px-4 text-center"><span class="px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] bg-indigo-50 text-indigo-700 font-semibold border border-indigo-100">${r.channel || ""}</span></td>
+            <td class="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-bold text-slate-900">${formatVND(r.total)}</td>
+            <td class="py-2.5 sm:py-3 px-3 sm:px-4 text-right font-semibold text-emerald-600">${formatVND(r.collected)}</td>
+            <td class="py-2.5 sm:py-3 px-3 sm:px-4 text-center">${badge}</td>
           </tr>
         `;
       }).join("");
