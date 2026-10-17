@@ -303,6 +303,7 @@ function doGet(e) {
   var freshOct = getFreshOctoberRecords();
   var template = HtmlService.createTemplateFromFile('Index');
   template.freshOctoberRecords = (freshOct && freshOct.success) ? freshOct.records : [];
+  template.freshOctoberRecordsJson = (freshOct && freshOct.success) ? JSON.stringify(freshOct.records).replace(/<\/script/gi, '<\\/script') : '[]';
   template.currentUserEmail = userEmail || 'Ủy quyền nội bộ';
   return template.evaluate()
     .setTitle('L&T Analytics - Báo Cáo Doanh Thu KiotViet')

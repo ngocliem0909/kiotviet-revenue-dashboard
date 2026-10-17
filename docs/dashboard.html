@@ -866,17 +866,22 @@
     </div>
   </div>
 
-  <!-- Dữ liệu tổng hợp lịch sử 10 năm (130 tháng) nạp tối ưu qua CDN -->
+  <!-- Dữ liệu tổng hợp lịch sử 10 năm (130 tháng) & dữ liệu đệm tháng 10 nạp qua CDN -->
   <script src="https://ngocliem0909.github.io/kiotviet-revenue-dashboard/historical_summary.min.js"></script>
+  <script src="https://ngocliem0909.github.io/kiotviet-revenue-dashboard/october_data.min.js"></script>
 
   <!-- SCRIPT -->
   <script>
+    // Nạp trực tiếp dữ liệu từ server Google Apps Script (0-second render) hoặc dữ liệu đệm CDN
+    window.RAW_DATA = <?!= (typeof freshOctoberRecordsJson !== 'undefined') ? freshOctoberRecordsJson : ((typeof freshOctoberRecords !== 'undefined' && Array.isArray(freshOctoberRecords)) ? JSON.stringify(freshOctoberRecords) : '[]') ?>;
     window.HISTORICAL_SUMMARY = window.HISTORICAL_SUMMARY || { yearly: {}, monthly: {}, top_products: [] };
     window.currentAdminKey = "";
 
-    let allRecords = Array.isArray(window.RAW_DATA) ? window.RAW_DATA : [];
+    let allRecords = (Array.isArray(window.RAW_DATA) && window.RAW_DATA.length > 0)
+      ? window.RAW_DATA
+      : (Array.isArray(window.OCTOBER_DATA) ? window.OCTOBER_DATA : []);
     let currentPreset = "thisMonth";
-    let serverDateRange = { min: "2026-09-01", max: "2026-10-15" };
+    let serverDateRange = { min: "2026-09-01", max: "2026-10-17" };
     let cachedTransactions = [];
 
     let chartTimelineInstance = null;
@@ -1947,8 +1952,20 @@
 
       // 1. Trường hợp chạy trong Google Apps Script
       if (typeof google !== "undefined" && google.script && google.script.run) {
+        let called = false;
+        const rpcTimer = setTimeout(function() {
+          if (!called) {
+            called = true;
+            console.warn("google.script.run timeout, trying fallback API...");
+            tryFetchFromApi();
+          }
+        }, 2500);
+
         google.script.run
           .withSuccessHandler(res => {
+            if (called) return;
+            called = true;
+            clearTimeout(rpcTimer);
             if (res && res.success && Array.isArray(res.records)) {
               updateDataset(res.records, "Đã đồng bộ " + res.count + " hóa đơn tháng 10 từ Google Sheets!");
             } else {
@@ -1956,6 +1973,9 @@
             }
           })
           .withFailureHandler(err => {
+            if (called) return;
+            called = true;
+            clearTimeout(rpcTimer);
             tryFetchFromApi();
           })
           .getFreshOctoberRecords();
@@ -1975,10 +1995,26 @@
             } else if (Array.isArray(res)) {
               updateDataset(res, "Đã kết nối trực tiếp Google Sheets: " + res.length + " đơn hàng!");
             } else {
-              tryLocalServer();
+              tryStaticData();
             }
           })
           .catch(e => {
+            tryStaticData();
+          });
+      }
+
+      function tryStaticData() {
+        fetch("https://ngocliem0909.github.io/kiotviet-revenue-dashboard/october_data.json")
+          .then(r => r.json())
+          .then(res => {
+            const recs = (res && res.records) ? res.records : (Array.isArray(res) ? res : []);
+            if (recs.length > 0) {
+              updateDataset(recs, "Đã tải dữ liệu đệm: " + recs.length + " hóa đơn!");
+            } else {
+              tryLocalServer();
+            }
+          })
+          .catch(err => {
             tryLocalServer();
           });
       }
@@ -2184,27 +2220,31 @@
           }
         }
 
+        const fEnd = filter.endDate || "";
+        const isSingleMonth = (fStart && fEnd && fStart.slice(0, 7) === fEnd.slice(0, 7) && fStart.endsWith("-01"));
+        const selectedMonthKey = isSingleMonth ? fStart.slice(0, 7) : null;
+
         const hsMonth = (selectedMonthKey && window.HISTORICAL_SUMMARY && window.HISTORICAL_SUMMARY.monthly) ? window.HISTORICAL_SUMMARY.monthly[selectedMonthKey] : null;
         let invCount = "--", revTotal = "--", aovVal = "--";
 
         if (hsMonth) {
           const bMonthInfo = (fBranch && hsMonth.branches) ? hsMonth.branches[fBranch] : null;
-          invCount = bMonthInfo ? bMonthInfo.invoices.toLocaleString() : (hsMonth.invoices ? hsMonth.invoices.toLocaleString() : "--");
-          revTotal = bMonthInfo ? formatVND(bMonthInfo.revenue) : formatVND(hsMonth.revenue);
-          const iNum = bMonthInfo ? bMonthInfo.invoices : hsMonth.invoices;
-          const rNum = bMonthInfo ? bMonthInfo.revenue : hsMonth.revenue;
+          const iNum = bMonthInfo ? bMonthInfo.invoices : (hsMonth.invoices || 0);
+          const rNum = bMonthInfo ? bMonthInfo.revenue : (hsMonth.revenue || 0);
+          invCount = iNum.toLocaleString();
+          revTotal = formatVND(rNum);
           aovVal = iNum > 0 ? formatVND(Math.round(rNum / iNum)) : "--";
         } else if (hsYear) {
           const bYearInfo = (fBranch && hsYear.branches && hsYear.branches[fBranch]) ? hsYear.branches[fBranch] : null;
-          invCount = bYearInfo ? bYearInfo.invoices.toLocaleString() : (hsYear.invoices ? hsYear.invoices.toLocaleString() : "--");
-          revTotal = bYearInfo ? formatVND(bYearInfo.revenue) : formatVND(hsYear.revenue);
           const iNum = bYearInfo ? bYearInfo.invoices : (hsYear.invoices || 0);
           const rNum = bYearInfo ? bYearInfo.revenue : (hsYear.revenue || 0);
+          invCount = iNum.toLocaleString();
+          revTotal = formatVND(rNum);
           aovVal = iNum > 0 ? formatVND(Math.round(rNum / iNum)) : (formatVND(hsYear.avg_order_value) || "--");
         } else {
-          invCount = (completedOrders || 0).toLocaleString();
-          revTotal = formatVND(totalRevenue);
-          aovVal = completedOrders > 0 ? formatVND(Math.round(totalRevenue / completedOrders)) : "--";
+          invCount = "--";
+          revTotal = "--";
+          aovVal = "--";
         }
 
         tbody.innerHTML = `
