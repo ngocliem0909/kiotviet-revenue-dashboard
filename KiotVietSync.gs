@@ -532,3 +532,73 @@ function backfillKiotVietDates_(fromDateStr, toDateStr) {
     postCounts: postCounts
   };
 }
+
+/**
+ * Đối soát toàn bộ các tháng từ 01/2026 đến tháng hiện tại đối chiếu KiotViet API
+ */
+function auditAll2026Months_() {
+  const token = getAccessToken();
+  const cfg = getKiotConfig_();
+
+  const now = new Date();
+  const nowStr = Utilities.formatDate(now, 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd HH:mm:ss');
+
+  const monthRanges = [
+    { ym: '2026-01', from: '2026-01-01 00:00:00', to: '2026-01-31 23:59:59' },
+    { ym: '2026-02', from: '2026-02-01 00:00:00', to: '2026-02-28 23:59:59' },
+    { ym: '2026-03', from: '2026-03-01 00:00:00', to: '2026-03-31 23:59:59' },
+    { ym: '2026-04', from: '2026-04-01 00:00:00', to: '2026-04-30 23:59:59' },
+    { ym: '2026-05', from: '2026-05-01 00:00:00', to: '2026-05-31 23:59:59' },
+    { ym: '2026-06', from: '2026-06-01 00:00:00', to: '2026-06-30 23:59:59' },
+    { ym: '2026-07', from: '2026-07-01 00:00:00', to: '2026-07-31 23:59:59' },
+    { ym: '2026-08', from: '2026-08-01 00:00:00', to: '2026-08-31 23:59:59' },
+    { ym: '2026-09', from: '2026-09-01 00:00:00', to: '2026-09-30 23:59:59' },
+    { ym: '2026-10', from: '2026-10-01 00:00:00', to: nowStr }
+  ];
+
+  const results = [];
+
+  for (let mr of monthRanges) {
+    let kiotTotal = null;
+    let kiotError = null;
+    const url = 'https://public.kiotapi.com/invoices?pageSize=1' +
+      '&fromPurchaseDate=' + encodeURIComponent(mr.from) +
+      '&toPurchaseDate=' + encodeURIComponent(mr.to);
+
+    try {
+      const resp = UrlFetchApp.fetch(url, {
+        headers: { 'Retailer': cfg.retailer, 'Authorization': 'Bearer ' + token },
+        muteHttpExceptions: true
+      });
+      if (resp.getResponseCode() === 200) {
+        const d = JSON.parse(resp.getContentText());
+        kiotTotal = d.total || 0;
+      } else {
+        kiotError = 'HTTP ' + resp.getResponseCode();
+      }
+    } catch (e) {
+      kiotError = e.toString();
+    }
+
+    let sheetRows = null;
+    try {
+      const sh = (typeof getMonthSheetDynamic_ === 'function') ? getMonthSheetDynamic_(mr.ym) : null;
+      if (sh) {
+        sheetRows = Math.max(0, sh.getLastRow() - 1);
+      }
+    } catch (sErr) {}
+
+    results.push({
+      month: mr.ym,
+      from: mr.from,
+      to: mr.to,
+      kiotTotal: kiotTotal,
+      sheetRows: sheetRows,
+      kiotError: kiotError
+    });
+
+    Utilities.sleep(150);
+  }
+
+  return { success: true, auditedAt: nowStr, audit: results };
+}

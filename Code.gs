@@ -162,6 +162,18 @@ function doGet(e) {
     }
   }
 
+  // API Đối soát toàn bộ các tháng năm 2026 giữa KiotViet và Google Sheets
+  if (e && e.parameter && e.parameter.api === 'audit_2026') {
+    try {
+      var resAudit2026 = auditAll2026Months_();
+      return ContentService.createTextOutput(JSON.stringify(resAudit2026))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   // Kiểm tra quyền Quản trị cho các API tác động hệ thống
   function isAuthorizedAdminRequest_() {
     var uEmail = (Session.getActiveUser().getEmail() || '').trim().toLowerCase();
