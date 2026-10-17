@@ -63,18 +63,27 @@ function buildDailyReportMessage() {
   const displayDate = Utilities.formatDate(now, tz, 'dd/MM/yyyy');
   const monthLabel = ym.substring(5) + '/' + ym.substring(0, 4);
 
-  // Đọc dữ liệu từ file hóa đơn tháng hiện tại
-  const ssId = (ym === '2026-10') ? INVOICES_2026_10_ID : null;
+  // Đọc dữ liệu từ file hóa đơn tháng hiện tại (tự động theo tháng hiện tại và tương lai)
+  let sh = null;
+  if (ym === '2026-10') {
+    try { sh = SpreadsheetApp.openById(INVOICES_2026_10_ID).getSheetByName('Invoices'); } catch (e) {}
+  } else if (ym === '2026-09') {
+    try { sh = SpreadsheetApp.openById(INVOICES_2026_09_ID).getSheetByName('Invoices'); } catch (e) {}
+  }
+  // Nếu không có ID cố định, tìm động trong thư mục Drive KiotViet-HoaDon
+  if (!sh && typeof getOrCreateMonthSheet_ === 'function') {
+    try { sh = getOrCreateMonthSheet_(ym); } catch (e) {}
+  }
+
   let rows = [];
-  if (ssId) {
+  if (sh) {
     try {
-      const sh = SpreadsheetApp.openById(ssId).getSheetByName('Invoices');
       const lastRow = sh.getLastRow();
       if (lastRow > 1) {
         rows = sh.getRange(2, 1, lastRow - 1, 9).getValues();
       }
     } catch (e) {
-      Logger.log('Lỗi đọc sheet tháng: ' + e);
+      Logger.log('Lỗi đọc sheet tháng (' + ym + '): ' + e);
     }
   }
 

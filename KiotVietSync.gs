@@ -144,6 +144,7 @@ function syncHourly() {
     props.setProperty('LAST_SYNC', syncEnd.toISOString());
     props.setProperty('LAST_SYNC_SUCCESS_TIME', Utilities.formatDate(new Date(), 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd HH:mm:ss'));
     props.setProperty('LAST_SYNC_COUNT', String(invoices.length));
+    props.deleteProperty('LAST_SYNC_ERROR');
     Logger.log('Đồng bộ KiotViet thành công. LAST_SYNC=%s', syncEnd.toISOString());
     return { success: true, count: invoices.length, syncEnd: syncEnd.toISOString() };
   } catch (e) {

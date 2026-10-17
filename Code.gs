@@ -134,6 +134,20 @@ function doGet(e) {
     }
   }
 
+  // Kiểm tra quyền Quản trị cho các API tác động hệ thống
+  function isAuthorizedAdminRequest_() {
+    var uEmail = (Session.getActiveUser().getEmail() || '').trim().toLowerCase();
+    if (uEmail && ALLOWED_EMAILS.indexOf(uEmail) !== -1) return true;
+    var props = PropertiesService.getScriptProperties();
+    var secretToken = props.getProperty('ADMIN_SECRET_KEY');
+    if (!secretToken) {
+      secretToken = 'LT_SEC_' + Utilities.getUuid().replace(/-/g, '').substring(0, 16);
+      props.setProperty('ADMIN_SECRET_KEY', secretToken);
+    }
+    var reqKey = (e && e.parameter && (e.parameter.key || e.parameter.adminKey || e.parameter.secret)) || '';
+    return reqKey === secretToken;
+  }
+
   // 4. API Trạng Thái Hệ Thống & Tự Động Hóa
   if (e && e.parameter && e.parameter.api === 'system_status') {
     try {
@@ -141,6 +155,7 @@ function doGet(e) {
       var props = PropertiesService.getScriptProperties();
       var triggers = getTriggersStatus();
       var triggerHandlers = triggers.map(function(t) { return t.handler; });
+      var isAdmin = isAuthorizedAdminRequest_();
       var info = {
         triggers: {
           totalCount: triggers.length,
@@ -160,14 +175,19 @@ function doGet(e) {
         telegram: {
           configured: !!getTelegramConfig_().token,
           chatId: getTelegramConfig_().chatId || '530892002'
-        }
+        },
+        isAdmin: isAdmin
       };
+      if (isAdmin) {
+        info.adminKey = props.getProperty('ADMIN_SECRET_KEY') || '';
+      }
       var statusData = {
         success: true,
         status: info,
         triggers: info.triggers,
         kiot: info.kiot,
-        telegram: info.telegram
+        telegram: info.telegram,
+        adminKey: isAdmin ? (props.getProperty('ADMIN_SECRET_KEY') || '') : undefined
       };
       return ContentService.createTextOutput(JSON.stringify(statusData))
         .setMimeType(ContentService.MimeType.JSON);
@@ -177,29 +197,45 @@ function doGet(e) {
     }
   }
 
-  // 5. API Kích hoạt gửi thử Telegram
+  // 5. API Kích hoạt gửi thử Telegram (Admin Only)
   if (e && e.parameter && e.parameter.api === 'test_telegram') {
+    if (!isAuthorizedAdminRequest_()) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Yêu cầu quyền Quản trị viên hoặc Admin Secret Key.' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     var resTel = testTelegramReport();
     return ContentService.createTextOutput(JSON.stringify(resTel))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // 6. API Kích hoạt đồng bộ KiotViet ngay
+  // 6. API Kích hoạt đồng bộ KiotViet ngay (Admin Only)
   if (e && e.parameter && e.parameter.api === 'sync_now') {
+    if (!isAuthorizedAdminRequest_()) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Yêu cầu quyền Quản trị viên hoặc Admin Secret Key.' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     var resSync = syncHourly();
     return ContentService.createTextOutput(JSON.stringify(resSync))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // 7. API Kích hoạt cài đặt Triggers tự động
+  // 7. API Kích hoạt cài đặt Triggers tự động (Admin Only)
   if (e && e.parameter && e.parameter.api === 'setup_triggers') {
+    if (!isAuthorizedAdminRequest_()) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Yêu cầu quyền Quản trị viên hoặc Admin Secret Key.' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     var resTrig = setupAllTriggers();
     return ContentService.createTextOutput(JSON.stringify(resTrig))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // 8. API Lưu Cấu Hình KiotViet (Client ID / Secret / Retailer)
+  // 8. API Lưu Cấu Hình KiotViet (Client ID / Secret / Retailer) (Admin Only)
   if (e && e.parameter && e.parameter.api === 'save_kiot_config') {
+    if (!isAuthorizedAdminRequest_()) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Từ chối truy cập: Yêu cầu quyền Quản trị viên hoặc Admin Secret Key.' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     var cId = (e.parameter.clientId || '').trim();
     var cSec = (e.parameter.clientSecret || '').trim();
     var cRet = (e.parameter.retailer || 'leeandteevn').trim();
@@ -212,8 +248,12 @@ function doGet(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
 
-  // 9. API Lưu Cấu Hình Telegram (Bot Token / Chat ID)
+  // 9. API Lưu Cấu Hình Telegram (Bot Token / Chat ID) (Admin Only)
   if (e && e.parameter && e.parameter.api === 'save_telegram_config') {
+    if (!isAuthorizedAdminRequest_()) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Từ chối truy cập: Yêu cầu quyền Quản trị viên hoặc Admin Secret Key.' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
     var bTok = (e.parameter.botToken || '').trim();
     var cIdTele = (e.parameter.chatId || '530892002').trim();
     if (!bTok) {
@@ -346,11 +386,12 @@ function getRevenueReportData(filter) {
 
     if (needOct) {
       try {
-        var ssOct = SpreadsheetApp.openById(INVOICES_2026_10_ID);
-        var shOct = ssOct.getSheetByName('Invoices') || ssOct.getSheets()[0];
-        var lrOct = shOct.getLastRow();
-        if (lrOct > 1) {
-          rawValues = rawValues.concat(shOct.getRange(2, 1, lrOct - 1, 14).getValues());
+        var shOct = getMonthSheetDynamic_('2026-10');
+        if (shOct) {
+          var lrOct = shOct.getLastRow();
+          if (lrOct > 1) {
+            rawValues = rawValues.concat(shOct.getRange(2, 1, lrOct - 1, 14).getValues());
+          }
         }
       } catch (eOct) {
         console.warn('Lỗi đọc sheet tháng 10: ' + eOct.message);
@@ -359,11 +400,12 @@ function getRevenueReportData(filter) {
 
     if (needSep) {
       try {
-        var ssSep = SpreadsheetApp.openById(INVOICES_2026_09_ID);
-        var shSep = ssSep.getSheetByName('Invoices') || ssSep.getSheets()[0];
-        var lrSep = shSep.getLastRow();
-        if (lrSep > 1) {
-          rawValues = rawValues.concat(shSep.getRange(2, 1, lrSep - 1, 14).getValues());
+        var shSep = getMonthSheetDynamic_('2026-09');
+        if (shSep) {
+          var lrSep = shSep.getLastRow();
+          if (lrSep > 1) {
+            rawValues = rawValues.concat(shSep.getRange(2, 1, lrSep - 1, 14).getValues());
+          }
         }
       } catch (eSep) {
         console.warn('Lỗi đọc sheet tháng 9: ' + eSep.message);
@@ -564,25 +606,50 @@ function getRevenueReportData(filter) {
     };
   }
 }
+ 
+/**
+ * Lấy sheet hóa đơn theo tháng (tự động theo tháng hiện tại và tương lai)
+ */
+function getMonthSheetDynamic_(yearMonth) {
+  var tz = 'Asia/Ho_Chi_Minh';
+  var ym = yearMonth || Utilities.formatDate(new Date(), tz, 'yyyy-MM');
+  if (ym === '2026-10') {
+    try { return SpreadsheetApp.openById(INVOICES_2026_10_ID).getSheetByName('Invoices'); } catch (e) {}
+  }
+  if (ym === '2026-09') {
+    try { return SpreadsheetApp.openById(INVOICES_2026_09_ID).getSheetByName('Invoices'); } catch (e) {}
+  }
+  // Tìm động trong thư mục KiotViet-HoaDon trên Google Drive
+  if (typeof getOrCreateMonthSheet_ === 'function') {
+    try { return getOrCreateMonthSheet_(ym); } catch (e) {}
+  }
+  return null;
+}
 
 /**
- * Lấy danh sách hóa đơn tháng 10 mới nhất theo thời gian thực (READ ONLY)
+ * Lấy danh sách hóa đơn tháng mới nhất theo thời gian thực (READ ONLY)
  */
 function getFreshOctoberRecords() {
+  return getFreshCurrentMonthRecords();
+}
+
+function getFreshCurrentMonthRecords() {
   try {
     var userEmail = (Session.getActiveUser().getEmail() || '').trim().toLowerCase();
     if (userEmail && ALLOWED_EMAILS.indexOf(userEmail) === -1) {
       return { success: false, error: 'Tài khoản ' + userEmail + ' không có quyền truy cập.' };
     }
 
-    var ssOct = SpreadsheetApp.openById(INVOICES_2026_10_ID);
-    var shOct = ssOct.getSheetByName('Invoices') || ssOct.getSheets()[0];
-    var lrOct = shOct.getLastRow();
-    if (lrOct <= 1) {
+    var shCurrent = getMonthSheetDynamic_();
+    if (!shCurrent) {
+      return { success: true, count: 0, records: [] };
+    }
+    var lr = shCurrent.getLastRow();
+    if (lr <= 1) {
       return { success: true, count: 0, records: [] };
     }
 
-    var raw = shOct.getRange(2, 1, lrOct - 1, 14).getValues();
+    var raw = shCurrent.getRange(2, 1, lr - 1, 14).getValues();
     var records = [];
 
     for (var i = 0; i < raw.length; i++) {
@@ -644,7 +711,8 @@ function get2026MonthlySummary_() {
       var yr = Number(data[i][0]);
       var mo = Number(data[i][1]);
       var rev = Number(data[i][3]) || 0;
-      if (yr === 2026 && mo > 0) {
+      var curY = new Date().getFullYear();
+      if ((yr === 2026 || yr === curY) && mo > 0) {
         list.push({ label: 'Tháng ' + mo, monthNum: mo, revenue: rev });
       }
     }
