@@ -134,6 +134,34 @@ function doGet(e) {
     }
   }
 
+  // API Kiểm tra đối chiếu số lượng đơn KiotViet vs Google Sheet
+  if (e && e.parameter && e.parameter.api === 'kiot_audit') {
+    try {
+      var fromDate = (e.parameter.from || '2026-10-01 00:00:00').trim();
+      var toDate = (e.parameter.to || '2026-10-02 23:59:59').trim();
+      var resAudit = auditKiotVietAgainstSheet_(fromDate, toDate);
+      return ContentService.createTextOutput(JSON.stringify(resAudit))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  // API Backfill KiotViet cho một khoảng thời gian cụ thể
+  if (e && e.parameter && e.parameter.api === 'backfill') {
+    try {
+      var fromDate = (e.parameter.from || '2026-10-01 00:00:00').trim();
+      var toDate = (e.parameter.to || '2026-10-02 23:59:59').trim();
+      var resBackfill = backfillKiotVietDates_(fromDate, toDate);
+      return ContentService.createTextOutput(JSON.stringify(resBackfill))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   // Kiểm tra quyền Quản trị cho các API tác động hệ thống
   function isAuthorizedAdminRequest_() {
     var uEmail = (Session.getActiveUser().getEmail() || '').trim().toLowerCase();

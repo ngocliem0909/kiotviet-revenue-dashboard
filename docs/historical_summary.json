@@ -7554,9 +7554,9 @@
     },
     "2026": {
       "year": "2026",
-      "invoices": 56853,
-      "revenue": 33058184395.0,
-      "collected": 31087962836.0,
+      "invoices": 57542,
+      "revenue": 33478449395.0,
+      "collected": 31479342336.0,
       "cancelled": 153,
       "avg_order_value": 581468.0,
       "months": {
@@ -7606,9 +7606,9 @@
           "collected": 2767669650.0
         },
         "10": {
-          "invoices": 3041,
-          "revenue": 1822749250.0,
-          "collected": 1583971251.0
+          "invoices": 3730,
+          "revenue": 2243014250,
+          "collected": 1975350751
         }
       },
       "channels": {
@@ -61401,440 +61401,462 @@
       ]
     },
     "2026-10": {
-      "year": "2026",
-      "month": "10",
-      "invoices": 3041,
-      "revenue": 1822749250.0,
-      "collected": 1583971251.0,
-      "cancelled": 5,
+      "invoices": 3730,
+      "revenue": 2243014250,
+      "collected": 1975350751,
+      "cancelled": 6,
       "branches": {
         "CN 136 Ninh Kiều": {
-          "invoices": 248,
-          "revenue": 147129000.0,
-          "collected": 130694001.0,
+          "invoices": 295,
+          "revenue": 181218500.0,
+          "collected": 163903501.0,
           "channels": {
-            "Cửa hàng trực tiếp": 135054000.0,
-            "Zalo / Online COD": 12075000.0
+            "Cửa hàng trực tiếp": 167383500.0,
+            "Zalo / Online COD": 13835000.0
           },
           "sellers": {
-            "Lê Trần Thúy Duy": 57910000.0,
-            "Nguyễn Thị Diễm Mi": 70690000.0
+            "Lê Trần Thúy Duy": 76504500.0,
+            "Nguyễn Thị Diễm Mi": 86185000.0
           }
         },
         "88 Lê Văn Sỹ": {
-          "invoices": 303,
-          "revenue": 112259500.0,
-          "collected": 32737000.0,
+          "invoices": 357,
+          "revenue": 123555000.0,
+          "collected": 36892500.0,
           "channels": {
-            "TikTok Shop": 76310000.0,
-            "Zalo / Online COD": 13826500.0,
-            "Cửa hàng trực tiếp": 22123000.0
+            "TikTok Shop": 82520000.0,
+            "Zalo / Online COD": 14776500.0,
+            "Cửa hàng trực tiếp": 26258500.0
           },
           "sellers": {
-            "Mr Liêm": 75875000.0,
-            "LVS - Châu Đoan": 18877000.0,
-            "TX - Thảo Nghi": 3199500.0,
-            "NTB - Ngọc Lâm": 751500.0,
-            "252 - Bảo Khanh": 4495000.0,
-            "535 - Anh Thy": 1060000.0,
+            "Mr Liêm": 82085000.0,
+            "LVS - Châu Đoan": 19792500.0,
+            "TX - Thảo Nghi": 3754500.0,
+            "NTB - Ngọc Lâm": 1276500.0,
+            "252 - Bảo Khanh": 6465000.0,
+            "535 - Anh Thy": 2180000.0,
             "CQ - Ý Nhi": 7496500.0,
             "297NT - Nam Anh": 505000.0
           }
         },
         "CN Cần Thơ": {
-          "invoices": 343,
-          "revenue": 207888000.0,
-          "collected": 191161000.0,
+          "invoices": 416,
+          "revenue": 255961000.0,
+          "collected": 236919000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 206568000.0,
-            "Zalo / Online COD": 1320000.0
+            "Cửa hàng trực tiếp": 254301000.0,
+            "Zalo / Online COD": 1660000.0
           },
           "sellers": {
-            "Nguyễn Thị Như Ý": 88622000.0,
-            "Võ Thị Mỹ Nương": 61363500.0,
+            "Nguyễn Thị Như Ý": 114281000.0,
+            "Võ Thị Mỹ Nương": 83777500.0,
             "Lê Trần Thúy Duy": 3506500.0,
             "Nguyễn Thị Diễm Mi": 6470000.0,
             "Nguyễn Thị Cẩm Duyên": 12910000.0
           }
         },
         "CN Biên Hoà": {
-          "invoices": 78,
-          "revenue": 43182500.0,
-          "collected": 26805500.0,
+          "invoices": 87,
+          "revenue": 47972500.0,
+          "collected": 31195500.0,
           "channels": {
-            "Cửa hàng trực tiếp": 16954500.0,
-            "Zalo / Online COD": 26228000.0
+            "Cửa hàng trực tiếp": 19339500.0,
+            "Zalo / Online COD": 28633000.0
           },
           "sellers": {
-            "BH - Tiến Đạt": 32766000.0,
-            "Nhân viên hỗ trợ": 6292500.0,
+            "BH - Tiến Đạt": 35346000.0,
+            "Nhân viên hỗ trợ": 8502500.0,
             "BH - Linh Nhi": 4124000.0
           }
         },
         "84A Cống Quỳnh - Q.1": {
-          "invoices": 174,
-          "revenue": 105808500.0,
-          "collected": 99818500.0,
+          "invoices": 209,
+          "revenue": 126941000.0,
+          "collected": 120951000.0,
           "channels": {
-            "Zalo / Online COD": 23482000.0,
-            "Cửa hàng trực tiếp": 82326500.0
+            "Zalo / Online COD": 27179500.0,
+            "Cửa hàng trực tiếp": 99761500.0
           },
           "sellers": {
             "297NT - Nam Anh": 6225500.0,
-            "CQ - Ý Nhi": 38709000.0,
-            "CQ - Xuân Nhi": 51609000.0
+            "CQ - Ý Nhi": 42726500.0,
+            "CQ - Xuân Nhi": 68724000.0
           }
         },
         "CN Đà Lạt": {
-          "invoices": 165,
-          "revenue": 106684000.0,
-          "collected": 97754000.0,
+          "invoices": 199,
+          "revenue": 129138000.0,
+          "collected": 119168000.0,
           "channels": {
-            "Zalo / Online COD": 21933500.0,
-            "Cửa hàng trực tiếp": 84750500.0
+            "Zalo / Online COD": 25760000.0,
+            "Cửa hàng trực tiếp": 103378000.0
           },
           "sellers": {
-            "ĐL - Khánh Huyền": 60597500.0,
-            "ĐL - Hoàng Vy": 45326500.0
+            "ĐL - Khánh Huyền": 75006500.0,
+            "ĐL - Hoàng Vy": 53371500.0
           }
         },
         "CN Gia Lai": {
-          "invoices": 44,
-          "revenue": 28812000.0,
-          "collected": 28287000.0,
+          "invoices": 57,
+          "revenue": 37598000.0,
+          "collected": 37073000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 27997000.0,
-            "Zalo / Online COD": 815000.0
+            "Cửa hàng trực tiếp": 35443000.0,
+            "Zalo / Online COD": 2155000.0
           },
           "sellers": {
-            "NT Đạt": 24122000.0
+            "NT Đạt": 32908000.0
           }
         },
         "CN 42 Thái Thịnh": {
-          "invoices": 90,
-          "revenue": 62224000.0,
-          "collected": 60464000.0,
+          "invoices": 122,
+          "revenue": 83191500.0,
+          "collected": 80626500.0,
           "channels": {
-            "Cửa hàng trực tiếp": 53119000.0,
-            "Zalo / Online COD": 9105000.0
+            "Cửa hàng trực tiếp": 68686500.0,
+            "Zalo / Online COD": 14505000.0
           },
           "sellers": {
-            "Tạ Phương Nhi": 14836500.0,
-            "Lâm Việt Linh": 15652500.0,
-            "Quách Thị Bình": 25630000.0,
+            "Tạ Phương Nhi": 23144000.0,
+            "Lâm Việt Linh": 25457500.0,
+            "Quách Thị Bình": 28485000.0,
             "Thái Thịnh - Thùy Linh": 805000.0
           }
         },
         "252 Phan Đình Phùng": {
-          "invoices": 98,
-          "revenue": 72231000.0,
-          "collected": 59439000.0,
+          "invoices": 124,
+          "revenue": 85709000.0,
+          "collected": 69837000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 34165000.0,
-            "Zalo / Online COD": 38066000.0
+            "Cửa hàng trực tiếp": 40358000.0,
+            "Zalo / Online COD": 45351000.0
           },
           "sellers": {
-            "252 - Bảo Khanh": 37006000.0,
-            "252 - Hải Đăng": 30410000.0
+            "252 - Bảo Khanh": 44714000.0,
+            "252 - Hải Đăng": 36180000.0
           }
         },
         "CN Quang Trung": {
-          "invoices": 82,
-          "revenue": 53346000.0,
-          "collected": 52651000.0,
+          "invoices": 106,
+          "revenue": 68140500.0,
+          "collected": 67445500.0,
           "channels": {
-            "Zalo / Online COD": 8655000.0,
-            "Cửa hàng trực tiếp": 44691000.0
+            "Zalo / Online COD": 12210000.0,
+            "Cửa hàng trực tiếp": 55930500.0
           },
           "sellers": {
-            "TƯỜNG VÂN": 29230000.0,
-            "THANH TÚ": 17346000.0
+            "TƯỜNG VÂN": 38960000.0,
+            "THANH TÚ": 22410500.0
           }
         },
         "297 Nguyễn Trãi": {
-          "invoices": 125,
-          "revenue": 71974000.0,
-          "collected": 69394000.0,
+          "invoices": 160,
+          "revenue": 92519000.0,
+          "collected": 87924000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 49974500.0,
-            "Zalo / Online COD": 21999500.0
+            "Cửa hàng trực tiếp": 65504500.0,
+            "Zalo / Online COD": 27014500.0
           },
           "sellers": {
-            "297NT - Hồng Nhã": 32803500.0,
+            "297NT - Hồng Nhã": 34448500.0,
             "CQ - Xuân Nhi": 2796000.0,
-            "297NT - Nam Anh": 32894500.0
+            "297NT - Nam Anh": 51794500.0
           }
         },
         "CN 164 Phố Huế _ Hà Nội": {
-          "invoices": 110,
-          "revenue": 71172000.0,
-          "collected": 68882000.0,
+          "invoices": 128,
+          "revenue": 81778000.0,
+          "collected": 79043000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 65657000.0,
-            "Zalo / Online COD": 5515000.0
+            "Cửa hàng trực tiếp": 74883000.0,
+            "Zalo / Online COD": 6895000.0
           },
           "sellers": {
-            "Bùi Lê Hoàng Anh": 11189000.0,
-            "Lê Khánh Linh": 26863500.0,
-            "Bảo Nhi": 23130000.0,
-            "Thái Thịnh - Thùy Linh": 765000.0
+            "Bùi Lê Hoàng Anh": 13133500.0,
+            "Lê Khánh Linh": 32610000.0,
+            "Bảo Nhi": 23925000.0,
+            "Thái Thịnh - Thùy Linh": 765000.0,
+            "Nguyễn Thị Ánh Ngọc": 2120000.0
           }
         },
         "75 Ba Cu, Vũng Tàu": {
-          "invoices": 63,
-          "revenue": 36504500.0,
-          "collected": 30664500.0,
+          "invoices": 71,
+          "revenue": 41179500.0,
+          "collected": 34034500.0,
           "channels": {
-            "Cửa hàng trực tiếp": 20364000.0,
-            "Zalo / Online COD": 16140500.0
+            "Cửa hàng trực tiếp": 22814000.0,
+            "Zalo / Online COD": 18365500.0
           },
           "sellers": {
             "VT - Cẩm Tiên": 2231500.0,
-            "VT - Minh Cường": 23017500.0,
-            "Nhân viên hỗ trợ": 11255500.0
+            "VT - Minh Cường": 26887500.0,
+            "Nhân viên hỗ trợ": 12060500.0
           }
         },
         "99F Nguyễn Thái Bình": {
-          "invoices": 96,
-          "revenue": 56710500.0,
-          "collected": 53770500.0,
+          "invoices": 115,
+          "revenue": 66689500.0,
+          "collected": 63749500.0,
           "channels": {
-            "Zalo / Online COD": 24965000.0,
-            "Cửa hàng trực tiếp": 31745500.0
+            "Zalo / Online COD": 27080000.0,
+            "Cửa hàng trực tiếp": 39609500.0
           },
           "sellers": {
-            "NTB - Sơn Hà": 24934500.0,
-            "CQ - Ý Nhi": 4035000.0,
+            "NTB - Sơn Hà": 32623500.0,
+            "CQ - Ý Nhi": 4520000.0,
             "TX - Thảo Nghi": 1235000.0,
-            "NTB - Ngọc Lâm": 24486000.0
+            "NTB - Ngọc Lâm": 26291000.0
           }
         },
         "CN Long Xuyên": {
-          "invoices": 120,
-          "revenue": 80782000.0,
-          "collected": 73362000.0,
+          "invoices": 152,
+          "revenue": 100695500.0,
+          "collected": 93275500.0,
           "channels": {
-            "Cửa hàng trực tiếp": 75612000.0,
+            "Cửa hàng trực tiếp": 95525500.0,
             "Zalo / Online COD": 5170000.0
           },
           "sellers": {
-            "Tân Thanh Phong": 40464500.0,
-            "Phạm Thị Tuyết Nhi": 31983500.0
+            "Tân Thanh Phong": 50864000.0,
+            "Phạm Thị Tuyết Nhi": 41497500.0
           }
         },
         "535 CMT8 - Q.10": {
-          "invoices": 85,
-          "revenue": 48629500.0,
-          "collected": 37943000.0,
+          "invoices": 103,
+          "revenue": 60219500.0,
+          "collected": 48308000.0,
           "channels": {
-            "Zalo / Online COD": 22802500.0,
-            "Cửa hàng trực tiếp": 25827000.0
+            "Zalo / Online COD": 27847500.0,
+            "Cửa hàng trực tiếp": 32372000.0
           },
           "sellers": {
-            "535 - Xuân Thanh": 25063500.0,
-            "535 - Anh Thy": 21461000.0
+            "535 - Xuân Thanh": 34513500.0,
+            "535 - Anh Thy": 22821000.0,
+            "Nhân viên hỗ trợ": 780000.0
           }
         },
         "CN Đà Nẵng": {
-          "invoices": 132,
-          "revenue": 90722500.0,
-          "collected": 89372500.0,
+          "invoices": 172,
+          "revenue": 123801500.0,
+          "collected": 120411500.0,
           "channels": {
-            "Cửa hàng trực tiếp": 90722500.0
+            "Cửa hàng trực tiếp": 123801500.0
           },
           "sellers": {
-            "Hồng Vân ĐN": 28210000.0,
-            "Mai Linh ĐN": 30956500.0,
-            "ĐN - Nhật Hà": 22375000.0
+            "Hồng Vân ĐN": 40140000.0,
+            "Mai Linh ĐN": 40944500.0,
+            "ĐN - Nhật Hà": 33536000.0
           }
         },
         "17B Tú Xương": {
-          "invoices": 94,
-          "revenue": 58681500.0,
-          "collected": 46478500.0,
+          "invoices": 108,
+          "revenue": 67671500.0,
+          "collected": 54038500.0,
           "channels": {
-            "Cửa hàng trực tiếp": 26521000.0,
-            "Zalo / Online COD": 32160500.0
+            "Cửa hàng trực tiếp": 32686000.0,
+            "Zalo / Online COD": 34985500.0
           },
           "sellers": {
-            "TX - Thảo Nghi": 38368000.0,
-            "TX - Thanh Thảo": 19688500.0
+            "TX - Thảo Nghi": 46558000.0,
+            "TX - Thanh Thảo": 20488500.0
           }
         },
         "CN Nha Trang": {
-          "invoices": 104,
-          "revenue": 63261500.0,
-          "collected": 62201500.0,
+          "invoices": 137,
+          "revenue": 87670000.0,
+          "collected": 86610000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 63261500.0
+            "Cửa hàng trực tiếp": 87670000.0
           },
           "sellers": {
-            "Nguyễn Thị Anh Thư": 34363000.0,
-            "Trần Ánh Tuyết": 16494500.0,
+            "Nguyễn Thị Anh Thư": 57086500.0,
+            "Trần Ánh Tuyết": 17474500.0,
             "Nguyễn Dương Linh": 909000.0,
-            "Đinh Thị Thảo Lộc": 3705000.0
+            "Đinh Thị Thảo Lộc": 4410000.0
           }
         },
         "CN Cầu Giấy": {
-          "invoices": 126,
-          "revenue": 75534000.0,
-          "collected": 73749000.0,
+          "invoices": 170,
+          "revenue": 103819000.0,
+          "collected": 100864000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 73609000.0,
-            "Zalo / Online COD": 1925000.0
+            "Cửa hàng trực tiếp": 100574000.0,
+            "Zalo / Online COD": 3245000.0
           },
           "sellers": {
-            "Phạm Khánh Ly": 33023500.0,
-            "Nguyễn Thị Ánh Ngọc": 19167500.0,
-            "Lương khánh linh": 14453000.0
+            "Phạm Khánh Ly": 39268500.0,
+            "Nguyễn Thị Ánh Ngọc": 36377500.0,
+            "Lương khánh linh": 19283000.0
           }
         },
         "CN Kiên Giang": {
-          "invoices": 107,
-          "revenue": 62409000.0,
-          "collected": 58234000.0,
+          "invoices": 127,
+          "revenue": 74396000.0,
+          "collected": 71301000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 58749000.0,
+            "Cửa hàng trực tiếp": 70736000.0,
             "Zalo / Online COD": 3660000.0
           },
           "sellers": {
-            "Ngô Thị Huỳnh Như": 20355000.0,
-            "Danh Minh Thư": 35894000.0,
+            "Ngô Thị Huỳnh Như": 24540000.0,
+            "Danh Minh Thư": 43696000.0,
             "Nguyễn Thị Như Ý": 550000.0
           }
         },
         "161 Võ Văn Ngân - THỦ ĐỨC": {
-          "invoices": 91,
-          "revenue": 54340250.0,
-          "collected": 46075250.0,
+          "invoices": 119,
+          "revenue": 71262750.0,
+          "collected": 60497250.0,
           "channels": {
-            "Cửa hàng trực tiếp": 48480250.0,
-            "Zalo / Online COD": 5860000.0
+            "Cửa hàng trực tiếp": 63302750.0,
+            "Zalo / Online COD": 7960000.0
           },
           "sellers": {
-            "Dung 161 VVN": 10707250.0,
-            "Thu Thảo 161": 10011500.0,
-            "Diễm Thúy 161": 24061500.0
+            "Dung 161 VVN": 11959750.0,
+            "Thu Thảo 161": 12786500.0,
+            "Diễm Thúy 161": 36956500.0
           }
         },
         "CN Bình Dương": {
-          "invoices": 71,
-          "revenue": 50745000.0,
-          "collected": 43885000.0,
+          "invoices": 79,
+          "revenue": 56955000.0,
+          "collected": 49240000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 50745000.0
+            "Cửa hàng trực tiếp": 56955000.0
           },
           "sellers": {
-            "Bội Tuyền - BD": 34355000.0,
-            "Lee&Tee Bình Dương": 9530000.0
+            "Bội Tuyền - BD": 38020000.0,
+            "Lee&Tee Bình Dương": 12075000.0
           }
         },
         "CN HUẾ": {
-          "invoices": 26,
-          "revenue": 16770000.0,
-          "collected": 13560000.0,
+          "invoices": 33,
+          "revenue": 20420000.0,
+          "collected": 17210000.0,
           "channels": {
-            "Cửa hàng trực tiếp": 15100000.0,
+            "Cửa hàng trực tiếp": 18750000.0,
             "Zalo / Online COD": 1670000.0
           },
           "sellers": {
-            "Hồ Thị Tố Nga": 785000.0,
+            "Hồ Thị Tố Nga": 1250000.0,
             "Huỳnh Phạm Tố Trinh": 3855000.0,
-            "Nguyễn Thị Bích Ngân": 2230000.0,
-            "Đoàn Thị Phương": 4775000.0,
-            "Huỳnh Tấn Nhi": 1380000.0
+            "Nguyễn Thị Bích Ngân": 3945000.0,
+            "Đoàn Thị Phương": 5610000.0,
+            "Huỳnh Tấn Nhi": 2015000.0
           }
         },
         "CN Bình Thạnh": {
-          "invoices": 66,
-          "revenue": 44948500.0,
-          "collected": 36588500.0,
+          "invoices": 84,
+          "revenue": 54512500.0,
+          "collected": 44832500.0,
           "channels": {
-            "Cửa hàng trực tiếp": 34208500.0,
-            "Zalo / Online COD": 10740000.0
+            "Cửa hàng trực tiếp": 43047500.0,
+            "Zalo / Online COD": 11465000.0
           },
           "sellers": {
-            "Huyền Vy 186G": 7804500.0,
-            "tranthimy": 18943500.0,
-            "Ngọc My - 186G": 6553500.0,
+            "Huyền Vy 186G": 9084500.0,
+            "tranthimy": 23362000.0,
+            "Ngọc My - 186G": 10419000.0,
             "958CMT8 - Phạm Hồng Nhiên": 8160000.0
           }
         }
       },
       "channels": {
         "Cửa hàng trực tiếp": {
-          "invoices": 2349,
-          "revenue": 1438325250.0
+          "invoices": 2911,
+          "revenue": 1799071250.0
         },
         "TikTok Shop": {
-          "invoices": 212,
-          "revenue": 76310000.0
+          "invoices": 251,
+          "revenue": 82520000.0
         },
         "Zalo / Online COD": {
-          "invoices": 480,
-          "revenue": 308114000.0
+          "invoices": 568,
+          "revenue": 361423000.0
         }
       },
       "top_sellers": [
         {
           "seller": "Nguyễn Thị Như Ý",
-          "revenue": 89172000.0,
-          "invoices": 151,
-          "branch": "CN Cần Thơ"
+          "revenue": 114831000.0
         },
         {
           "seller": "Nguyễn Thị Diễm Mi",
-          "revenue": 77160000.0,
-          "invoices": 129,
-          "branch": "CN 136 Ninh Kiều"
-        },
-        {
-          "seller": "Mr Liêm",
-          "revenue": 75875000.0,
-          "invoices": 132,
-          "branch": "88 Lê Văn Sỹ"
-        },
-        {
-          "seller": "Lê Trần Thúy Duy",
-          "revenue": 61416500.0,
-          "invoices": 105,
-          "branch": "CN 136 Ninh Kiều"
+          "revenue": 92655000.0
         },
         {
           "seller": "Võ Thị Mỹ Nương",
-          "revenue": 61363500.0,
-          "invoices": 100,
-          "branch": "CN Cần Thơ"
+          "revenue": 83777500.0
+        },
+        {
+          "seller": "Mr Liêm",
+          "revenue": 82085000.0
+        },
+        {
+          "seller": "Lê Trần Thúy Duy",
+          "revenue": 80011000.0
         },
         {
           "seller": "ĐL - Khánh Huyền",
-          "revenue": 60597500.0,
-          "invoices": 84,
-          "branch": "CN Đà Lạt"
+          "revenue": 75006500.0
         },
         {
           "seller": "CQ - Xuân Nhi",
-          "revenue": 54405000.0,
-          "invoices": 86,
-          "branch": "297 Nguyễn Trãi"
+          "revenue": 71520000.0
+        },
+        {
+          "seller": "297NT - Nam Anh",
+          "revenue": 58525000.0
+        },
+        {
+          "seller": "Nguyễn Thị Anh Thư",
+          "revenue": 57086500.0
         },
         {
           "seller": "CQ - Ý Nhi",
-          "revenue": 50240500.0,
-          "invoices": 84,
-          "branch": "99F Nguyễn Thái Bình"
+          "revenue": 54743000.0
+        }
+      ],
+      "top_branches": [
+        {
+          "branch": "CN Cần Thơ",
+          "revenue": 255961000.0
         },
         {
-          "seller": "ĐL - Hoàng Vy",
-          "revenue": 45326500.0,
-          "invoices": 79,
-          "branch": "CN Đà Lạt"
+          "branch": "CN 136 Ninh Kiều",
+          "revenue": 181218500.0
         },
         {
-          "seller": "TX - Thảo Nghi",
-          "revenue": 42802500.0,
-          "invoices": 67,
-          "branch": "88 Lê Văn Sỹ"
+          "branch": "CN Đà Lạt",
+          "revenue": 129138000.0
+        },
+        {
+          "branch": "84A Cống Quỳnh - Q.1",
+          "revenue": 126941000.0
+        },
+        {
+          "branch": "CN Đà Nẵng",
+          "revenue": 123801500.0
+        },
+        {
+          "branch": "88 Lê Văn Sỹ",
+          "revenue": 123555000.0
+        },
+        {
+          "branch": "CN Cầu Giấy",
+          "revenue": 103819000.0
+        },
+        {
+          "branch": "CN Long Xuyên",
+          "revenue": 100695500.0
+        },
+        {
+          "branch": "297 Nguyễn Trãi",
+          "revenue": 92519000.0
+        },
+        {
+          "branch": "CN Nha Trang",
+          "revenue": 87670000.0
         }
       ]
     }
@@ -81136,14 +81158,14 @@
       "collected": 108056000.0
     },
     "2026-10-01": {
-      "invoices": 23,
-      "revenue": 12934000.0,
-      "collected": 9844000.0
+      "invoices": 192,
+      "revenue": 112175000.0,
+      "collected": 104585000.0
     },
     "2026-10-02": {
-      "invoices": 76,
-      "revenue": 47648500.0,
-      "collected": 35248500.0
+      "invoices": 230,
+      "revenue": 142731000.0,
+      "collected": 128500500.0
     },
     "2026-10-04": {
       "invoices": 159,
@@ -81206,9 +81228,14 @@
       "collected": 122012500.0
     },
     "2026-10-16": {
-      "invoices": 226,
-      "revenue": 129579500.0,
-      "collected": 104799500.0
+      "invoices": 287,
+      "revenue": 168094500.0,
+      "collected": 141829500.0
+    },
+    "2026-10-17": {
+      "invoices": 305,
+      "revenue": 187426500.0,
+      "collected": 166356500.0
     }
   }
 }

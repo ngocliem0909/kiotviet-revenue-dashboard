@@ -215,7 +215,7 @@ function upsertToMonthlySheets(invoices) {
   });
 
   Object.keys(groups).forEach(ym => {
-    const sheet = getOrCreateMonthSheet_(ym);
+    const sheet = (typeof getMonthSheetDynamic_ === 'function' ? getMonthSheetDynamic_(ym) : null) || getOrCreateMonthSheet_(ym);
     if (sheet) {
       upsertRows_(sheet, groups[ym]);
       Logger.log('%s: Đã cập nhật %d hóa đơn', ym, groups[ym].length);
@@ -253,27 +253,42 @@ function getOrCreateFolder_(name, parent) {
 function upsertRows_(sheet, invoices) {
   const lastRow = sheet.getLastRow();
   const idMap = {};
+  let existingRows = [];
+
   if (lastRow > 1) {
-    const ids = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
-    ids.forEach((r, i) => { idMap[String(r[0])] = i + 2; });
+    existingRows = sheet.getRange(2, 1, lastRow - 1, INVOICE_COLUMNS.length).getValues();
+    for (let i = 0; i < existingRows.length; i++) {
+      const idVal = String(existingRows[i][0]);
+      if (idVal) idMap[idVal] = i;
+    }
   }
-  const toAppend = [];
-  const toUpdate = [];
+
+  let appendCount = 0;
+  let updateCount = 0;
+  const newAppendRows = [];
+
   invoices.forEach(inv => {
     const row = invoiceToRow_(inv);
-    const rowNum = idMap[String(inv.id)];
-    if (rowNum) {
-      toUpdate.push({ row: rowNum, values: row });
+    const idKey = String(inv.id);
+    if (idMap.hasOwnProperty(idKey)) {
+      const idx = idMap[idKey];
+      existingRows[idx] = row;
+      updateCount++;
     } else {
-      toAppend.push(row);
+      newAppendRows.push(row);
+      appendCount++;
     }
   });
-  if (toAppend.length > 0) {
-    sheet.getRange(lastRow + 1, 1, toAppend.length, INVOICE_COLUMNS.length).setValues(toAppend);
+
+  if (updateCount > 0 && existingRows.length > 0) {
+    sheet.getRange(2, 1, existingRows.length, INVOICE_COLUMNS.length).setValues(existingRows);
   }
-  toUpdate.forEach(u => {
-    sheet.getRange(u.row, 1, 1, INVOICE_COLUMNS.length).setValues([u.values]);
-  });
+  if (newAppendRows.length > 0) {
+    const startAppendRow = sheet.getLastRow() + 1;
+    sheet.getRange(startAppendRow, 1, newAppendRows.length, INVOICE_COLUMNS.length).setValues(newAppendRows);
+  }
+
+  return { totalInvoices: invoices.length, appended: appendCount, updated: updateCount };
 }
 
 function invoiceToRow_(inv) {
@@ -364,4 +379,156 @@ function refreshCurrentSummary_() {
       dSh.appendRow([todayStr, dInv, dRev, dCol, nowStr]);
     }
   }
+}
+
+/**
+ * Đối chiếu số lượng đơn KiotViet vs Google Sheet cho một khoảng thời gian
+ */
+function auditKiotVietAgainstSheet_(fromDateStr, toDateStr) {
+  const token = getAccessToken();
+  const cfg = getKiotConfig_();
+
+  let fDate = String(fromDateStr || '2026-10-01').trim();
+  let tDate = String(toDateStr || '2026-10-02').trim();
+  if (fDate.length === 10) fDate += ' 00:00:00';
+  if (tDate.length === 10) tDate += ' 23:59:59';
+
+  const testFormats = [
+    { from: fDate, to: tDate, label: 'space' },
+    { from: fDate.replace(' ', 'T'), to: tDate.replace(' ', 'T'), label: 'ISO-T' }
+  ];
+
+  let bestData = null;
+  let usedUrl = '';
+  let statusLog = [];
+
+  for (let tf of testFormats) {
+    const url = 'https://public.kiotapi.com/invoices?pageSize=1' +
+      '&fromPurchaseDate=' + encodeURIComponent(tf.from) +
+      '&toPurchaseDate=' + encodeURIComponent(tf.to);
+    try {
+      const resp = UrlFetchApp.fetch(url, {
+        headers: { 'Retailer': cfg.retailer, 'Authorization': 'Bearer ' + token },
+        muteHttpExceptions: true
+      });
+      statusLog.push({ format: tf.label, code: resp.getResponseCode(), body: resp.getContentText().substring(0, 150) });
+      if (resp.getResponseCode() === 200) {
+        bestData = JSON.parse(resp.getContentText());
+        usedUrl = url;
+        break;
+      }
+    } catch (e) {
+      statusLog.push({ format: tf.label, error: e.toString() });
+    }
+  }
+
+  // Đếm số lượng hiện có trong Sheet Tháng 10
+  const sh10 = (typeof getMonthSheetDynamic_ === 'function') ? getMonthSheetDynamic_('2026-10') : null;
+  let sheetCounts = {};
+  if (sh10 && sh10.getLastRow() > 1) {
+    const vals = sh10.getRange(2, 3, sh10.getLastRow() - 1, 1).getValues();
+    vals.forEach(r => {
+      const ds = (typeof extractDateStr_ === 'function') ? extractDateStr_(r[0]) : String(r[0]).substring(0, 10);
+      if (ds && ds >= fDate.substring(0, 10) && ds <= tDate.substring(0, 10)) {
+        sheetCounts[ds] = (sheetCounts[ds] || 0) + 1;
+      }
+    });
+  }
+
+  return {
+    success: true,
+    range: { from: fDate, to: tDate },
+    kiotTotal: bestData ? bestData.total : null,
+    sheetCountsInTargetRange: sheetCounts,
+    statusLog: statusLog
+  };
+}
+
+/**
+ * Backfill hóa đơn từ KiotViet API vào Google Sheet
+ */
+function backfillKiotVietDates_(fromDateStr, toDateStr) {
+  const token = getAccessToken();
+  const cfg = getKiotConfig_();
+
+  let fDate = String(fromDateStr || '2026-10-01').trim();
+  let tDate = String(toDateStr || '2026-10-02').trim();
+  if (fDate.length === 10) fDate += ' 00:00:00';
+  if (tDate.length === 10) tDate += ' 23:59:59';
+
+  const allInvoices = [];
+  let currentItem = 0;
+  const pageSize = 100;
+  let totalKiot = 0;
+
+  while (true) {
+    const url = 'https://public.kiotapi.com/invoices?' +
+      'pageSize=' + pageSize +
+      '&currentItem=' + currentItem +
+      '&fromPurchaseDate=' + encodeURIComponent(fDate) +
+      '&toPurchaseDate=' + encodeURIComponent(tDate);
+
+    const resp = UrlFetchApp.fetch(url, {
+      headers: { 'Retailer': cfg.retailer, 'Authorization': 'Bearer ' + token },
+      muteHttpExceptions: true
+    });
+
+    if (resp.getResponseCode() !== 200) {
+      throw new Error('Lỗi KiotViet API (' + resp.getResponseCode() + '): ' + resp.getContentText().substring(0, 200));
+    }
+
+    const data = JSON.parse(resp.getContentText());
+    totalKiot = data.total || 0;
+    const batch = data.data || [];
+    for (let i = 0; i < batch.length; i++) allInvoices.push(batch[i]);
+
+    if (allInvoices.length >= totalKiot || batch.length === 0) break;
+    currentItem += pageSize;
+    Utilities.sleep(250);
+  }
+
+  // Phân nhóm theo tháng
+  const groups = {};
+  allInvoices.forEach(inv => {
+    const pd = String(inv.purchaseDate || '');
+    const ym = pd.substring(0, 7);
+    if (/^\d{4}-\d{2}$/.test(ym)) {
+      (groups[ym] = groups[ym] || []).push(inv);
+    }
+  });
+
+  const upsertStats = {};
+  Object.keys(groups).forEach(ym => {
+    const sheet = (typeof getMonthSheetDynamic_ === 'function' ? getMonthSheetDynamic_(ym) : null) || getOrCreateMonthSheet_(ym);
+    if (sheet) {
+      const stats = upsertRows_(sheet, groups[ym]);
+      upsertStats[ym] = stats;
+    }
+  });
+
+  try {
+    refreshCurrentSummary_();
+  } catch (e) {}
+
+  // Đếm lại số lượng hóa đơn theo ngày trong tháng 10 sau khi backfill
+  const sh10 = (typeof getMonthSheetDynamic_ === 'function') ? getMonthSheetDynamic_('2026-10') : null;
+  const postCounts = {};
+  if (sh10 && sh10.getLastRow() > 1) {
+    const vals = sh10.getRange(2, 3, sh10.getLastRow() - 1, 1).getValues();
+    vals.forEach(r => {
+      const ds = (typeof extractDateStr_ === 'function') ? extractDateStr_(r[0]) : String(r[0]).substring(0, 10);
+      if (ds && ds >= fDate.substring(0, 10) && ds <= tDate.substring(0, 10)) {
+        postCounts[ds] = (postCounts[ds] || 0) + 1;
+      }
+    });
+  }
+
+  return {
+    success: true,
+    range: { from: fDate, to: tDate },
+    kiotTotal: totalKiot,
+    invoicesFetched: allInvoices.length,
+    upsertStats: upsertStats,
+    postCounts: postCounts
+  };
 }
