@@ -1553,12 +1553,16 @@
       }
 
       // 2. Chế độ Tổng hợp lịch sử (Historical Summary):
-      // Áp dụng khi chọn Năm (2016-2026) hoặc kỳ trong quá khứ trước tháng 9/2026
+      // Áp dụng khi chọn Năm (2016-2026), chọn Tháng trong quá khứ (< tháng hiện tại), hoặc khi không có dữ liệu chi tiết
       const hs = window.HISTORICAL_SUMMARY;
+      const curMonthKey = (typeof getVietnamTodayStr === "function" ? getVietnamTodayStr() : "2026-10-17").slice(0, 7);
       const useHistorical = hs && (
         selectedYear !== null || // Bất kỳ năm nào (kể cả 2026, 2025...) dù lọc chi nhánh hay không
-        (selectedMonthKey !== null && selectedMonthKey < "2026-09") || // Bất kỳ tháng nào trước tháng 9/2026
-        (filteredRows.length === 0 && fStart && fStart < "2026-09-01") // Bất kỳ kỳ nào trước tháng 9/2026
+        (selectedMonthKey !== null && selectedMonthKey < curMonthKey) || // Bất kỳ tháng nào trước tháng hiện tại (kể cả Tháng 9/2026)
+        (filteredRows.length === 0 && (
+          (selectedMonthKey && hs.monthly && hs.monthly[selectedMonthKey]) ||
+          (fStart && fStart < curMonthKey + "-01")
+        ))
       );
 
       let totalRevenue = 0, totalCollected = 0, completedOrders = 0, processingOrders = 0, cancelledOrders = 0;
@@ -2180,10 +2184,28 @@
           }
         }
 
-        const bYearInfo = (hsYear && fBranch && hsYear.branches && hsYear.branches[fBranch]) ? hsYear.branches[fBranch] : null;
-        const invCount = bYearInfo ? bYearInfo.invoices.toLocaleString() : (hsYear ? hsYear.invoices.toLocaleString() : "--");
-        const revTotal = bYearInfo ? formatVND(bYearInfo.revenue) : (hsYear ? formatVND(hsYear.revenue) : "--");
-        const aovVal = bYearInfo ? formatVND(Math.round(bYearInfo.revenue / bYearInfo.invoices)) : (hsYear ? formatVND(hsYear.avg_order_value) : "--");
+        const hsMonth = (selectedMonthKey && window.HISTORICAL_SUMMARY && window.HISTORICAL_SUMMARY.monthly) ? window.HISTORICAL_SUMMARY.monthly[selectedMonthKey] : null;
+        let invCount = "--", revTotal = "--", aovVal = "--";
+
+        if (hsMonth) {
+          const bMonthInfo = (fBranch && hsMonth.branches) ? hsMonth.branches[fBranch] : null;
+          invCount = bMonthInfo ? bMonthInfo.invoices.toLocaleString() : (hsMonth.invoices ? hsMonth.invoices.toLocaleString() : "--");
+          revTotal = bMonthInfo ? formatVND(bMonthInfo.revenue) : formatVND(hsMonth.revenue);
+          const iNum = bMonthInfo ? bMonthInfo.invoices : hsMonth.invoices;
+          const rNum = bMonthInfo ? bMonthInfo.revenue : hsMonth.revenue;
+          aovVal = iNum > 0 ? formatVND(Math.round(rNum / iNum)) : "--";
+        } else if (hsYear) {
+          const bYearInfo = (fBranch && hsYear.branches && hsYear.branches[fBranch]) ? hsYear.branches[fBranch] : null;
+          invCount = bYearInfo ? bYearInfo.invoices.toLocaleString() : (hsYear.invoices ? hsYear.invoices.toLocaleString() : "--");
+          revTotal = bYearInfo ? formatVND(bYearInfo.revenue) : formatVND(hsYear.revenue);
+          const iNum = bYearInfo ? bYearInfo.invoices : (hsYear.invoices || 0);
+          const rNum = bYearInfo ? bYearInfo.revenue : (hsYear.revenue || 0);
+          aovVal = iNum > 0 ? formatVND(Math.round(rNum / iNum)) : (formatVND(hsYear.avg_order_value) || "--");
+        } else {
+          invCount = (completedOrders || 0).toLocaleString();
+          revTotal = formatVND(totalRevenue);
+          aovVal = completedOrders > 0 ? formatVND(Math.round(totalRevenue / completedOrders)) : "--";
+        }
 
         tbody.innerHTML = `
           <tr>
