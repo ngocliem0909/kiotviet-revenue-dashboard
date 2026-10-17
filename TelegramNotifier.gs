@@ -96,8 +96,8 @@ function buildDailyReportMessage() {
     const rawDate = r[2];
     let pdStr = '';
     if (Object.prototype.toString.call(rawDate) === '[object Date]') {
-      // Dùng Etc/GMT vì giờ trong Google Sheet đã là giờ VN, tránh cộng 7 tiếng làm trôi đơn tối sang sáng hôm sau
-      pdStr = Utilities.formatDate(rawDate, 'Etc/GMT', 'yyyy-MM-dd');
+      // Dùng Asia/Ho_Chi_Minh để trích xuất chuẩn ngày Việt Nam cho các đơn hàng sáng sớm
+      pdStr = Utilities.formatDate(rawDate, 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd');
     } else {
       pdStr = String(rawDate || '').substring(0, 10);
     }

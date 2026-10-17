@@ -217,6 +217,12 @@ function upsertToMonthlySheets(invoices) {
   Object.keys(groups).forEach(ym => {
     const sheet = (typeof getMonthSheetDynamic_ === 'function' ? getMonthSheetDynamic_(ym) : null) || getOrCreateMonthSheet_(ym);
     if (sheet) {
+      try {
+        const ssParent = sheet.getParent();
+        if (ssParent.getSpreadsheetTimeZone() !== 'Asia/Ho_Chi_Minh') {
+          ssParent.setSpreadsheetTimeZone('Asia/Ho_Chi_Minh');
+        }
+      } catch (tzErr) {}
       upsertRows_(sheet, groups[ym]);
       Logger.log('%s: Đã cập nhật %d hóa đơn', ym, groups[ym].length);
     }
@@ -425,14 +431,54 @@ function auditKiotVietAgainstSheet_(fromDateStr, toDateStr) {
   // Đếm số lượng hiện có trong Sheet Tháng 10
   const sh10 = (typeof getMonthSheetDynamic_ === 'function') ? getMonthSheetDynamic_('2026-10') : null;
   let sheetCounts = {};
+  let diagnostic = null;
   if (sh10 && sh10.getLastRow() > 1) {
-    const vals = sh10.getRange(2, 3, sh10.getLastRow() - 1, 1).getValues();
-    vals.forEach(r => {
-      const ds = (typeof extractDateStr_ === 'function') ? extractDateStr_(r[0]) : String(r[0]).substring(0, 10);
+    try {
+      const ssParent = sh10.getParent();
+      if (ssParent.getSpreadsheetTimeZone() !== 'Asia/Ho_Chi_Minh') {
+        ssParent.setSpreadsheetTimeZone('Asia/Ho_Chi_Minh');
+      }
+    } catch (tzErr) {}
+    const rawData = sh10.getRange(2, 1, sh10.getLastRow() - 1, 3).getValues(); // col 1: ID, col 2: Code, col 3: Date
+    let dateCount = 0;
+    let stringCount = 0;
+    let sampleDateRows = [];
+
+    rawData.forEach(r => {
+      const idVal = r[0];
+      const codeVal = r[1];
+      const cellVal = r[2];
+      const isDate = (cellVal instanceof Date);
+      if (isDate) dateCount++;
+      else stringCount++;
+
+      const ds = (typeof extractDateStr_ === 'function') ? extractDateStr_(cellVal) : String(cellVal).substring(0, 10);
       if (ds && ds >= fDate.substring(0, 10) && ds <= tDate.substring(0, 10)) {
         sheetCounts[ds] = (sheetCounts[ds] || 0) + 1;
       }
+
+      // Check sample rows for HD855363 or around Oct 15-16
+      if (codeVal === 'HD855363' || codeVal === 'HD855469' || codeVal === 'HD855362' || codeVal === 'HD855624') {
+        sampleDateRows.push({
+          code: codeVal,
+          isDate: isDate,
+          rawStr: String(cellVal),
+          dsExtracted: ds,
+          fmtGmt: isDate ? Utilities.formatDate(cellVal, 'Etc/GMT', 'yyyy-MM-dd HH:mm:ss') : null,
+          fmtVn: isDate ? Utilities.formatDate(cellVal, 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd HH:mm:ss') : null,
+          fmtLa: isDate ? Utilities.formatDate(cellVal, 'America/Los_Angeles', 'yyyy-MM-dd HH:mm:ss') : null
+        });
+      }
     });
+
+    diagnostic = {
+      ssTimezone: sh10.getParent().getSpreadsheetTimeZone(),
+      scriptTimezone: Session.getScriptTimeZone(),
+      totalRows: rawData.length,
+      dateCount: dateCount,
+      stringCount: stringCount,
+      samples: sampleDateRows
+    };
   }
 
   return {
@@ -440,6 +486,7 @@ function auditKiotVietAgainstSheet_(fromDateStr, toDateStr) {
     range: { from: fDate, to: tDate },
     kiotTotal: bestData ? bestData.total : null,
     sheetCountsInTargetRange: sheetCounts,
+    diagnostic: diagnostic,
     statusLog: statusLog
   };
 }
@@ -501,6 +548,12 @@ function backfillKiotVietDates_(fromDateStr, toDateStr) {
   Object.keys(groups).forEach(ym => {
     const sheet = (typeof getMonthSheetDynamic_ === 'function' ? getMonthSheetDynamic_(ym) : null) || getOrCreateMonthSheet_(ym);
     if (sheet) {
+      try {
+        const ssParent = sheet.getParent();
+        if (ssParent.getSpreadsheetTimeZone() !== 'Asia/Ho_Chi_Minh') {
+          ssParent.setSpreadsheetTimeZone('Asia/Ho_Chi_Minh');
+        }
+      } catch (tzErr) {}
       const stats = upsertRows_(sheet, groups[ym]);
       upsertStats[ym] = stats;
     }

@@ -7607,8 +7607,8 @@
         },
         "10": {
           "invoices": 3730,
-          "revenue": 2243014250,
-          "collected": 1975350751
+          "revenue": 2243014250.0,
+          "collected": 1999779250.0
         }
       },
       "channels": {
@@ -61402,8 +61402,8 @@
     },
     "2026-10": {
       "invoices": 3730,
-      "revenue": 2243014250,
-      "collected": 1975350751,
+      "revenue": 2243014250.0,
+      "collected": 1999779250.0,
       "cancelled": 6,
       "branches": {
         "CN 136 Ninh Kiều": {
@@ -81155,7 +81155,7 @@
     "2026-10-03": {
       "invoices": 209,
       "revenue": 120931000.0,
-      "collected": 108056000.0
+      "collected": 110606000.0
     },
     "2026-10-01": {
       "invoices": 192,
@@ -81170,57 +81170,57 @@
     "2026-10-04": {
       "invoices": 159,
       "revenue": 103680500.0,
-      "collected": 97275500.0
+      "collected": 99585500.0
     },
     "2026-10-05": {
       "invoices": 194,
       "revenue": 117751500.0,
-      "collected": 103371500.0
+      "collected": 108321500.0
     },
     "2026-10-06": {
       "invoices": 166,
       "revenue": 98639500.0,
-      "collected": 89079500.0
+      "collected": 89544500.0
     },
     "2026-10-07": {
       "invoices": 183,
       "revenue": 114271000.0,
-      "collected": 104996000.0
+      "collected": 105191000.0
     },
     "2026-10-08": {
       "invoices": 191,
       "revenue": 110024500.0,
-      "collected": 96915500.0
+      "collected": 97510500.0
     },
     "2026-10-09": {
       "invoices": 260,
       "revenue": 149849250.0,
-      "collected": 129019250.0
+      "collected": 131139250.0
     },
     "2026-10-10": {
       "invoices": 315,
       "revenue": 183638000.0,
-      "collected": 149684501.0
+      "collected": 154908000.0
     },
     "2026-10-11": {
       "invoices": 253,
       "revenue": 157562500.0,
-      "collected": 137626000.0
+      "collected": 140861000.0
     },
     "2026-10-12": {
       "invoices": 188,
       "revenue": 111789500.0,
-      "collected": 95879500.0
+      "collected": 96424500.0
     },
     "2026-10-13": {
       "invoices": 173,
       "revenue": 104110500.0,
-      "collected": 91467500.0
+      "collected": 93202500.0
     },
     "2026-10-14": {
       "invoices": 198,
       "revenue": 121361000.0,
-      "collected": 108696000.0
+      "collected": 109201000.0
     },
     "2026-10-15": {
       "invoices": 227,

@@ -392,10 +392,8 @@ function normalizeStatus_(statusVal, rawStatus) {
 function extractDateStr_(val) {
   if (!val) return '';
   if (val instanceof Date) {
-    // Spreadsheet có TimeZone là Etc/GMT nên các trường thời gian từ KiotViet (giờ VN)
-    // được lưu dưới dạng giá trị ngày/giờ nguyên bản trong GMT.
-    // Dùng Etc/GMT để trích xuất đúng ngày (YYYY-MM-DD), tránh bị cộng thêm 7 tiếng làm trôi đơn buổi tối sang ngày hôm sau!
-    return Utilities.formatDate(val, 'Etc/GMT', 'yyyy-MM-dd');
+    // Luôn định dạng theo giờ Việt Nam (Asia/Ho_Chi_Minh) để đảm bảo các đơn hàng sáng sớm (00:00 - 07:00) không bị trôi về ngày hôm trước
+    return Utilities.formatDate(val, 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd');
   }
   var s = String(val).trim();
   if (s.length >= 10) {
