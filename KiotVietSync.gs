@@ -534,36 +534,36 @@ function backfillKiotVietDates_(fromDateStr, toDateStr) {
 }
 
 /**
- * Đối soát toàn bộ các tháng từ 01/2026 đến tháng hiện tại đối chiếu KiotViet API
+ * Đối soát toàn bộ các tháng của một năm bất kỳ đối chiếu KiotViet API
  */
-function auditAll2026Months_() {
+function auditYear_(targetYear) {
   const token = getAccessToken();
   const cfg = getKiotConfig_();
 
+  const yr = parseInt(targetYear, 10) || 2025;
   const now = new Date();
   const nowStr = Utilities.formatDate(now, 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd HH:mm:ss');
 
-  const monthRanges = [
-    { ym: '2026-01', from: '2026-01-01 00:00:00', to: '2026-01-31 23:59:59' },
-    { ym: '2026-02', from: '2026-02-01 00:00:00', to: '2026-02-28 23:59:59' },
-    { ym: '2026-03', from: '2026-03-01 00:00:00', to: '2026-03-31 23:59:59' },
-    { ym: '2026-04', from: '2026-04-01 00:00:00', to: '2026-04-30 23:59:59' },
-    { ym: '2026-05', from: '2026-05-01 00:00:00', to: '2026-05-31 23:59:59' },
-    { ym: '2026-06', from: '2026-06-01 00:00:00', to: '2026-06-30 23:59:59' },
-    { ym: '2026-07', from: '2026-07-01 00:00:00', to: '2026-07-31 23:59:59' },
-    { ym: '2026-08', from: '2026-08-01 00:00:00', to: '2026-08-31 23:59:59' },
-    { ym: '2026-09', from: '2026-09-01 00:00:00', to: '2026-09-30 23:59:59' },
-    { ym: '2026-10', from: '2026-10-01 00:00:00', to: nowStr }
-  ];
+  const daysInMonth = [31, (yr % 4 === 0 && (yr % 100 !== 0 || yr % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  const maxMonth = (yr === now.getFullYear()) ? (now.getMonth() + 1) : 12;
 
   const results = [];
 
-  for (let mr of monthRanges) {
+  for (let m = 1; m <= maxMonth; m++) {
+    const mStr = String(m).padStart(2, '0');
+    const ym = `${yr}-${mStr}`;
+    const lastDay = daysInMonth[m - 1];
+    const from = `${ym}-01 00:00:00`;
+    let to = `${ym}-${lastDay} 23:59:59`;
+    if (yr === now.getFullYear() && m === maxMonth) {
+      to = nowStr;
+    }
+
     let kiotTotal = null;
     let kiotError = null;
     const url = 'https://public.kiotapi.com/invoices?pageSize=1' +
-      '&fromPurchaseDate=' + encodeURIComponent(mr.from) +
-      '&toPurchaseDate=' + encodeURIComponent(mr.to);
+      '&fromPurchaseDate=' + encodeURIComponent(from) +
+      '&toPurchaseDate=' + encodeURIComponent(to);
 
     try {
       const resp = UrlFetchApp.fetch(url, {
@@ -582,16 +582,17 @@ function auditAll2026Months_() {
 
     let sheetRows = null;
     try {
-      const sh = (typeof getMonthSheetDynamic_ === 'function') ? getMonthSheetDynamic_(mr.ym) : null;
+      const sh = (typeof getMonthSheetDynamic_ === 'function') ? getMonthSheetDynamic_(ym) : null;
       if (sh) {
         sheetRows = Math.max(0, sh.getLastRow() - 1);
       }
     } catch (sErr) {}
 
     results.push({
-      month: mr.ym,
-      from: mr.from,
-      to: mr.to,
+      year: yr,
+      month: ym,
+      from: from,
+      to: to,
       kiotTotal: kiotTotal,
       sheetRows: sheetRows,
       kiotError: kiotError
@@ -600,5 +601,9 @@ function auditAll2026Months_() {
     Utilities.sleep(150);
   }
 
-  return { success: true, auditedAt: nowStr, audit: results };
+  return { success: true, year: yr, auditedAt: nowStr, audit: results };
+}
+
+function auditAll2026Months_() {
+  return auditYear_(2026);
 }
