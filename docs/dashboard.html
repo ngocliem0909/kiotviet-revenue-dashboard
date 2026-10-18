@@ -649,6 +649,7 @@
             </div>
             <div class="flex items-center space-x-1.5">
               <span id="teleStatusBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">Kiểm tra...</span>
+              <span id="teleNotifyStatusBadge" class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-bell mr-1 text-[9px]"></i>Đang Bật</span>
               <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">Lịch: 23:59</span>
             </div>
           </div>
@@ -659,6 +660,10 @@
             </button>
             <button onclick="toggleTeleConfigForm()" class="px-2.5 py-1.5 text-xs font-medium rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 flex items-center">
               <i class="fa-solid fa-robot mr-1.5 text-[10px] text-blue-600"></i> Cài đặt Bot Token
+            </button>
+            <button onclick="toggleTelegramNotifications()" id="btnToggleTelegram" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center transition shadow-sm" title="Bật hoặc Tắt nhận tin nhắn báo cáo Telegram">
+              <i id="iconToggleTelegram" class="fa-solid fa-toggle-on mr-1.5 text-sm text-emerald-600"></i>
+              <span id="textToggleTelegram">Nhận Tin: BẬT</span>
             </button>
             <span id="teleStatusMsg" class="text-xs text-slate-500"></span>
           </div>
@@ -1112,6 +1117,85 @@
         });
     }
 
+    window.telegramNotificationsEnabled = true;
+
+    function updateTelegramToggleButtonUI(enabled) {
+      window.telegramNotificationsEnabled = (enabled !== false);
+      const isEn = window.telegramNotificationsEnabled;
+      const btn = document.getElementById("btnToggleTelegram");
+      const icon = document.getElementById("iconToggleTelegram");
+      const text = document.getElementById("textToggleTelegram");
+      const badge = document.getElementById("teleNotifyStatusBadge");
+
+      if (isEn) {
+        if (btn) {
+          btn.className = "px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 flex items-center transition shadow-sm";
+          btn.title = "Đang BẬT nhận tin. Bấm để TẮT nhận tin nhắn báo cáo Telegram.";
+        }
+        if (icon) icon.className = "fa-solid fa-toggle-on mr-1.5 text-sm text-emerald-600";
+        if (text) text.innerText = "Nhận Tin: BẬT";
+        if (badge) {
+          badge.className = "text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+          badge.innerHTML = '<i class="fa-solid fa-bell mr-1 text-[9px]"></i>Đang Bật';
+        }
+      } else {
+        if (btn) {
+          btn.className = "px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 flex items-center transition shadow-sm";
+          btn.title = "Đang TẮT nhận tin. Bấm để BẬT lại nhận tin nhắn báo cáo Telegram.";
+        }
+        if (icon) icon.className = "fa-solid fa-toggle-off mr-1.5 text-sm text-rose-500";
+        if (text) text.innerText = "Nhận Tin: TẮT";
+        if (badge) {
+          badge.className = "text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200";
+          badge.innerHTML = '<i class="fa-solid fa-bell-slash mr-1 text-[9px]"></i>Đã Tắt Nhận Tin';
+        }
+      }
+    }
+
+    function toggleTelegramNotifications() {
+      const nextState = !window.telegramNotificationsEnabled;
+      const icon = document.getElementById("iconToggleTelegram");
+      const text = document.getElementById("textToggleTelegram");
+      const msg = document.getElementById("teleStatusMsg");
+
+      if (icon) icon.className = "fa-solid fa-spinner fa-spin mr-1.5 text-sm";
+      if (text) text.innerText = nextState ? "Đang bật..." : "Đang tắt...";
+      if (msg) msg.innerText = nextState ? "Đang bật nhận tin..." : "Đang tắt nhận tin...";
+
+      function handleSuccess(res) {
+        if (res && res.success) {
+          updateTelegramToggleButtonUI(res.enabled);
+          if (msg) msg.innerText = res.message || (res.enabled ? "Đã BẬT nhận tin" : "Đã TẮT nhận tin");
+          showToast(res.message || (res.enabled ? "Đã BẬT nhận thông báo Telegram!" : "Đã TẮT nhận thông báo Telegram!"), res.enabled ? "success" : "info");
+          setTimeout(() => { if (msg) msg.innerText = ""; }, 4000);
+          checkSystemStatus();
+        } else {
+          handleFailure(res ? res.error || res.message : "Thao tác không thành công");
+        }
+      }
+
+      function handleFailure(err) {
+        updateTelegramToggleButtonUI(window.telegramNotificationsEnabled);
+        const errText = (typeof err === "string" ? err : (err && err.message) || "Lỗi cập nhật");
+        if (msg) msg.innerText = "Lỗi: " + errText;
+        showToast("Lỗi: " + errText, "error");
+      }
+
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(handleSuccess)
+          .withFailureHandler(handleFailure)
+          .setTelegramNotificationState(nextState);
+        return;
+      }
+
+      const adminParam = window.currentAdminKey ? ("&key=" + encodeURIComponent(window.currentAdminKey)) : "";
+      fetch("https://script.google.com/macros/s/AKfycbzBJ8SdazzihyeIomttMdgIgj3czv_I4xMt_K1Bw7Syc2Jdc7sU0wJRnjUbQvaKhyXs/exec?api=toggle_telegram&enabled=" + nextState + adminParam)
+        .then(r => r.json())
+        .then(handleSuccess)
+        .catch(handleFailure);
+    }
+
     function openTriggerGuideModal() {
       const modal = document.getElementById("triggerGuideModal");
       if (modal) modal.classList.remove("hidden");
@@ -1198,6 +1282,11 @@
                 teleBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1 text-[9px]"></i> Chưa Cài Bot Token';
               }
             }
+
+            // Cập nhật trạng thái BẬT / TẮT nhận tin Telegram
+            const teleEnabled = (tele.enabled !== false);
+            updateTelegramToggleButtonUI(teleEnabled);
+
             if (tele.chatId) {
               const elDisp = document.getElementById("teleChatIdDisplay");
               if (elDisp) elDisp.innerText = tele.chatId;
@@ -1217,12 +1306,13 @@
 
             const clientIdDisp = kiot.clientId ? (kiot.clientId + (kiot.hasClientSecret ? " (Secret OK)" : " (Thiếu Secret)")) : (kiot.retailer || "leeandteevn");
             const tokenDisp = kiot.tokenCached ? '<span class="text-emerald-600 font-semibold">Sẵn sàng (Cached)</span>' : '<span class="text-amber-600 font-semibold">Cần cấp mới</span>';
+            const teleStatusLabel = teleEnabled ? '<span class="text-emerald-600 font-semibold">Đang Bật</span>' : '<span class="text-rose-600 font-semibold">Đã Tắt</span>';
 
             if (box) {
               box.innerHTML = '<div class="space-y-1.5 text-xs text-slate-700">' +
                 '<div class="flex items-center justify-between"><span>KiotViet Client ID:</span><span class="font-semibold text-slate-800">' + clientIdDisp + '</span></div>' +
                 '<div class="flex items-center justify-between"><span>OAuth Token:</span>' + tokenDisp + '</div>' +
-                '<div class="flex items-center justify-between"><span>Telegram Bot:</span><span class="font-semibold text-blue-700">Chat ID ' + (tele.chatId || "530892002") + '</span></div>' +
+                '<div class="flex items-center justify-between"><span>Telegram Bot:</span><span class="font-semibold text-blue-700">Chat ID ' + (tele.chatId || "530892002") + ' (' + teleStatusLabel + ')</span></div>' +
                 '<div class="flex items-center justify-between"><span>Triggers Hoạt Động:</span><span class="font-bold ' + (trigCount > 0 ? 'text-emerald-700' : 'text-amber-600') + '">' + trigCount + ' triggers</span></div>' +
                 '<div class="text-[11px] text-slate-500 pt-1 border-t border-slate-200"><i class="fa-solid fa-list-check mr-1"></i> ' + trigNames + '</div>' +
               '</div>';

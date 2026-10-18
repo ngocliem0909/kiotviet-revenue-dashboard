@@ -26,6 +26,47 @@ function setTelegramCredentials(botToken, chatId) {
 }
 
 /**
+ * Kiểm tra xem tính năng nhận tin nhắn báo cáo Telegram đang BẬT hay TẮT
+ */
+function isTelegramNotificationEnabled() {
+  const props = PropertiesService.getScriptProperties();
+  const val = props.getProperty('TELEGRAM_NOTIFICATIONS_ENABLED');
+  // Mặc định là bật (true) nếu chưa từng thiết lập
+  return val !== 'false';
+}
+
+/**
+ * Bật hoặc tắt tính năng nhận tin nhắn báo cáo Telegram (ON / OFF)
+ */
+function setTelegramNotificationState(enabled) {
+  const props = PropertiesService.getScriptProperties();
+  const isEnabled = (enabled === true || enabled === 'true' || enabled === 1 || enabled === '1');
+  props.setProperty('TELEGRAM_NOTIFICATIONS_ENABLED', String(isEnabled));
+
+  // Tự động quản lý trigger theo trạng thái bật/tắt
+  try {
+    if (isEnabled) {
+      if (typeof setupDailyTelegramTrigger === 'function') {
+        setupDailyTelegramTrigger(true);
+      }
+    } else {
+      if (typeof removeTriggerByHandler_ === 'function') {
+        removeTriggerByHandler_('sendDailyReportToTelegram');
+      }
+    }
+  } catch (trigErr) {
+    Logger.log('Lưu ý cập nhật trigger Telegram: ' + trigErr.message);
+  }
+
+  Logger.log('Đã cập nhật trạng thái nhận tin Telegram: %s', isEnabled ? 'BẬT (ON)' : 'TẮT (OFF)');
+  return {
+    success: true,
+    enabled: isEnabled,
+    message: isEnabled ? 'Đã BẬT nhận thông báo báo cáo Telegram (23:59 hàng ngày)' : 'Đã TẮT nhận thông báo báo cáo Telegram'
+  };
+}
+
+/**
  * Gửi tin nhắn qua Telegram API
  */
 function sendTelegramMessage(text, parseMode) {
@@ -168,8 +209,12 @@ function buildDailyReportMessage() {
 /**
  * Gửi báo cáo hàng ngày (gọi tự động bởi trigger 23:59)
  */
-function sendDailyReportToTelegram() {
+function sendDailyReportToTelegram(forceSend) {
   try {
+    if (forceSend !== true && !isTelegramNotificationEnabled()) {
+      Logger.log('Tính năng nhận tin Telegram đang TẮT. Bỏ qua gửi báo cáo tự động.');
+      return { success: true, skipped: true, message: 'Tính năng nhận tin Telegram đang TẮT' };
+    }
     const text = buildDailyReportMessage();
     const res = sendTelegramMessage(text, 'HTML');
     Logger.log('Đã gửi báo cáo Telegram thành công.');
@@ -184,5 +229,6 @@ function sendDailyReportToTelegram() {
  * Hàm test gửi báo cáo Telegram ngay lập tức
  */
 function testTelegramReport() {
-  return sendDailyReportToTelegram();
+  return sendDailyReportToTelegram(true);
 }
+

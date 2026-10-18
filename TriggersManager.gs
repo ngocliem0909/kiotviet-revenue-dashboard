@@ -25,9 +25,13 @@ function setupHourlySyncTrigger() {
 /**
  * Tạo trigger gửi báo cáo Telegram hàng đêm lúc 23:59
  */
-function setupDailyTelegramTrigger() {
+function setupDailyTelegramTrigger(force) {
   try {
     removeTriggerByHandler_('sendDailyReportToTelegram');
+    if (force !== true && typeof isTelegramNotificationEnabled === 'function' && !isTelegramNotificationEnabled()) {
+      Logger.log('Tính năng nhận tin Telegram đang TẮT. Không tạo trigger sendDailyReportToTelegram.');
+      return { success: true, message: 'Nhận tin Telegram đang TẮT, đã hủy lịch gửi tự động' };
+    }
     ScriptApp.newTrigger('sendDailyReportToTelegram')
       .timeBased()
       .atHour(23)

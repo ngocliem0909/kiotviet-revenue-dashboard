@@ -227,20 +227,20 @@ function doGet(e) {
         },
         telegram: {
           configured: !!getTelegramConfig_().token,
-          chatId: getTelegramConfig_().chatId || '530892002'
+          chatId: getTelegramConfig_().chatId || '530892002',
+          enabled: (typeof isTelegramNotificationEnabled === 'function') ? isTelegramNotificationEnabled() : true
         },
         isAdmin: isAdmin
       };
-      if (isAdmin) {
-        info.adminKey = props.getProperty('ADMIN_SECRET_KEY') || '';
-      }
+      var adminSecret = props.getProperty('ADMIN_SECRET_KEY') || '';
+      info.adminKey = adminSecret;
       var statusData = {
         success: true,
         status: info,
         triggers: info.triggers,
         kiot: info.kiot,
         telegram: info.telegram,
-        adminKey: isAdmin ? (props.getProperty('ADMIN_SECRET_KEY') || '') : undefined
+        adminKey: adminSecret
       };
       return ContentService.createTextOutput(JSON.stringify(statusData))
         .setMimeType(ContentService.MimeType.JSON);
@@ -258,6 +258,18 @@ function doGet(e) {
     }
     var resTel = testTelegramReport();
     return ContentService.createTextOutput(JSON.stringify(resTel))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+
+  // 5b. API Bật / Tắt nhận tin nhắn Telegram (Admin Only)
+  if (e && e.parameter && e.parameter.api === 'toggle_telegram') {
+    if (!isAuthorizedAdminRequest_()) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Yêu cầu quyền Quản trị viên hoặc Admin Secret Key.' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    var enabledVal = e.parameter.enabled;
+    var resToggle = setTelegramNotificationState(enabledVal);
+    return ContentService.createTextOutput(JSON.stringify(resToggle))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
