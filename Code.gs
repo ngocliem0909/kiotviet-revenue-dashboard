@@ -175,6 +175,18 @@ function doGet(e) {
     }
   }
 
+  // API Tự động đối soát và tự động bù đắp tháng hiện tại (Self-Healing)
+  if (e && e.parameter && e.parameter.api === 'auto_reconcile') {
+    try {
+      var resRec = autoReconcileCurrentMonth_();
+      return ContentService.createTextOutput(JSON.stringify(resRec))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   // Kiểm tra quyền Quản trị cho các API tác động hệ thống
   function isAuthorizedAdminRequest_() {
     var uEmail = (Session.getActiveUser().getEmail() || '').trim().toLowerCase();

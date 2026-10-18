@@ -110,27 +110,27 @@ function testKiotConnection() {
 
 /**
  * Hàm đồng bộ tự động hàng giờ (syncHourly)
+ * Cơ chế Cửa sổ trượt an toàn (Rolling Window 36 Giờ) theo chuẩn giờ Việt Nam (Asia/Ho_Chi_Minh).
+ * Quét toàn bộ hóa đơn từ 00:00:00 ngày hôm qua đến thời điểm hiện tại.
+ * Tuyệt đối KHÔNG dùng toISOString() (UTC) để tránh lệch 7 tiếng.
  */
 function syncHourly() {
-  const props = PropertiesService.getScriptProperties();
-  const lastSyncStr = props.getProperty('LAST_SYNC') || Utilities.formatDate(new Date(Date.now() - 2 * 3600 * 1000), 'Asia/Ho_Chi_Minh', "yyyy-MM-dd'T'HH:mm:ss");
-  const lastSync = new Date(lastSyncStr);
+  const tz = 'Asia/Ho_Chi_Minh';
   const now = new Date();
+  
+  // Mốc bắt đầu: 00:00:00 của ngày hôm qua theo giờ Việt Nam
+  const yesterday = new Date(now.getTime() - 24 * 3600 * 1000);
+  const yesterdayDateStr = Utilities.formatDate(yesterday, tz, 'yyyy-MM-dd');
+  const fromDateStr = yesterdayDateStr + ' 00:00:00';
+  const toDateStr = Utilities.formatDate(now, tz, 'yyyy-MM-dd HH:mm:ss');
+  
+  Logger.log('Đang đồng bộ KiotViet (Rolling Window 36h) từ %s đến %s', fromDateStr, toDateStr);
 
-  // Chia theo chunk tối đa 2 giờ để tránh timeout 6 phút của Apps Script
-  let syncEnd = now;
-  const maxChunkMs = 2 * 60 * 60 * 1000;
-  if (now.getTime() - lastSync.getTime() > maxChunkMs) {
-    syncEnd = new Date(lastSync.getTime() + maxChunkMs);
-    Logger.log('Syncing chunk từ %s đến %s', lastSync.toISOString(), syncEnd.toISOString());
-  } else {
-    Logger.log('Sync từ %s đến %s', lastSync.toISOString(), syncEnd.toISOString());
-  }
-
+  const props = PropertiesService.getScriptProperties();
   try {
     const token = getAccessToken();
-    const invoices = fetchInvoicesRange(token, lastSync.toISOString(), syncEnd.toISOString());
-    Logger.log('KiotViet trả về: %d hóa đơn', invoices.length);
+    const invoices = fetchInvoicesRange(token, fromDateStr, toDateStr);
+    Logger.log('KiotViet trả về: %d hóa đơn trong 36h qua', invoices.length);
 
     if (invoices.length > 0) {
       upsertToMonthlySheets(invoices);
@@ -141,17 +141,115 @@ function syncHourly() {
       }
     }
 
-    props.setProperty('LAST_SYNC', syncEnd.toISOString());
-    props.setProperty('LAST_SYNC_SUCCESS_TIME', Utilities.formatDate(new Date(), 'Asia/Ho_Chi_Minh', 'yyyy-MM-dd HH:mm:ss'));
+    const nowFormatted = Utilities.formatDate(now, tz, 'yyyy-MM-dd HH:mm:ss');
+    props.setProperty('LAST_SYNC', nowFormatted);
+    props.setProperty('LAST_SYNC_SUCCESS_TIME', nowFormatted);
     props.setProperty('LAST_SYNC_COUNT', String(invoices.length));
     props.deleteProperty('LAST_SYNC_ERROR');
-    Logger.log('Đồng bộ KiotViet thành công. LAST_SYNC=%s', syncEnd.toISOString());
-    return { success: true, count: invoices.length, syncEnd: syncEnd.toISOString() };
+    Logger.log('Đồng bộ KiotViet thành công lúc %s', nowFormatted);
+
+    // Tự động kiểm tra đối soát tháng hiện tại (Self-healing audit)
+    try {
+      autoReconcileCurrentMonth_();
+    } catch (recErr) {
+      Logger.log('Tự đối soát tháng gặp lỗi: ' + recErr.toString());
+    }
+
+    return { success: true, count: invoices.length, windowFrom: fromDateStr, windowTo: toDateStr };
   } catch (e) {
     Logger.log('Lỗi syncHourly: %s', e.toString());
     props.setProperty('LAST_SYNC_ERROR', e.toString());
     throw e;
   }
+}
+
+/**
+ * Tự động đối soát tháng hiện tại giữa KiotViet API và Google Sheets (Self-Healing Audit)
+ * Chạy tự động sau mỗi lần sync để phát hiện và tự động bù đắp đơn nếu có lệch.
+ */
+function autoReconcileCurrentMonth_() {
+  const tz = 'Asia/Ho_Chi_Minh';
+  const now = new Date();
+  const ym = Utilities.formatDate(now, tz, 'yyyy-MM');
+  const monthStart = ym + '-01 00:00:00';
+  const monthEnd = Utilities.formatDate(now, tz, 'yyyy-MM-dd HH:mm:ss');
+
+  const sheet = (typeof getMonthSheetDynamic_ === 'function') ? getMonthSheetDynamic_(ym) : null;
+  if (!sheet) return { checked: false, reason: 'Sheet không tồn tại' };
+
+  const sheetTotal = Math.max(0, sheet.getLastRow() - 1);
+  const token = getAccessToken();
+  const cfg = getKiotConfig_();
+
+  const url = 'https://public.kiotapi.com/invoices?pageSize=1' +
+    '&fromPurchaseDate=' + encodeURIComponent(monthStart) +
+    '&toPurchaseDate=' + encodeURIComponent(monthEnd);
+
+  let resp = null;
+  try {
+    resp = UrlFetchApp.fetch(url, {
+      headers: { 'Retailer': cfg.retailer, 'Authorization': 'Bearer ' + token },
+      muteHttpExceptions: true
+    });
+  } catch (e) {
+    Logger.log('autoReconcileCurrentMonth_ fetch error: ' + e.message);
+    return { checked: false, error: e.message };
+  }
+
+  if (resp.getResponseCode() !== 200) return { checked: false, code: resp.getResponseCode() };
+
+  const data = JSON.parse(resp.getContentText());
+  const kiotTotal = data.total || 0;
+
+  if (sheetTotal === kiotTotal) {
+    Logger.log('Self-healing audit: Tháng %s khớp tuyệt đối 100% (%d / %d đơn)', ym, sheetTotal, kiotTotal);
+    return { checked: true, matched: true, ym: ym, total: kiotTotal };
+  }
+
+  Logger.log('CẢNH BÁO Self-healing: Sheet tháng %s có %d đơn, KiotViet có %d đơn (Lệch %d đơn). Kích hoạt tự động phục hồi!', ym, sheetTotal, kiotTotal, kiotTotal - sheetTotal);
+
+  // Tự động quét 7 ngày gần nhất để bù đắp bất kỳ ngày nào bị lệch
+  const daysToCheck = 7;
+  const recons = [];
+  for (let i = 0; i < daysToCheck; i++) {
+    const d = new Date(now.getTime() - i * 24 * 3600 * 1000);
+    const dStr = Utilities.formatDate(d, tz, 'yyyy-MM-dd');
+    if (dStr < ym + '-01') break;
+
+    const dayUrl = 'https://public.kiotapi.com/invoices?pageSize=1' +
+      '&fromPurchaseDate=' + encodeURIComponent(dStr + ' 00:00:00') +
+      '&toPurchaseDate=' + encodeURIComponent(dStr + ' 23:59:59');
+
+    try {
+      const dResp = UrlFetchApp.fetch(dayUrl, {
+        headers: { 'Retailer': cfg.retailer, 'Authorization': 'Bearer ' + token },
+        muteHttpExceptions: true
+      });
+      if (dResp.getResponseCode() === 200) {
+        const dData = JSON.parse(dResp.getContentText());
+        const dKiot = dData.total || 0;
+
+        let dSheet = 0;
+        if (sheet.getLastRow() > 1) {
+          const dVals = sheet.getRange(2, 3, sheet.getLastRow() - 1, 1).getValues();
+          dVals.forEach(r => {
+            const ds = (typeof extractDateStr_ === 'function') ? extractDateStr_(r[0]) : String(r[0]).substring(0, 10);
+            if (ds === dStr) dSheet++;
+          });
+        }
+
+        if (dKiot !== dSheet) {
+          Logger.log('Tự động chữa lỗi ngày %s: KiotViet=%d, Sheet=%d. Đang backfill...', dStr, dKiot, dSheet);
+          backfillKiotVietDates_(dStr, dStr);
+          recons.push({ date: dStr, fixed: true, kiot: dKiot, before: dSheet });
+        }
+      }
+    } catch (dErr) {
+      Logger.log('Lỗi check ngày %s: %s', dStr, dErr.message);
+    }
+  }
+
+  return { checked: true, matched: false, ym: ym, kiotTotal: kiotTotal, sheetTotal: sheetTotal, reconciledDays: recons };
 }
 
 /**
@@ -335,7 +433,9 @@ function refreshCurrentSummary_() {
 
     const tot = Number(r[6]) || 0;
     const paid = Number(r[7]) || 0;
-    const dStr = String(r[2] || '').substring(0, 10);
+    const dStr = (typeof extractDateStr_ === 'function')
+      ? extractDateStr_(r[2])
+      : ((r[2] instanceof Date) ? Utilities.formatDate(r[2], tz, 'yyyy-MM-dd') : String(r[2] || '').substring(0, 10));
 
     mInv++;
     mRev += tot;
