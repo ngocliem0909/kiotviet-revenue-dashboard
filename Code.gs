@@ -366,10 +366,10 @@ function doGet(e) {
       .addMetaTag('viewport', 'width=device-width, initial-scale=1.0');
   }
 
-  var freshOct = getFreshOctoberRecords();
+  // Tối ưu tốc độ: Render giao diện ngay tức thì (1s) và tải dữ liệu mới nhất ngầm qua background RPC
   var template = HtmlService.createTemplateFromFile('Index');
-  template.freshOctoberRecords = (freshOct && freshOct.success) ? freshOct.records : [];
-  template.freshOctoberRecordsJson = (freshOct && freshOct.success) ? JSON.stringify(freshOct.records).replace(/<\/script/gi, '<\\/script') : '[]';
+  template.freshOctoberRecords = [];
+  template.freshOctoberRecordsJson = '[]';
   template.currentUserEmail = userEmail || 'Ủy quyền nội bộ';
   return template.evaluate()
     .setTitle('L&T Analytics - Báo Cáo Doanh Thu KiotViet')
