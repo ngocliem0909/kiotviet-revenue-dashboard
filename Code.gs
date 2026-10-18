@@ -321,8 +321,9 @@ function doGet(e) {
     }
     var bTok = (e.parameter.botToken || '').trim();
     var cIdTele = (e.parameter.chatId || '530892002').trim();
-    if (!bTok) {
-      return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Thiếu Bot Token' }))
+    var curTeleCfg = getTelegramConfig_();
+    if (!bTok && !curTeleCfg.token) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, message: 'Thiếu Bot Token. Vui lòng nhập Bot Token tạo từ @BotFather.' }))
         .setMimeType(ContentService.MimeType.JSON);
     }
     var resSaveT = setTelegramCredentials(bTok, cIdTele);

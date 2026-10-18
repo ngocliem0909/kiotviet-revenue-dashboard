@@ -653,7 +653,7 @@
               <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">Lịch: 23:59</span>
             </div>
           </div>
-          <p class="text-xs text-slate-500">Gửi bản tóm tắt doanh số, thực thu, số đơn và top chi nhánh hôm nay về Chat ID: <code class="font-mono text-slate-700 bg-slate-100 px-1 py-0.5 rounded" id="teleChatIdDisplay">530892002</code>.</p>
+          <p class="text-xs text-slate-500">Gửi bản tóm tắt doanh số, thực thu, số đơn và top chi nhánh hôm nay về Chat ID: <code class="font-mono text-slate-700 bg-slate-100 px-1 py-0.5 rounded break-all" id="teleChatIdDisplay">530892002</code>.</p>
           <div class="pt-1 flex flex-wrap items-center gap-2">
             <button onclick="testTelegram()" id="btnTestTele" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-sm flex items-center">
               <i class="fa-solid fa-paper-plane mr-1.5 text-[10px]" id="iconTestTele"></i> Gửi Thử Ngay
@@ -669,19 +669,25 @@
           </div>
 
           <!-- Form Cài Đặt Telegram Bot (ẩn/hiện) -->
-          <div id="teleConfigBox" class="mt-2.5 p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 hidden">
+          <div id="teleConfigBox" class="mt-2.5 p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2.5 hidden">
             <div class="flex items-center justify-between text-xs font-bold text-slate-800">
               <span><i class="fa-brands fa-telegram text-blue-600 mr-1"></i> Cấu hình Bot Telegram</span>
               <span class="text-[10px] text-slate-500 font-normal">Tạo bot qua @BotFather</span>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-              <div class="sm:col-span-2">
+            <div class="space-y-2 text-xs">
+              <div>
                 <label class="block text-[11px] font-medium text-slate-600 mb-0.5">TELEGRAM_BOT_TOKEN:</label>
                 <input type="password" id="cfgTeleBotToken" placeholder="Ví dụ: 123456789:ABCdefGhIJKlmNo..." class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono focus:ring-1 focus:ring-blue-500 focus:outline-none">
               </div>
               <div>
-                <label class="block text-[11px] font-medium text-slate-600 mb-0.5">Chat ID nhận tin:</label>
-                <input type="text" id="cfgTeleChatId" placeholder="530892002" value="530892002" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                <div class="flex items-center justify-between mb-0.5">
+                  <label class="block text-[11px] font-medium text-slate-600">Chat ID nhận tin (hỗ trợ 1 hoặc nhiều ID):</label>
+                  <span class="text-[10px] text-blue-600 font-medium">Cách nhau bằng dấu phẩy <code>,</code></span>
+                </div>
+                <input type="text" id="cfgTeleChatId" placeholder="Ví dụ: 530892002, -100123456789" value="530892002" class="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono focus:ring-1 focus:ring-blue-500 focus:outline-none">
+                <p class="text-[10px] text-slate-500 mt-1 leading-relaxed">
+                  <i class="fa-solid fa-circle-info text-blue-500 mr-0.5"></i> <b>Có thể nhập nhiều Chat ID</b> (cá nhân hoặc nhóm) ngăn cách bằng dấu phẩy <code>,</code> (ID nhóm thường có dấu trừ <code>-100...</code>).
+                </p>
               </div>
             </div>
             <div class="pt-1 flex items-center justify-between">
@@ -971,7 +977,7 @@
       const msg = document.getElementById("teleSaveMsg");
       const btn = document.getElementById("btnSaveTele");
 
-      if (!tok) {
+      if (!tok && !window.telegramConfigured) {
         if (msg) msg.innerHTML = '<span class="text-rose-600 font-medium">Vui lòng nhập Bot Token</span>';
         return;
       }
@@ -1272,11 +1278,14 @@
             }
 
             // Cập nhật Badge & Form Telegram
+            window.telegramConfigured = !!tele.configured;
             const teleBadge = document.getElementById("teleStatusBadge");
             if (teleBadge) {
               if (tele.configured) {
                 teleBadge.className = "text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200";
                 teleBadge.innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-[9px]"></i> Đã Cài Bot Token';
+                const elTok = document.getElementById("cfgTeleBotToken");
+                if (elTok && !elTok.value) elTok.placeholder = "•••••••••••••••• (Giữ nguyên nếu không đổi)";
               } else {
                 teleBadge.className = "text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200";
                 teleBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation mr-1 text-[9px]"></i> Chưa Cài Bot Token';
@@ -1291,7 +1300,7 @@
               const elDisp = document.getElementById("teleChatIdDisplay");
               if (elDisp) elDisp.innerText = tele.chatId;
               const elInp = document.getElementById("cfgTeleChatId");
-              if (elInp && !elInp.value) elInp.value = tele.chatId;
+              if (elInp && (!elInp.value || elInp.value === "530892002")) elInp.value = tele.chatId;
             }
 
             let trigCount = 0;

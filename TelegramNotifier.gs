@@ -19,10 +19,10 @@ function getTelegramConfig_() {
  */
 function setTelegramCredentials(botToken, chatId) {
   const props = PropertiesService.getScriptProperties();
-  if (botToken) props.setProperty('TELEGRAM_BOT_TOKEN', botToken.trim());
-  if (chatId) props.setProperty('TELEGRAM_CHAT_ID', chatId.trim());
+  if (botToken && botToken.trim()) props.setProperty('TELEGRAM_BOT_TOKEN', botToken.trim());
+  if (chatId !== undefined && chatId !== null) props.setProperty('TELEGRAM_CHAT_ID', String(chatId).trim());
   Logger.log('Đã lưu cấu hình Telegram thành công.');
-  return { success: true, message: 'Đã lưu cấu hình Telegram' };
+  return { success: true, message: 'Đã lưu cấu hình Telegram thành công' };
 }
 
 /**
@@ -67,30 +67,74 @@ function setTelegramNotificationState(enabled) {
 }
 
 /**
- * Gửi tin nhắn qua Telegram API
+ * Tách danh sách Chat ID từ chuỗi cấu hình (hỗ trợ phân cách bằng dấu phẩy, chấm phẩy, khoảng trắng, xuống dòng)
+ */
+function parseTelegramChatIds_(chatIdStr) {
+  if (!chatIdStr) return [];
+  return String(chatIdStr)
+    .split(/[,;\s\n]+/)
+    .map(function(s) { return s.trim(); })
+    .filter(function(s) { return s.length > 0; });
+}
+
+/**
+ * Gửi tin nhắn qua Telegram API (Hỗ trợ gửi đồng thời tới 1 hoặc nhiều Chat ID / Nhóm)
  */
 function sendTelegramMessage(text, parseMode) {
   const cfg = getTelegramConfig_();
   if (!cfg.token) {
     throw new Error('Chưa cấu hình TELEGRAM_BOT_TOKEN trong Script Properties');
   }
-  const url = 'https://api.telegram.org/bot' + cfg.token + '/sendMessage';
-  const payload = {
-    chat_id: cfg.chatId,
-    text: text,
-    parse_mode: parseMode || 'HTML',
-    disable_web_page_preview: true
-  };
-  const resp = UrlFetchApp.fetch(url, {
-    method: 'post',
-    contentType: 'application/json',
-    payload: JSON.stringify(payload),
-    muteHttpExceptions: true
-  });
-  if (resp.getResponseCode() !== 200) {
-    throw new Error('Gửi Telegram thất bại (' + resp.getResponseCode() + '): ' + resp.getContentText());
+  const chatIds = parseTelegramChatIds_(cfg.chatId);
+  if (chatIds.length === 0) {
+    throw new Error('Chưa có Chat ID nhận tin Telegram');
   }
-  return JSON.parse(resp.getContentText());
+
+  const url = 'https://api.telegram.org/bot' + cfg.token + '/sendMessage';
+  const successList = [];
+  const errorList = [];
+
+  for (let i = 0; i < chatIds.length; i++) {
+    const cid = chatIds[i];
+    try {
+      const payload = {
+        chat_id: cid,
+        text: text,
+        parse_mode: parseMode || 'HTML',
+        disable_web_page_preview: true
+      };
+      const resp = UrlFetchApp.fetch(url, {
+        method: 'post',
+        contentType: 'application/json',
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true
+      });
+      const respCode = resp.getResponseCode();
+      const respText = resp.getContentText();
+      if (respCode === 200) {
+        successList.push(cid);
+      } else {
+        errorList.push(cid + ' (' + respCode + ')');
+        Logger.log('Lỗi gửi tới chat_id ' + cid + ': ' + respText);
+      }
+    } catch (e) {
+      errorList.push(cid + ' (' + e.message + ')');
+      Logger.log('Ngoại lệ khi gửi tới chat_id ' + cid + ': ' + e.message);
+    }
+  }
+
+  if (successList.length === 0 && errorList.length > 0) {
+    throw new Error('Gửi Telegram thất bại cho tất cả Chat ID: ' + errorList.join(', '));
+  }
+
+  Logger.log('Gửi Telegram thành công cho %d/%d Chat ID: %s', successList.length, chatIds.length, successList.join(', '));
+  return {
+    success: true,
+    sent: successList,
+    failed: errorList,
+    total: chatIds.length,
+    message: 'Đã gửi thành công tới ' + successList.length + '/' + chatIds.length + ' Chat ID' + (errorList.length > 0 ? (' (Lỗi: ' + errorList.join(', ') + ')') : '')
+  };
 }
 
 /**
@@ -217,8 +261,8 @@ function sendDailyReportToTelegram(forceSend) {
     }
     const text = buildDailyReportMessage();
     const res = sendTelegramMessage(text, 'HTML');
-    Logger.log('Đã gửi báo cáo Telegram thành công.');
-    return { success: true, message: 'Đã gửi báo cáo Telegram thành công' };
+    Logger.log('Đã gửi báo cáo Telegram: ' + (res.message || 'thành công'));
+    return { success: true, message: res.message || 'Đã gửi báo cáo Telegram thành công', details: res };
   } catch (e) {
     Logger.log('Lỗi gửi Telegram: ' + e.toString());
     return { success: false, message: e.toString() };
