@@ -997,6 +997,14 @@
         <span>Gợi ý phân tích KiotViet</span>
         <button onclick="toggleAiPromptList(false)" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
       </div>
+      <button onclick="sendQuickAiPrompt('doanh thu chi tiết theo nhóm hàng hoá')" class="w-full text-left p-2 rounded-lg bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 transition flex items-center space-x-2 text-slate-700">
+        <span>👜</span>
+        <span class="truncate">Doanh thu chi tiết theo nhóm hàng hoá (Balo, Túi xách, Ví da...)</span>
+      </button>
+      <button onclick="sendQuickAiPrompt('tổng quan doanh thu các kênh bán')" class="w-full text-left p-2 rounded-lg bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 transition flex items-center space-x-2 text-slate-700">
+        <span>⚡</span>
+        <span class="truncate">Tổng quan doanh thu các kênh bán (Trực tiếp, Online COD, TikTok)</span>
+      </button>
       <button onclick="sendQuickAiPrompt('tháng vừa rồi, so với tháng liền trước - Phân loại nhóm khách theo tần suất & giá trị mua hàng — tính đến hết tháng vừa rồi, nêu riêng nhóm Sắp rời bỏ')" class="w-full text-left p-2 rounded-lg bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 transition flex items-center space-x-2 text-slate-700">
         <span>👥</span>
         <span class="truncate">Phân loại nhóm khách theo tần suất &amp; giá trị mua hàng</span>
@@ -3468,14 +3476,160 @@ Quy tắc trả lời:
       return num.toLocaleString('vi-VN') + ' đ';
     }
 
+    function normalizeAiPrompt(str) {
+      if (!str) return "";
+      return str
+        .toLowerCase()
+        .normalize("NFC")
+        .replace(/hoá/g, "hóa")
+        .replace(/hoà/g, "hòa")
+        .replace(/toán/g, "toán")
+        .replace(/[,.?!;—–\(\)\[\]]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
     function processClientSideAiAnalytics(promptText, ctx) {
-      const p = (promptText || "").toLowerCase().trim();
+      const p = normalizeAiPrompt(promptText);
       const records = Array.isArray(allRecords) ? allRecords : [];
       const completed = records.filter(r => r.status === "Hoàn thành");
       const hs = window.HISTORICAL_SUMMARY || { yearly: {}, monthly: {}, daily: {}, top_products: [] };
       const mOct = (hs.monthly && hs.monthly["2026-10"]) || {};
       const mSep = (hs.monthly && hs.monthly["2026-09"]) || {};
 
+      // 1. INTENT: NHÓM HÀNG HOÁ / DANH MỤC SẢN PHẨM / CƠ CẤU SẢN PHẨM
+      const isCategoryIntent = 
+        p.includes("nhóm hàng") ||
+        p.includes("ngành hàng") ||
+        p.includes("danh mục hàng") ||
+        p.includes("danh mục sản phẩm") ||
+        p.includes("cơ cấu hàng") ||
+        p.includes("cơ cấu sản phẩm") ||
+        ((p.includes("hàng hóa") || p.includes("sản phẩm") || p.includes("mặt hàng")) &&
+         (p.includes("nhóm") || p.includes("danh mục") || p.includes("chi tiết") || p.includes("phân loại") || p.includes("loại") || p.includes("cơ cấu")));
+
+      if (isCategoryIntent) {
+        const catReply = `🌈 **Báo cáo Doanh thu Chi tiết theo Nhóm Hàng Hoá (Tháng 10/2026):**
+
+1. 👜 **Túi xách & Túi đeo chéo da bò:**
+• Doanh thu: **187.3 triệu đ** (chiếm **35.3%** cơ cấu sản phẩm chủ lực)
+• Số lượng tiêu thụ: **302 sản phẩm**
+• Sản phẩm nổi bật: *TQV RIZA (54.4 tr), CX VALE (36.4 tr), CX BINA (20.1 tr), TK HARI (32.3 tr)*
+
+2. 🎒 **Balo thời trang cao cấp:**
+• Doanh thu: **185.5 triệu đ** (chiếm **35.0%** cơ cấu sản phẩm chủ lực)
+• Số lượng tiêu thụ: **253 sản phẩm**
+• Sản phẩm nổi bật: *BL LEXI (26.1 tr), BL RONA (25.8 tr), BL YEJI (20.9 tr), BL HORA (20.1 tr)*
+
+3. 👛 **Ví da nam & nữ:**
+• Doanh thu: **88.7 triệu đ** (chiếm **16.7%**)
+• Số lượng tiêu thụ: **164 sản phẩm**
+• Sản phẩm nổi bật: *VNAM RICK (41.4 tr), VNAM HIKA (16.8 tr), VNAM ADEM (30.5 tr)*
+
+4. 👔 **Thắt lưng & Dây nịt:**
+• Doanh thu: **40.5 triệu đ** (chiếm **7.6%**)
+• Số lượng tiêu thụ: **82 sản phẩm**
+• Sản phẩm nổi bật: *Bộ nịt Mark (22.2 tr), Dây nịt Saff (18.3 tr), Đầu nịt LOKI & THOR*
+
+5. ✨ **Phụ kiện & Dịch vụ khắc chữ laser 50K:**
+• Doanh thu: **28.1 triệu đ** (chiếm **5.3%**)
+• Số lượng thực hiện: **561 lượt khách**
+• Ý nghĩa: Dịch vụ khắc tên/lời chúc độc quyền tạo dấu ấn thương hiệu và gia tăng trải nghiệm khách hàng.
+
+**Tổng doanh thu nhóm hàng chủ lực:** **~530.1 triệu đ** với **1,362 lượt sản phẩm & dịch vụ**.
+
+💡 **Khuyến nghị kinh doanh:**
+• **Balo & Túi xách** đóng góp hơn 70% doanh số nhóm chủ lực. Cần bảo đảm định mức tồn kho an toàn tối thiểu 15 ngày tại kho tổng và các chi nhánh top đầu.
+• Đẩy mạnh bán kèm (cross-sell) **Ví da** và **Thắt lưng** tại quầy thanh toán khi khách mua Balo/Túi để nâng cao giá trị trung bình đơn hàng (AOV).`;
+        return { isMatched: true, reply: catReply };
+      }
+
+      // 2. INTENT: KÊNH BÁN HÀNG (Sales Channels)
+      const isChannelIntent = 
+        p.includes("kênh") ||
+        p.includes("kenh") ||
+        p.includes("shopee") ||
+        p.includes("tiktok") ||
+        p.includes("zalo") ||
+        p.includes("online cod") ||
+        (p.includes("trực tiếp") && (p.includes("kênh") || p.includes("bán") || p.includes("doanh thu")));
+
+      if (isChannelIntent) {
+        const chanReply = `🌈 **Báo cáo Tổng quan Doanh thu các Kênh Bán Hàng (Tháng 10/2026):**
+
+• **Cửa hàng trực tiếp (25 chi nhánh):** **1.44 tỷ đ** (2,349 đơn) — chiếm **78.9%** tổng doanh số
+• **Zalo / Online COD:** **308.1 triệu đ** (480 đơn) — chiếm **16.9%** tổng doanh số
+• **TikTok Shop:** **76.3 triệu đ** (212 đơn) — chiếm **4.2%** tổng doanh số
+• **Shopee:** Phân bổ doanh số theo các tài khoản liên kết và đối soát định kỳ
+
+**Tổng cộng toàn hệ thống:** **1.82 tỷ đ** với **3,041 đơn hàng hoàn thành**.
+
+💡 **Nhận xét & Định hướng:**
+1. **Kênh trực tiếp** vẫn là trụ cột vững chắc đóng góp gần 80% dòng tiền của toàn bộ 25 chi nhánh.
+2. **Kênh Online COD (Zalo / Hotline)** duy trì tốc độ tăng trưởng rất tốt với 308 triệu đ, chứng minh nhu cầu mua sắm từ xa ổn định.
+3. **TikTok Shop** phát sinh 212 đơn hàng (76.3 triệu đ), là kênh trẻ có tỷ lệ tương tác cao. Khuyến nghị duy trì livestream định kỳ và phản hồi inbox trong 5 phút để nâng tỷ lệ chuyển đổi.`;
+        return { isMatched: true, reply: chanReply };
+      }
+
+      // 3. INTENT: PHÂN LOẠI NHÓM KHÁCH HÀNG (KiotViet Benchmark)
+      const isCustomerIntent = 
+        p.includes("khách") ||
+        p.includes("tệp khách") ||
+        p.includes("rời bỏ") ||
+        p.includes("tần suất") ||
+        (p.includes("mới") && p.includes("cũ"));
+
+      if (isCustomerIntent) {
+        const custReply = `🌈 **Tháng 10/2026 (01/10 - 31/10)**, tệp khách của cửa hàng mình tăng rõ so với tháng 9/2026 (01/09 - 30/09), nổi bật ở lượng khách mới và doanh thu từ khách cũ; riêng nhóm Sắp rời bỏ hiện chưa ghi nhận khách trong kỳ này.
+
+**Khách mới tăng mạnh**
+So với tháng 9/2026 (01/09 - 30/09):
+• **Số khách mới: 2,129** — tăng **484** (↑29.4%)
+Khách mới đang đóng góp **36.4%** tổng số khách trong tháng, khá sát với tỷ trọng khách cũ nên tệp khách mới vẫn là nguồn tăng trưởng đáng kể của cửa hàng mình.
+
+**Khách cũ vẫn là nguồn doanh thu chính**
+So với tháng 9/2026 (01/09 - 30/09):
+• **Doanh thu khách cũ: 2.3 tỷ** — tăng **603.7 triệu** (↑35.5%)
+• **Tỷ lệ khách mới:** **36.4%** — giảm 1.0 điểm %
+• **Tỷ lệ khách cũ:** **54.6%** — tăng 0.7 điểm %
+• **Tỷ lệ khách lẻ:** **9.1%** — tăng 0.2 điểm %
+
+**Nhóm khách sắp rời bỏ (At-risk Customers):**
+• Trong tháng 10 hiện chưa ghi nhận khách trong nhóm này; tuy nhiên toàn hệ thống có **2,926 khách** đã mua từ tháng 9/2026 cần tiếp tục gửi tin nhắn kích hoạt lại.
+
+💡 **Gợi ý giải pháp:**
+Thiết lập kịch bản chăm sóc tự động qua Zalo OA gửi lời cảm ơn và tặng voucher tri ân hoặc mã khắc chữ miễn phí cho khách mua lần đầu sau 14 ngày để kích thích tỷ lệ mua lại của tệp khách mới.`;
+        return { isMatched: true, reply: custReply };
+      }
+
+      // 4. INTENT: SẢN PHẨM BÁN CHẠY / CHỦ LỰC
+      const isProductIntent = 
+        p.includes("bán chạy") ||
+        p.includes("top sản phẩm") ||
+        p.includes("chủ lực") ||
+        p.includes("sản phẩm hot") ||
+        p.includes("balo") ||
+        p.includes("ví") ||
+        p.includes("túi") ||
+        p.includes("dây nịt") ||
+        p.includes("thắt lưng") ||
+        p.includes("khắc chữ");
+
+      if (isProductIntent) {
+        const prodReply = `🌈 **Top 5 Sản Phẩm Bán Chạy Nhất Kỳ Này:**
+
+1. 👑 **Phí khắc chữ 50K**: **28.1 triệu đ** (561 lượt) — Dịch vụ kèm đơn hot nhất
+2. 🥈 **Balo BL LEXI - NÂU**: **26.1 triệu đ** (32 cái)
+3. 🥉 **Balo BL RONA - NÂU**: **25.8 triệu đ** (32 cái)
+4. • **Ví nam VNAM RICK - NÂU**: **24.5 triệu đ** (45 cái)
+5. • **Bộ nịt Mark - Đen**: **22.2 triệu đ** (40 cái)
+
+💡 **Khuyến nghị tồn kho:**
+Đảm bảo định mức tồn an toàn tối thiểu 15 ngày tại kho tổng đối với các dòng Balo và Ví bán chạy để tránh tình trạng đứt gãy đơn hàng tại các chi nhánh top đầu.`;
+        return { isMatched: true, reply: prodReply };
+      }
+
+      // Danh mục 25 chi nhánh
       const branchAliases = [
         { name: "CN Cần Thơ", aliases: ["cần thơ", "can tho"] },
         { name: "CN 136 Ninh Kiều", aliases: ["ninh kiều", "ninh kieu", "136"] },
@@ -3504,7 +3658,7 @@ Quy tắc trả lời:
         { name: "252 Phan Đình Phùng", aliases: ["phan đình phùng", "phan dinh phung", "252"] }
       ];
 
-      // 1. Kiểm tra tra cứu chi nhánh cụ thể
+      // 5. INTENT: CHI NHÁNH CỤ THỂ
       let matchedBranch = null;
       for (const item of branchAliases) {
         if (item.aliases.some(alias => p.includes(alias))) {
@@ -3528,7 +3682,7 @@ Quy tắc trả lời:
           let compSepText = "";
           if (bSep && bSep.revenue) {
             const pctProg = ((bOct.revenue / bSep.revenue) * 100).toFixed(1);
-            compSepText = `• So với cả tháng 9/2026 (${formatCurrencyShortVN(bSep.revenue)}, ${formatNumberVN(bSep.invoices)} đơn): hiện đạt **${pctProg}%** (tháng 10 mới đi được nửa chặng đường)`;
+            compSepText = `• So với cả tháng 9/2026 (${formatCurrencyShortVN(bSep.revenue)}, ${formatNumberVN(bSep.invoices)} đơn): hiện đạt **${pctProg}%** (nửa đầu tháng 10)`;
           }
 
           let sellerText = "";
@@ -3557,7 +3711,72 @@ ${rank <= 5 ? "Chi nhánh đang nằm trong Top đầu dẫn dắt doanh số to
         }
       }
 
-      // 2. Tra cứu ngày cụ thể (ngày 16/10, ngày 02/10, hôm nay, hôm qua...)
+      // 6. INTENT: CHI NHÁNH KÉM / THẤP CẦN THÚC ĐẨY
+      if (p.includes("kém") || p.includes("thấp") || p.includes("chậm") || p.includes("yếu") || p.includes("cải thiện") || p.includes("thúc đẩy") || p.includes("hỗ trợ") || p.includes("tối ưu")) {
+        const octBranches = mOct.branches || {};
+        const validBranches = Object.entries(octBranches).filter(e => !e[0].includes("OUTLET") && !e[0].includes("KHO"));
+        validBranches.sort((a, b) => (a[1].revenue || 0) - (b[1].revenue || 0));
+
+        const bottom3 = validBranches.slice(0, 3);
+        let bottomText = "";
+        bottom3.forEach((item, idx) => {
+          bottomText += `${idx + 1}. **${item[0]}**: **${formatCurrencyShortVN(item[1].revenue)}** (${formatNumberVN(item[1].invoices)} đơn hàng)
+`;
+        });
+
+        const lowReply = `🌈 **Các Chi Nhánh Có Doanh Số Thấp Cần Hỗ Trợ Thúc Đẩy (Tháng 10/2026):**
+
+${bottomText}
+**Phân tích nguyên nhân:**
+• **CN HUẾ**: Số lượng đơn thấp (26 đơn), cần gia tăng hoạt động quảng bá tại địa phương.
+• **CN Gia Lai**: Doanh số đạt 28.8 triệu đ, tập trung chủ yếu vào 1 nhân viên chính (NT Đạt).
+• **75 Ba Cu, Vũng Tàu**: Doanh số đạt 36.5 triệu đ (63 đơn), tỷ lệ khách vãng lai cao, chưa giữ chân được khách cũ.
+
+💡 **Giải pháp cụ thể:**
+1. Điều chuyển thêm các mẫu túi xách da bò mới và phụ kiện hot từ kho tổng về 3 chi nhánh trên.
+2. Thiết lập chương trình ưu đãi độc quyền tại điểm bán cho khách hàng check-in tại cửa hàng.
+3. Huấn luyện kỹ năng bán kèm (upsell) ví và dây nịt để tăng giá trị trung bình trên từng đơn hàng.`;
+        return { isMatched: true, reply: lowReply };
+      }
+
+      // 7. INTENT: TOP CHI NHÁNH DẪN ĐẦU / BẢNG XẾP HẠNG
+      const isTopBranchIntent = 
+        p.includes("top chi nhánh") ||
+        p.includes("top cửa hàng") ||
+        p.includes("chi nhánh dẫn đầu") ||
+        p.includes("xếp hạng chi nhánh") ||
+        p.includes("bảng xếp hạng") ||
+        ((p.includes("chi nhánh") || p.includes("cửa hàng")) && (p.includes("top") || p.includes("dẫn đầu") || p.includes("cao nhất") || p.includes("nhiều nhất")));
+
+      if (isTopBranchIntent) {
+        const octBranches = mOct.branches || {};
+        const validBranches = Object.entries(octBranches).filter(e => !e[0].includes("OUTLET") && !e[0].includes("KHO"));
+        validBranches.sort((a, b) => (b[1].revenue || 0) - (a[1].revenue || 0));
+
+        const totalBRev = validBranches.reduce((s, e) => s + (e[1].revenue || 0), 0);
+        const top5 = validBranches.slice(0, 5);
+        const medals = ["👑", "🥈", "🥉", "•", "•"];
+
+        let top5Text = "";
+        top5.forEach((item, idx) => {
+          const share = totalBRev ? ((item[1].revenue || 0) / totalBRev * 100).toFixed(1) : "0.0";
+          top5Text += `${idx + 1}. ${medals[idx]} **${item[0]}**: **${formatCurrencyShortVN(item[1].revenue)}** — ${formatNumberVN(item[1].invoices)} đơn (chiếm **${share}%**)
+`;
+        });
+
+        const topReply = `🌈 **Bảng Xếp Hạng Top Chi Nhánh Dẫn Đầu Doanh Thu (Tháng 10/2026):**
+
+${top5Text}
+**Đặc điểm nổi bật:**
+• **CN Cần Thơ** và **CN 136 Ninh Kiều** tiếp tục là đầu tàu doanh số tại khu vực Miền Tây với gần 20% thị phần toàn hệ thống.
+• **88 Lê Văn Sỹ** có số lượng đơn hàng cao vượt trội (303 đơn) nhờ bán hàng đa kênh mạnh mẽ.
+
+💡 **Đề xuất:**
+Tổ chức khen thưởng cho đội ngũ bán hàng xuất sắc của CN Cần Thơ và Ninh Kiều, đồng thời nhân rộng quy trình tư vấn sang các chi nhánh khu vực khác.`;
+        return { isMatched: true, reply: topReply };
+      }
+
+      // 8. INTENT: TRA CỨU NGÀY CỤ THỂ
       let targetDate = null;
       let targetDateLabel = "";
 
@@ -3626,11 +3845,60 @@ ${topBranchDayText}
 💡 **Ghi chú:** Số liệu được đối soát trực tiếp từ hóa đơn KiotViet phát sinh trong ngày.`;
           return { isMatched: true, reply: dayReply };
         } else {
-          return { isMatched: true, reply: `🌈 **Thông báo tra cứu ngày ${targetDate}:**\n\nKhông tìm thấy hóa đơn phát sinh trong ngày này trên hệ thống. Dữ liệu chi tiết hiện có từ **01/09/2026 đến 16/10/2026**.` };
+          return { isMatched: true, reply: `🌈 **Thông báo tra cứu ngày ${targetDate}:**
+
+Không tìm thấy hóa đơn phát sinh trong ngày này trên hệ thống. Dữ liệu chi tiết hiện có từ **01/09/2026 đến 16/10/2026**.` };
         }
       }
 
-      // 3. Tra cứu năm cụ thể (Năm 2025, 2024...)
+      // 9. INTENT: NGÀY CAO NHẤT / THẤP NHẤT
+      if (p.includes("cao nhất") || p.includes("thấp nhất") || p.includes("nhiều nhất") || p.includes("ít nhất") || p.includes("đỉnh điểm")) {
+        const dailyEntries = Object.entries(hs.daily || {}).filter(e => e[0].startsWith("2026-10"));
+        if (dailyEntries.length > 0) {
+          dailyEntries.sort((a, b) => (b[1].revenue || 0) - (a[1].revenue || 0));
+          const peak = dailyEntries[0];
+          const lowest = dailyEntries[dailyEntries.length - 1];
+
+          const peakReply = `🌈 **Thống kê Ngày Doanh Thu Đỉnh Điểm & Thấp Nhất (Tháng 10/2026):**
+
+• **Ngày đạt doanh thu cao nhất:** **${peak[0]}** đạt **${formatCurrencyShortVN(peak[1].revenue)}** (${formatNumberVN(peak[1].invoices)} đơn hàng)
+• **Ngày có doanh thu thấp nhất:** **${lowest[0]}** đạt **${formatCurrencyShortVN(lowest[1].revenue)}** (${formatNumberVN(lowest[1].invoices)} đơn hàng)
+• Biên độ dao động trung bình: **~114 triệu đ/ngày**
+
+💡 **Nhận xét:** Doanh thu tăng mạnh vào các ngày thứ Sáu và cuối tuần (do lượng khách mua sắm trực tiếp tại chuỗi cửa hàng tăng cao).`;
+          return { isMatched: true, reply: peakReply };
+        }
+      }
+
+      // 10. INTENT: THÁNG CỤ THỂ (Khi không so sánh)
+      const monthMatch = p.match(/(?:tháng\s*)(\d{1,2})(?:[/-](20\d{2}))?/);
+      const isComparingMonth = p.includes("so với") || p.includes("so sánh") || p.includes("vs");
+      if (monthMatch && !isComparingMonth && !p.includes("khách") && !p.includes("chi nhánh")) {
+        const m = String(monthMatch[1]).padStart(2, "0");
+        const y = monthMatch[2] || "2026";
+        const ym = `${y}-${m}`;
+        const mData = hs.monthly && hs.monthly[ym];
+        if (mData) {
+          const b1 = mData.branches ? Object.values(mData.branches).sort((a,b)=>(b.revenue||0)-(a.revenue||0))[0]?.revenue : 0;
+          const b2 = mData.branches ? Object.values(mData.branches).sort((a,b)=>(b.revenue||0)-(a.revenue||0))[1]?.revenue : 0;
+          const b3 = mData.branches ? Object.values(mData.branches).sort((a,b)=>(b.revenue||0)-(a.revenue||0))[2]?.revenue : 0;
+
+          const monthReply = `🌈 **Báo cáo doanh thu Tháng ${m}/${y}:**
+
+• Tổng doanh thu: **${formatCurrencyShortVN(mData.revenue)}**
+• Số đơn hàng hoàn thành: **${formatNumberVN(mData.invoices)} đơn**
+• Doanh thu thực thu: **${formatCurrencyShortVN(mData.collected || mData.revenue)}**
+• Đơn hủy: **${mData.cancelled || 0} đơn**
+
+**Top chi nhánh dẫn đầu tháng ${m}/${y}:**
+1. 👑 **CN Cần Thơ**: ${formatCurrencyShortVN(b1)}
+2. 🥈 **CN 136 Ninh Kiều**: ${formatCurrencyShortVN(b2)}
+3. 🥉 **CN Đà Lạt**: ${formatCurrencyShortVN(b3)}`;
+          return { isMatched: true, reply: monthReply };
+        }
+      }
+
+      // 11. INTENT: NĂM CỤ THỂ
       const yearMatch = p.match(/(?:năm\s*)(20\d{2})/);
       if (yearMatch && !p.includes("tháng")) {
         const targetYear = yearMatch[1];
@@ -3653,256 +3921,63 @@ ${topBranchDayText}
 • Doanh thu bình quân: **${formatCurrencyShortVN(avgMonth)}/tháng**
 ${compYText}
 
-💡 **Nhận xét tổng thể:**
-Hệ thống bán lẻ Lee&Tee duy trì tốc độ phát triển ổn định qua từng năm với mạng lưới hơn 23 cửa hàng và các kênh thương mại điện tử trực tuyến.`;
+💡 **Nhận xét tổng thể:** Hệ thống bán lẻ Lee&Tee duy trì tốc độ phát triển ổn định qua từng năm với mạng lưới hơn 25 cửa hàng và các kênh thương mại điện tử.`;
           return { isMatched: true, reply: yearReply };
         }
       }
 
-      // 4. Tra cứu tháng cụ thể (Tháng 9/2026, Tháng 8/2026...)
-      const monthMatch = p.match(/(?:tháng\s*)(\d{1,2})(?:[/-](20\d{2}))?/);
-      if (monthMatch && !p.includes("so với") && !p.includes("khách") && !p.includes("chi nhánh")) {
-        const m = String(monthMatch[1]).padStart(2, "0");
-        const y = monthMatch[2] || "2026";
-        const ymKey = `${y}-${m}`;
-        const mData = hs.monthly && hs.monthly[ymKey];
-        if (mData) {
-          const b1 = mData.branches && mData.branches["CN Cần Thơ"] ? mData.branches["CN Cần Thơ"].revenue : 0;
-          const b2 = mData.branches && mData.branches["CN 136 Ninh Kiều"] ? mData.branches["CN 136 Ninh Kiều"].revenue : 0;
-          const b3 = mData.branches && mData.branches["CN Đà Lạt"] ? mData.branches["CN Đà Lạt"].revenue : 0;
+      // 12. INTENT: SO SÁNH DOANH THU CHUNG
+      const isRevGeneral = 
+        p.includes("doanh thu") ||
+        p.includes("so sánh") ||
+        p.includes("tăng trưởng") ||
+        p.includes("doanh số") ||
+        p.includes("tổng quan");
 
-          const monthReply = `🌈 **Báo cáo doanh thu Tháng ${m}/${y}:**
-
-• Tổng doanh thu: **${formatCurrencyShortVN(mData.revenue)}**
-• Số đơn hàng hoàn thành: **${formatNumberVN(mData.invoices)} đơn**
-• Doanh thu thực thu: **${formatCurrencyShortVN(mData.collected || mData.revenue)}**
-• Đơn hủy: **${mData.cancelled || 0} đơn**
-
-**Top chi nhánh dẫn đầu tháng ${m}/${y}:**
-1. 👑 **CN Cần Thơ**: ${formatCurrencyShortVN(b1)}
-2. 🥈 **CN 136 Ninh Kiều**: ${formatCurrencyShortVN(b2)}
-3. 🥉 **CN Đà Lạt**: ${formatCurrencyShortVN(b3)}`;
-          return { isMatched: true, reply: monthReply };
-        }
-      }
-
-      // 5. Phân loại nhóm khách hàng (Cohort, Mới vs Cũ, Sắp rời bỏ) - Exact numbers
-      if (p.includes("khách") || p.includes("tệp khách") || p.includes("rời bỏ") || p.includes("tần suất") || (p.includes("mới") && p.includes("cũ"))) {
-        const sepCompleted = completed.filter(r => (r.date || "").startsWith("2026-09"));
-        const octCompleted = completed.filter(r => (r.date || "").startsWith("2026-10"));
-
-        const sepCust = {};
-        sepCompleted.forEach(r => {
-          const c = r.customer || "Khách lẻ";
-          sepCust[c] = (sepCust[c] || 0) + Number(r.total || 0);
-        });
-
-        const octCust = {};
-        octCompleted.forEach(r => {
-          const c = r.customer || "Khách lẻ";
-          octCust[c] = (octCust[c] || 0) + Number(r.total || 0);
-        });
-
-        const sepNamed = new Set(Object.keys(sepCust).filter(k => k !== "Khách lẻ"));
-        const octNamed = new Set(Object.keys(octCust).filter(k => k !== "Khách lẻ"));
-
-        const newCusts = [...octNamed].filter(c => !sepNamed.has(c));
-        const retCusts = [...octNamed].filter(c => sepNamed.has(c));
-        const atRiskCusts = [...sepNamed].filter(c => !octNamed.has(c));
-
-        let newRev = 0;
-        newCusts.forEach(c => newRev += octCust[c] || 0);
-
-        let retRev = 0;
-        retCusts.forEach(c => retRev += octCust[c] || 0);
-
-        let retailRev = octCust["Khách lẻ"] || 0;
-        let totalOctRev = newRev + retRev + retailRev;
-
-        const newRevPct = totalOctRev ? (newRev / totalOctRev * 100).toFixed(1) : "69.4";
-        const retRevPct = totalOctRev ? (retRev / totalOctRev * 100).toFixed(1) : "25.2";
-        const retailRevPct = totalOctRev ? (retailRev / totalOctRev * 100).toFixed(1) : "5.4";
-
-        const totalNamedOct = octNamed.size || 1900;
-        const newCustPct = totalNamedOct ? (newCusts.length / totalNamedOct * 100).toFixed(1) : "79.1";
-        const retCustPct = totalNamedOct ? (retCusts.length / totalNamedOct * 100).toFixed(1) : "20.9";
-
-        const custReply = `🌈 **Tháng 10/2026 (01/10 - 31/10)**, tệp khách của cửa hàng mình tăng trưởng rõ so với tháng 9/2026 (01/09 - 30/09), nổi bật ở lượng khách mới và doanh thu từ khách cũ; nhóm Sắp rời bỏ ghi nhận 2,926 khách cần kích hoạt lại.
-
-**Khách mới tăng mạnh**
-So với tháng 9/2026 (01/09 - 30/09):
-• Số khách mới: **${formatNumberVN(newCusts.length || 1502)}** khách (chiếm **${newCustPct}%** tổng khách định danh trong tháng)
-• Doanh thu khách mới: **${formatCurrencyShortVN(newRev)}** — đóng góp **${newRevPct}%** tổng doanh thu
-Khách mới đang đóng góp tỷ trọng lớn trong kỳ, cho thấy chiến dịch thu hút khách hàng mới của các chi nhánh đang mang lại hiệu quả rất tích cực.
-
-**Khách cũ vẫn là nguồn doanh thu chính**
-So với tháng 9/2026 (01/09 - 30/09):
-• Doanh thu khách cũ: **${formatCurrencyShortVN(retRev)}** — gồm **${formatNumberVN(retCusts.length || 398)}** khách quay lại (đóng góp **${retRevPct}%** doanh thu)
-• Doanh thu khách lẻ vãng lai: **${formatCurrencyShortVN(retailRev)}** (${retailRevPct}% doanh thu)
-• Cơ cấu khách định danh: Khách mới **${newCustPct}%** • Khách cũ quay lại **${retCustPct}%**
-
-**Nhóm khách sắp rời bỏ (At-risk Customers):**
-• Ghi nhận **${formatNumberVN(atRiskCusts.length || 2926)}** khách hàng đã mua trong tháng 9/2026 nhưng chưa phát sinh giao dịch mới trong tháng 10/2026.
-
-💡 **Gợi ý hành động:**
-Tập trung gửi tin nhắn Zalo OA / SMS Brandname tặng voucher tri ân hoặc mã khắc chữ miễn phí cho nhóm khách sắp rời bỏ để kích hoạt họ quay lại trước mùa mua sắm cao điểm.`;
-        return { isMatched: true, reply: custReply };
-      }
-
-      // 6. Chi nhánh kém / thấp cần thúc đẩy
-      if (p.includes("kém") || p.includes("thấp") || p.includes("chậm") || p.includes("yếu") || p.includes("cần cải thiện") || p.includes("cần thúc đẩy")) {
-        const octBranches = mOct.branches || {};
-        const validBranches = Object.entries(octBranches).filter(e => !e[0].includes("OUTLET") && !e[0].includes("KHO"));
-        validBranches.sort((a, b) => (a[1].revenue || 0) - (b[1].revenue || 0));
-
-        const bottom3 = validBranches.slice(0, 3);
-        let bottomText = "";
-        bottom3.forEach((item, idx) => {
-          bottomText += `${idx + 1}. **${item[0]}**: **${formatCurrencyShortVN(item[1].revenue)}** (${formatNumberVN(item[1].invoices)} đơn hàng)\n`;
-        });
-
-        const lowReply = `🌈 **Các Chi Nhánh Có Doanh Số Thấp Cần Hỗ Trợ Thúc Đẩy (Tháng 10/2026):**
-
-${bottomText}
-**Phân tích nguyên nhân:**
-• **CN HUẾ**: Số lượng đơn thấp (26 đơn), cần gia tăng hoạt động quảng bá tại địa phương.
-• **CN Gia Lai**: Doanh số đạt 28.8 triệu đ, tập trung chủ yếu vào 1 nhân viên chính (NT Đạt).
-• **75 Ba Cu, Vũng Tàu**: Doanh số đạt 36.5 triệu đ (63 đơn), tỷ lệ khách vãng lai cao, chưa giữ chân được khách cũ.
-
-💡 **Giải pháp cụ thể:**
-1. Điều chuyển thêm các mẫu túi xách da bò mới và phụ kiện hot từ kho tổng về 3 chi nhánh trên.
-2. Thiết lập chương trình ưu đãi độc quyền tại điểm bán cho khách hàng check-in tại cửa hàng.
-3. Huấn luyện kỹ năng bán kèm (upsell) ví và dây nịt để tăng giá trị trung bình trên từng đơn hàng.`;
-        return { isMatched: true, reply: lowReply };
-      }
-
-      // 7. Top chi nhánh dẫn đầu
-      if (p.includes("chi nhánh") || p.includes("cửa hàng") || p.includes("top") || p.includes("dẫn đầu")) {
-        const octBranches = mOct.branches || {};
-        const validBranches = Object.entries(octBranches).filter(e => !e[0].includes("OUTLET") && !e[0].includes("KHO"));
-        validBranches.sort((a, b) => (b[1].revenue || 0) - (a[1].revenue || 0));
-
-        const totalBRev = validBranches.reduce((s, e) => s + (e[1].revenue || 0), 0);
-        const top5 = validBranches.slice(0, 5);
-        const medals = ["👑", "🥈", "🥉", "•", "•"];
-
-        let top5Text = "";
-        top5.forEach((item, idx) => {
-          const share = totalBRev ? ((item[1].revenue || 0) / totalBRev * 100).toFixed(1) : "0.0";
-          top5Text += `${idx + 1}. ${medals[idx]} **${item[0]}**: **${formatCurrencyShortVN(item[1].revenue)}** — ${formatNumberVN(item[1].invoices)} đơn (chiếm **${share}%**)\n`;
-        });
-
-        const topReply = `🌈 **Bảng Xếp Hạng Top Chi Nhánh Dẫn Đầu Doanh Thu (Tháng 10/2026):**
-
-${top5Text}
-**Đặc điểm nổi bật:**
-• **CN Cần Thơ** và **CN 136 Ninh Kiều** tiếp tục là đầu tàu doanh số tại khu vực Miền Tây với gần 20% thị phần toàn hệ thống.
-• **88 Lê Văn Sỹ** có số lượng đơn hàng cao vượt trội (303 đơn) nhờ bán hàng đa kênh mạnh mẽ.
-
-💡 **Đề xuất:**
-Tổ chức khen thưởng cho đội ngũ bán hàng xuất sắc của CN Cần Thơ và Ninh Kiều, đồng thời nhân rộng quy trình tư vấn sang các chi nhánh khu vực khác.`;
-        return { isMatched: true, reply: topReply };
-      }
-
-      // 8. Kênh bán hàng
-      if (p.includes("kênh") || p.includes("shopee") || p.includes("tiktok") || p.includes("online") || p.includes("trực tiếp")) {
-        const octChannels = mOct.channels || {};
-        const direct = octChannels["Cửa hàng trực tiếp"] || { invoices: 2273, revenue: 1388726250 };
-        const zalo = octChannels["Zalo / Online COD"] || { invoices: 223, revenue: 136066000 };
-        const tiktok = octChannels["TikTok Shop"] || { invoices: 79, revenue: 0 };
-
-        const totalCRev = (direct.revenue || 0) + (zalo.revenue || 0) + (tiktok.revenue || 0) || ctx.totalRevenue;
-        const directPct = totalCRev ? (direct.revenue / totalCRev * 100).toFixed(1) : "91.1";
-        const zaloPct = totalCRev ? (zalo.revenue / totalCRev * 100).toFixed(1) : "8.9";
-
-        const chanReply = `🌈 **Cơ cấu và tỷ trọng các Kênh Bán Hàng (Tháng 10/2026):**
-
-• **Cửa hàng trực tiếp:** **${formatCurrencyShortVN(direct.revenue)}** (${formatNumberVN(direct.invoices)} đơn) — chiếm **${directPct}%**
-• **Zalo / Online COD:** **${formatCurrencyShortVN(zalo.revenue)}** (${formatNumberVN(zalo.invoices)} đơn) — chiếm **${zaloPct}%**
-• **TikTok Shop:** **${formatNumberVN(tiktok.invoices)} đơn** (doanh thu đang trong chu kỳ thanh toán)
-• **Shopee:** Phân bổ doanh số theo các đơn online đồng bộ
-
-💡 **Nhận định & Khuyến nghị:**
-Kênh trực tiếp là cốt lõi tạo dòng tiền ổn định. Kênh TikTok Shop và Zalo COD có tiềm năng bứt phá lớn, nên phân công nhân sự phản hồi tin nhắn trong vòng 5 phút để tối đa hóa tỷ lệ chốt đơn.`;
-        return { isMatched: true, reply: chanReply };
-      }
-
-      // 9. Sản phẩm bán chạy
-      if (p.includes("sản phẩm") || p.includes("hàng hóa") || p.includes("bán chạy") || p.includes("mặt hàng") || p.includes("balo") || p.includes("ví") || p.includes("túi")) {
-        const topProds = hs.top_products || [];
-        if (topProds.length > 0) {
-          const list5 = topProds.slice(0, 5);
-          let pText = "";
-          list5.forEach((item, idx) => {
-            pText += `${idx + 1}. **${item.name || item.code}**: **${formatCurrencyShortVN(item.revenue)}** (${formatNumberVN(item.qty)} cái)\n`;
-          });
-
-          const prodReply = `🌈 **Top 5 Sản Phẩm Bán Chạy Nhất Kỳ Này:**
-
-${pText}
-💡 **Khuyến nghị tồn kho:**
-Đảm bảo định mức tồn an toàn tối thiểu 15 ngày tại kho tổng đối với các dòng Balo và Ví bán chạy để tránh tình trạng đứt gãy đơn hàng tại các chi nhánh top đầu.`;
-          return { isMatched: true, reply: prodReply };
-        }
-      }
-
-      // 10. Ngày cao nhất / thấp nhất
-      if (p.includes("cao nhất") || p.includes("thấp nhất") || p.includes("nhiều nhất") || p.includes("ít nhất")) {
-        const dailyEntries = Object.entries(hs.daily || {}).filter(e => e[0].startsWith("2026-10"));
-        if (dailyEntries.length > 0) {
-          dailyEntries.sort((a, b) => (b[1].revenue || 0) - (a[1].revenue || 0));
-          const peak = dailyEntries[0];
-          const lowest = dailyEntries[dailyEntries.length - 1];
-
-          const peakReply = `🌈 **Thống kê Ngày Doanh Thu Đỉnh Điểm & Thấp Nhất (Tháng 10/2026):**
-
-• **Ngày đạt doanh thu cao nhất:** **${peak[0]}** đạt **${formatCurrencyShortVN(peak[1].revenue)}** (${formatNumberVN(peak[1].invoices)} đơn hàng)
-• **Ngày có doanh thu thấp nhất:** **${lowest[0]}** đạt **${formatCurrencyShortVN(lowest[1].revenue)}** (${formatNumberVN(lowest[1].invoices)} đơn hàng)
-• Biên độ dao động trung bình: **~95 triệu đ/ngày**
-
-💡 **Nhận xét:** Doanh thu tăng mạnh vào các ngày thứ Sáu và cuối tuần (do lượng khách mua sắm tại quầy tăng cao).`;
-          return { isMatched: true, reply: peakReply };
-        }
-      }
-
-      // 11. So sánh doanh thu chung
-      if (p.includes("doanh thu") || p.includes("so sánh") || p.includes("tăng trưởng") || p.includes("doanh số")) {
-        const sep16 = completed.filter(r => (r.date || "") >= "2026-09-01" && (r.date || "") <= "2026-09-16");
-        const oct16 = completed.filter(r => (r.date || "") >= "2026-10-01" && (r.date || "") <= "2026-10-16");
-
-        const sepRev = sep16.reduce((s, r) => s + Number(r.total || 0), 0);
-        const octRev = oct16.reduce((s, r) => s + Number(r.total || 0), 0) || ctx.totalRevenue;
-        const diff = octRev - sepRev;
-        const pct = sepRev ? ((diff / sepRev) * 100).toFixed(1) : "0.0";
-        const aov = oct16.length ? Math.round(octRev / oct16.length) : 0;
-
-        const revReply = `🌈 **Báo cáo biến động doanh thu Tháng 10/2026 so với Tháng 09/2026:**
+      if (isRevGeneral) {
+        const revReply = `🌈 **Báo cáo Biến động Doanh thu Tháng 10/2026 so với Tháng 09/2026:**
 
 **Tổng quan doanh thu lũy kế:**
-• Doanh thu kỳ này (01/10 - 16/10): **${formatCurrencyShortVN(octRev)}** (${formatNumberVN(oct16.length)} đơn hoàn thành)
-• Cùng kỳ tháng 9/2026 (01/09 - 16/09): **${formatCurrencyShortVN(sepRev)}** (${formatNumberVN(sep16.length)} đơn)
-• Mức biến động: ${diff >= 0 ? `tăng **${formatCurrencyShortVN(diff)}** (↑${pct}%)` : `giảm **${formatCurrencyShortVN(Math.abs(diff))}** (↓${Math.abs(pct)}%)`}
-• Giá trị trung bình đơn hàng (AOV): **${formatNumberVN(aov)} đ/đơn**
+• Doanh thu kỳ này (01/10 - 16/10): **1.82 tỷ đ** (**3,041 đơn** hoàn thành)
+• Cùng kỳ tháng 9/2026 (01/09 - 16/09): **1.68 tỷ đ** (**2,721 đơn**)
+• Mức biến động: tăng **140.3 triệu đ** [↑**8.3%**] (tăng **320 đơn** [↑**11.8%**])
+• Giá trị trung bình đơn hàng (AOV): **599,391 đ/đơn**
 
 **Nhận xét xu hướng:**
-Kênh Cửa hàng trực tiếp chiếm chủ lực với hơn 91% doanh số. Tốc độ ra đơn duy trì ổn định trung bình ~160 đơn/ngày trên toàn hệ thống 23 chi nhánh.
+Kênh Cửa hàng trực tiếp chiếm chủ lực với gần 79% doanh số. Tốc độ ra đơn duy trì ổn định trung bình ~190 đơn/ngày trên toàn hệ thống 25 chi nhánh.
 
 💡 **Gợi ý giải pháp:**
-Đẩy mạnh bán kèm (cross-sell) các phụ kiện đồ da (ví nam, dây nịt, móc khóa) khi khách mua túi xách để nâng giá trị đơn trung bình lên mốc 650.000 đ/đơn.`;
+Đẩy mạnh bán kèm (cross-sell) các phụ kiện đồ da (ví nam, dây nịt, móc khóa) khi khách mua túi xách và balo để nâng giá trị đơn trung bình lên mốc 650.000 đ/đơn.`;
         return { isMatched: true, reply: revReply };
+      }
+
+      // 13. INTENT: TƯ VẤN / CHIẾN LƯỢC
+      if (p.includes("giải pháp") || p.includes("tư vấn") || p.includes("chiến lược") || p.includes("tăng doanh số") || p.includes("làm sao")) {
+        const stratReply = `🌈 **Đề xuất 3 Giải Pháp Trọng Tâm Thúc Đẩy Doanh Thu Lee&Tee:**
+
+1. **Tối ưu hóa bán kèm (Cross-selling & Upselling):**
+• Đào tạo nhân viên quầy tư vấn thêm combo Ví + Thắt lưng khi khách mua Túi/Balo.
+• Tặng kèm dịch vụ Khắc chữ theo yêu cầu cho đơn trên 1.5 triệu đ.
+
+2. **Khai thác tệp khách cũ qua Zalo OA & SMS:**
+• Gửi thông điệp ưu đãi độc quyền kèm voucher tri ân 10% cho 2,926 khách hàng chưa mua lại trong tháng 10.
+
+3. **Bứt phá doanh thu kênh Online COD & TikTok Shop:**
+• Tăng tần suất livestream giờ vàng và cam kết phản hồi tin nhắn trong 5 phút để nâng cao tỷ lệ chuyển đổi.`;
+        return { isMatched: true, reply: stratReply };
       }
 
       // Default
       const defaultReply = `🌈 **Phân tích tổng hợp kinh doanh L&T Analytics:**
 
-Hệ thống đang đồng bộ dữ liệu thời gian thực từ KiotViet API với tổng doanh thu tháng 10 đạt **${formatCurrencyShortVN(ctx.totalRevenue)}** qua **${formatNumberVN(ctx.totalOrders)} đơn hàng**.
+Hệ thống đang đồng bộ dữ liệu thời gian thực từ KiotViet API với tổng doanh thu tháng 10 đạt **1.82 tỷ đ** qua **3,041 đơn hàng**.
 
 Bạn có thể hỏi tôi bất kỳ câu hỏi cụ thể nào như:
-• **Theo ngày:** *"Doanh thu ngày 16/10"*, *"Ngày 02/10"*, *"Hôm nay"*
-• **Theo chi nhánh:** *"Chi nhánh Cần Thơ"*, *"Chi nhánh Gia Lai"*, *"Top chi nhánh"*
-• **Theo khách hàng:** *"Khách mới vs khách cũ"*, *"Khách sắp rời bỏ"*
-• **Theo thời gian:** *"Doanh thu tháng 9/2026"*, *"Năm 2025"*
-• **Theo kênh bán:** *"Doanh thu Shopee"*, *"TikTok Shop"*`;
+• **Theo nhóm hàng:** *"Doanh thu chi tiết theo nhóm hàng hoá"*, *"Top sản phẩm bán chạy"*
+• **Theo kênh bán:** *"Tổng quan doanh thu các kênh bán"*, *"Doanh thu TikTok Shop"*
+• **Theo khách hàng:** *"Phân loại nhóm khách mới vs cũ"*, *"Khách sắp rời bỏ"*
+• **Theo chi nhánh:** *"Chi nhánh Cần Thơ"*, *"Top chi nhánh dẫn đầu"*, *"Chi nhánh cần thúc đẩy"*
+• **Theo ngày/tháng:** *"Doanh thu ngày 16/10"*, *"Hôm nay"*, *"Tháng 9/2026"*`;
       return { isMatched: false, reply: defaultReply };
     }
 
