@@ -137,6 +137,23 @@
     /* An thanh cuon nhung van cuon ngang muot ma tren mobile */
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  
+    /* AI Assistant Drawer Mobile & Safari Safe Area */
+    @media (max-width: 639px) {
+      #aiAssistantDrawer {
+        height: 100%;
+        height: 100dvh;
+        height: -webkit-fill-available;
+      }
+      #aiDrawerFooter {
+        padding-bottom: max(84px, calc(env(safe-area-inset-bottom, 20px) + 54px));
+      }
+      @media (display-mode: standalone) {
+        #aiDrawerFooter {
+          padding-bottom: max(16px, env(safe-area-inset-bottom, 20px));
+        }
+      }
+    }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased min-h-screen flex flex-col">
@@ -939,7 +956,7 @@
   <div id="aiDrawerBackdrop" onclick="toggleAiDrawer(false)" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs transition-opacity duration-300 opacity-0 pointer-events-none"></div>
 
   <!-- Drawer Container -->
-  <aside id="aiAssistantDrawer" class="fixed top-0 right-0 bottom-0 z-50 w-full sm:w-[420px] md:w-[440px] bg-slate-50 border-l border-slate-200/90 shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full h-[100dvh] overflow-hidden" aria-label="Trợ lý AI KiotViet">
+  <aside id="aiAssistantDrawer" class="fixed inset-y-0 right-0 z-50 w-full sm:w-[420px] md:w-[440px] bg-slate-50 border-l border-slate-200/90 shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full overflow-hidden" aria-label="Trợ lý AI KiotViet">
     
     <!-- Drawer Header -->
     <div class="px-3.5 py-3 bg-white border-b border-slate-200 flex items-center justify-between shadow-xs select-none shrink-0">
@@ -1044,12 +1061,12 @@
     </div>
 
     <!-- Drawer Footer Input -->
-    <div class="p-3 bg-white border-t border-slate-200/90 shrink-0">
+    <div id="aiDrawerFooter" class="p-3 bg-white border-t border-slate-200/90 shrink-0 transition-[padding] duration-150">
       <form id="aiChatForm" onsubmit="handleAiSubmit(event)" class="relative flex items-center bg-slate-100 hover:bg-slate-100/90 focus-within:bg-white rounded-full border border-slate-200 focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 px-3 py-1.5 transition">
         <button type="button" onclick="toggleAiPromptList()" class="w-7 h-7 rounded-full text-slate-500 hover:text-indigo-600 hover:bg-slate-200/60 flex items-center justify-center transition shrink-0" title="Chọn câu hỏi gợi ý">
           <i class="fa-solid fa-plus text-xs"></i>
         </button>
-        <input type="text" id="aiUserInput" placeholder="Hỏi tôi bất cứ điều gì..." autocomplete="off" class="flex-1 bg-transparent border-0 outline-none px-2 py-1 text-xs sm:text-sm text-slate-800 placeholder-slate-400">
+        <input type="text" id="aiUserInput" placeholder="Hỏi tôi bất cứ điều gì..." autocomplete="off" class="flex-1 bg-transparent border-0 outline-none px-2.5 py-1 text-[16px] sm:text-sm text-slate-800 placeholder-slate-400">
         <button type="submit" id="btnAiSend" class="w-7 h-7 rounded-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 disabled:hover:bg-indigo-600 text-white flex items-center justify-center transition shrink-0 shadow-xs active:scale-95" title="Gửi câu hỏi">
           <i class="fa-solid fa-arrow-up text-xs"></i>
         </button>
@@ -2992,6 +3009,48 @@
       aiChatHistory = [];
     }
 
+    function syncAiDrawerHeight(isKeyboardExplicit) {
+      const drawer = document.getElementById("aiAssistantDrawer");
+      const footer = document.getElementById("aiDrawerFooter");
+      if (!drawer) return;
+
+      if (window.innerWidth < 640) {
+        if (window.visualViewport) {
+          const vvHeight = window.visualViewport.height;
+          const vvTop = window.visualViewport.offsetTop || 0;
+          const isKeyboard = (typeof isKeyboardExplicit === "boolean") 
+            ? isKeyboardExplicit 
+            : ((window.innerHeight - vvHeight) > 120);
+
+          drawer.style.height = `${vvHeight}px`;
+          drawer.style.top = `${vvTop}px`;
+          drawer.style.bottom = "auto";
+
+          if (footer) {
+            if (isKeyboard) {
+              footer.style.paddingBottom = "8px";
+            } else {
+              const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+              if (isStandalone) {
+                footer.style.paddingBottom = "max(14px, env(safe-area-inset-bottom, 20px))";
+              } else {
+                footer.style.paddingBottom = "max(84px, calc(env(safe-area-inset-bottom, 20px) + 54px))";
+              }
+            }
+          }
+        } else {
+          drawer.style.height = `${window.innerHeight}px`;
+          drawer.style.top = "0px";
+          drawer.style.bottom = "0px";
+        }
+      } else {
+        drawer.style.height = "";
+        drawer.style.top = "";
+        drawer.style.bottom = "";
+        if (footer) footer.style.paddingBottom = "";
+      }
+    }
+
     function toggleAiDrawer(forceOpen) {
       const drawer = document.getElementById("aiAssistantDrawer");
       const backdrop = document.getElementById("aiDrawerBackdrop");
@@ -3003,6 +3062,7 @@
 
       if (shouldOpen) {
         drawer.classList.remove("translate-x-full");
+        syncAiDrawerHeight();
         if (backdrop) {
           backdrop.classList.remove("opacity-0", "pointer-events-none");
           backdrop.classList.add("opacity-100");
@@ -3981,6 +4041,37 @@ Bạn có thể hỏi tôi bất kỳ câu hỏi cụ thể nào như:
       return { isMatched: false, reply: defaultReply };
     }
 
+
+    // Listeners for mobile Safari viewport changes and keyboard handling
+    if (typeof window !== "undefined") {
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", () => syncAiDrawerHeight());
+        window.visualViewport.addEventListener("scroll", () => syncAiDrawerHeight());
+      }
+      window.addEventListener("resize", () => syncAiDrawerHeight());
+      window.addEventListener("orientationchange", () => setTimeout(syncAiDrawerHeight, 200));
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const aiInp = document.getElementById("aiUserInput");
+        if (aiInp) {
+          aiInp.addEventListener("focus", () => {
+            if (window.innerWidth < 640) {
+              setTimeout(() => {
+                syncAiDrawerHeight(true);
+                scrollAiChatToBottom();
+              }, 150);
+            }
+          });
+          aiInp.addEventListener("blur", () => {
+            if (window.innerWidth < 640) {
+              setTimeout(() => {
+                syncAiDrawerHeight(false);
+              }, 150);
+            }
+          });
+        }
+      });
+    }
   </script>
 </body>
 </html>
