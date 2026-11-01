@@ -210,13 +210,13 @@
   </header>
 
   <!-- ================= MAIN CONTENT ================= -->
-  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3.5 sm:py-6 flex-1 w-full space-y-3.5 sm:space-y-6">
+  <main class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-3.5 sm:pt-6 pb-28 sm:pb-16 flex-1 w-full space-y-3.5 sm:space-y-6">
 
     <!-- FILTERS BAR -->
     <section class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-200 shadow-sm space-y-3">
       
       <!-- Date Presets Requested by User (Horizontal Swipeable on Mobile) -->
-      <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar pb-1 -mx-1 px-1 sm:mx-0 sm:px-0 sm:flex-wrap sm:space-x-0 sm:gap-1.5">
+      <div class="flex items-center space-x-1.5 overflow-x-auto no-scrollbar pb-1 pr-6 -mx-1 px-1 sm:mx-0 sm:px-0 sm:flex-wrap sm:space-x-0 sm:gap-1.5">
         <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-400 mr-1 flex-shrink-0"><i class="fa-regular fa-calendar mr-1"></i> Kỳ:</span>
         <button type="button" onclick="setPreset('today')" id="btnPresetToday" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Hôm nay</button>
         <button type="button" onclick="setPreset('yesterday')" id="btnPresetYesterday" class="preset-btn flex-shrink-0 whitespace-nowrap px-2.5 sm:px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Hôm qua</button>
@@ -944,11 +944,14 @@
     </div>
   </div>
 
-  <!-- FLOATING AI ASSISTANT BUTTON -->
-  <button onclick="toggleAiDrawer()" id="btnAiAssistantFloating" class="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center space-x-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-xs shadow-xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 active:scale-95 transition-all group" title="Mở Trợ lý AI KiotViet">
-    <span class="w-5 h-5 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-xs">🌈</span>
-    <span>Trợ lý AI</span>
-    <span class="px-1.5 py-0.2 text-[9px] font-black bg-rose-500 text-white rounded-full">9+</span>
+  <!-- FLOATING AI ASSISTANT BUTTON (Compact circle FAB on mobile, pill on desktop) -->
+  <button onclick="toggleAiDrawer()" id="btnAiAssistantFloating" class="fixed bottom-5 right-4 sm:bottom-6 sm:right-6 z-40 w-12 h-12 sm:w-auto sm:h-auto p-0 sm:px-4 sm:py-2.5 flex items-center justify-center sm:space-x-2 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-xs shadow-xl shadow-purple-500/30 hover:shadow-purple-500/50 hover:scale-105 active:scale-95 transition-all group" style="bottom: max(1.25rem, calc(env(safe-area-inset-bottom, 0px) + 1rem));" title="Mở Trợ lý AI KiotViet">
+    <div class="relative flex items-center justify-center">
+      <span class="w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-sm sm:text-xs">🌈</span>
+      <span class="sm:hidden absolute -top-2 -right-2 px-1.5 py-0.2 text-[9px] font-black bg-rose-500 text-white rounded-full border border-white shadow-xs">9+</span>
+    </div>
+    <span class="hidden sm:inline">Trợ lý AI</span>
+    <span class="hidden sm:inline-block px-1.5 py-0.2 text-[9px] font-black bg-rose-500 text-white rounded-full">9+</span>
   </button>
 
   <!-- ================= KIOTVIET AI ASSISTANT DRAWER ================= -->
