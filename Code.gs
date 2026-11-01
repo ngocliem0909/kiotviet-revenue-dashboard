@@ -187,6 +187,38 @@ function doGet(e) {
     }
   }
 
+  // API Trợ lý AI KiotViet (KiCi & Gemini Business Analytics)
+  if (e && e.parameter && e.parameter.api === 'ai_assistant') {
+    try {
+      var userPrompt = e.parameter.prompt || '';
+      var userContext = {};
+      if (e.parameter.context) {
+        try {
+          userContext = JSON.parse(e.parameter.context);
+        } catch (pe) {}
+      }
+      var aiRes = askAiAssistant(userPrompt, userContext);
+      return ContentService.createTextOutput(JSON.stringify(aiRes))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  // API Lưu Gemini API Key (Admin & Cấu hình)
+  if (e && e.parameter && e.parameter.api === 'save_gemini_key') {
+    try {
+      var apiKeyVal = (e.parameter.key || e.parameter.apiKey || '').trim();
+      var resKey = setGeminiApiKey(apiKeyVal);
+      return ContentService.createTextOutput(JSON.stringify(resKey))
+        .setMimeType(ContentService.MimeType.JSON);
+    } catch (err) {
+      return ContentService.createTextOutput(JSON.stringify({ success: false, error: err.toString() }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
   // Kiểm tra quyền Quản trị cho các API tác động hệ thống
   function isAuthorizedAdminRequest_() {
     var uEmail = (Session.getActiveUser().getEmail() || '').trim().toLowerCase();
